@@ -6,13 +6,12 @@ import Initial from '../screens/Initial';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
-export default function Navigation(){
+export default function Navigation(): JSX.Element {
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Initial">
         <RootStack.Screen name="Initial" component={Initial} />
       </RootStack.Navigator>
     </NavigationContainer>
-  )
+  );
 }
-
