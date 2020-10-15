@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SigninStackParamList } from '../types/index';
-import Main from '@base/screens/Main';
+import Main from '@base/src/screens/Main';
 
 const SigninStack = createStackNavigator<SigninStackParamList>();
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from '@emotion/native';
-import { SigninProps } from '@base/types';
+import { SigninProps } from '@base/src/types';
 import SigninScreen from '../components/SigninScreen';
 
 export default function Signin({ route, navigation }: SigninProps){
