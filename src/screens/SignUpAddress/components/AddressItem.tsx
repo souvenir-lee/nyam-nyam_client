@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled, { css } from '@emotion/native';
+import styled from 'styled-components/native';
 
 import { AddressObject } from '@base/types/api';
 import { PickedAddressObject } from '@base/types/SignUpAddress';

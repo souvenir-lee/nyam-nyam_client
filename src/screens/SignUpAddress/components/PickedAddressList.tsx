@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from '@emotion/native';
+import styled from 'styled-components/native';
 
 import { PickedAddressObject } from '@base/types/SignUpAddress';
 import PickedAddressItem from './PickedAddressItem';

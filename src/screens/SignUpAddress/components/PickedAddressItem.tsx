@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import styled, { css } from '@emotion/native';
+import styled from 'styled-components/native';
 
 import { PickedAddressObject } from '@base/types/SignUpAddress';
 

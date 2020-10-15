@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, Platform, Text, TextInput } from 'react-native';
-import styled, { css } from '@emotion/native';
+import styled from 'styled-components/native';
 
 import AddressItem from './AddressItem';
 import { getStoreByKeyword } from '@base/api';

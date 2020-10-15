@@ -12,15 +12,15 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.35",
-    "@emotion/native": "^10.0.27",
     "@expo/vector-icons": "^10.0.0",
     "@react-native-community/geolocation": "^2.0.2",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.7.3",
     "@react-navigation/stack": "^5.9.0",
+    "@types/styled-components": "^5.1.4",
     "axios": "^0.20.0",
+    "babel-plugin-styled-components": "^1.11.1",
     "emotion": "^10.0.27",
     "expo": "~39.0.2",
     "expo-asset": "~8.2.0",
@@ -35,7 +35,6 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",
-    "react-native-daum-postcode": "^1.0.9",
     "react-native-elements": "^2.3.2",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-safe-area-context": "3.1.4",
@@ -43,7 +42,8 @@
     "react-native-web": "~0.13.12",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
-    "redux-devtools-extension": "^2.13.8"
+    "redux-devtools-extension": "^2.13.8",
+    "styled-components": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
@@ -60,6 +60,7 @@
     "eslint-plugin-react-hooks": "^4.1.2",
     "jest-expo": "~39.0.0",
     "prettier": "^2.1.2",
+    "react-devtools": "^4.8.2",
     "typescript": "^4.0.3"
   },
   "private": true
