@@ -1,6 +1,6 @@
 import React  from 'react';
 import styled  from '@emotion/native';
-import SigninForm from '../components/SigninForm';
+import SigninForm from './SigninForm';
 
 type SigninScreenProps = {
     title: string;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SignupProps } from '@base/types';
+import { SignupProps } from '@base/src/types';
 import SignupScreen from '../components/SignupScreen';
 
 export default function Signup({ route, navigation }: SignupProps){

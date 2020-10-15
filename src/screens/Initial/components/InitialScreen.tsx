@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/native';
-import SigninRedirectButton from '../components/SigninRedirectButton';
+import SigninRedirectButton from './SigninRedirectButton';
 
 type InitialScreenProps = {
     handleStoreButtonPress: () => void;

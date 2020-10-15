@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-native';
-import { InitialProps } from '@base/types';
+import { InitialProps } from '@base/src/types';
 import InitialScreen from '../components/InitialScreen';
 
 export default function Initial({ route, navigation }: InitialProps){
