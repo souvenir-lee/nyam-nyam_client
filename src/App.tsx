@@ -1,9 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { StatusBar } from 'react-native';
 import Navigation from './navigation';
 
 export default function App() {
-  return (
-    <Navigation />
-  )
+  useEffect(() => {
+    StatusBar.setHidden(true);
+    return () => {
+      StatusBar.setHidden(false);
+    };
+  }, []);
+  return <Navigation />;
 }
