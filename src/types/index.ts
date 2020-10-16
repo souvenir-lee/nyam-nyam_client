@@ -9,7 +9,6 @@ export type RootStackParamList = {
   Signup: undefined;
 };
 
-export type 
 export type MainStackParamList = {
   Main: undefined;
 };
@@ -27,5 +26,5 @@ export type SignupProps = StackScreenProps<SignupParamList, 'Signup'>;
 
 export type StoreRegisterProps = StackScreenProps<
   SignupParamList,
-  'StoreRegister'
+  'SignUpAddress'
 >;

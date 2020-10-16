@@ -1,8 +1,9 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 
-import { PickedAddressObject } from '@base/types/SignUpAddress';
 import PickedAddressItem from './PickedAddressItem';
+import { RootState } from '@base/modules';
 
 const PickedWrapper = styled.View`
   width: 90%;
@@ -15,25 +16,21 @@ const PickedList = styled.FlatList`
   border: 1px solid black;
 `;
 
-type PickedAddressListProps = {
-  address: PickedAddressObject[];
-  setAddress: React.Dispatch<React.SetStateAction<PickedAddressObject[]>>;
+type PickedAddressItemProps = {
+  item: string;
 };
 
-type PickedAddressItemProps = {
-  item: PickedAddressObject;
-};
-function PickedAddressList({ address, setAddress }: PickedAddressListProps) {
+function PickedAddressList() {
+  const { data } = useSelector(
+    (state: RootState) => state.signup.picked_address
+  );
+
   return (
     <PickedWrapper>
       <PickedList
-        data={address}
+        data={Object.keys(data)}
         renderItem={({ item }: PickedAddressItemProps) => (
-          <PickedAddressItem
-            key={item.id}
-            data={item}
-            setAddress={setAddress}
-          />
+          <PickedAddressItem key={item} data={data[item]} />
         )}
       />
     </PickedWrapper>

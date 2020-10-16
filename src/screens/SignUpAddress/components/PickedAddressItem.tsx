@@ -1,8 +1,10 @@
 import React from 'react';
 import { Text } from 'react-native';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
 import { PickedAddressObject } from '@base/types/SignUpAddress';
+import { removeAddress } from '@base/modules/signup';
 
 const PickedItemWrapper = styled.View``;
 const PickedItemName = styled.Text``;
@@ -11,12 +13,13 @@ const PickedItemRemove = styled.TouchableOpacity``;
 
 type PickedAddressListProps = {
   data: PickedAddressObject;
-  setAddress: React.Dispatch<React.SetStateAction<PickedAddressObject[]>>;
 };
 
-function PickedAddressItem({ data, setAddress }: PickedAddressListProps) {
+function PickedAddressItem({ data }: PickedAddressListProps) {
+  const dispatch = useDispatch();
+
   const handleItemRemove = () => {
-    setAddress((address) => address.filter((item) => item.id !== data.id));
+    dispatch(removeAddress(data.id));
   };
 
   return (

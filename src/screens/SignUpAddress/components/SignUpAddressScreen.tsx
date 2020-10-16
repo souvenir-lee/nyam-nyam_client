@@ -25,13 +25,7 @@ const HeaderText = styled.Text`
 
 const RegisterButton = styled.TouchableOpacity``;
 
-type SignUpAddressProps = {
-  coords: Coords;
-};
-
-export default function SignUpAddress({ coords }: SignUpAddressProps) {
-  // 추후 redux로 전체적인 상태관리를 할 것.
-  const [address, setAddress] = useState<PickedAddressObject[]>([]);
+export default function SignUpAddress() {
   return (
     <Container>
       <TextContainer>
@@ -40,8 +34,8 @@ export default function SignUpAddress({ coords }: SignUpAddressProps) {
           수도 있습니다.
         </HeaderText>
       </TextContainer>
-      <AddressForm coords={coords} setAddress={setAddress} />
-      <PickedAddressList address={address} setAddress={setAddress} />
+      <AddressForm />
+      <PickedAddressList />
       <RegisterButton>
         <Text>회원가입</Text>
       </RegisterButton>

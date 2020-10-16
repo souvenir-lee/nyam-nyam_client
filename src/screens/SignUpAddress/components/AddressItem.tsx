@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
 import { AddressObject } from '@base/types/api';
 import { PickedAddressObject } from '@base/types/SignUpAddress';
+import { addAddress } from '@base/modules/signup';
 
 const AddressItemWrapper = styled.TouchableOpacity``;
 const AddressItemName = styled.Text``;
@@ -10,10 +12,11 @@ const AddressItemLocation = styled.Text``;
 
 type AddressItemProps = {
   data: AddressObject;
-  setAddress: React.Dispatch<React.SetStateAction<PickedAddressObject[]>>;
 };
 
-function AddressItem({ data, setAddress }: AddressItemProps) {
+function AddressItem({ data }: AddressItemProps) {
+  const dispatch = useDispatch();
+
   const handlePress = () => {
     const newAddress = {
       id: data.id,
@@ -24,7 +27,7 @@ function AddressItem({ data, setAddress }: AddressItemProps) {
         y: data.y,
       },
     };
-    setAddress((address) => [...address, newAddress]);
+    dispatch(addAddress(newAddress));
   };
 
   return (

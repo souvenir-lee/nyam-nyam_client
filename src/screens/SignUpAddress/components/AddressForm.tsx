@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Alert, Platform, Text, TextInput } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
 import AddressItem from './AddressItem';
 import { getStoreByKeyword } from '@base/api';
 import { AddressObject, AddressAPIResult } from '@base/types/api';
-import { PickedAddressObject, Coords } from '@base/types/SignUpAddress';
+import { getAddress } from '@base/modules/signup';
+import { RootState } from '@base/modules';
 
 const AddressWrapper = styled.View`
   width: 90%;
@@ -22,22 +23,18 @@ const AddressList = styled.FlatList`
   border: 1px solid black;
 `;
 
-type AddressFormProps = {
-  coords: Coords;
-  setAddress: React.Dispatch<React.SetStateAction<PickedAddressObject[]>>;
-};
-
 type AddressItemProps = {
   item: AddressObject;
 };
 
-function AddressForm({ coords, setAddress }: AddressFormProps) {
+function AddressForm() {
+  const coords = useSelector((state: RootState) => state.signup.coords);
+  const { data } = useSelector((state: RootState) => state.signup.address);
+  const dispatch = useDispatch();
   const [searchInput, setSearchInput] = useState('');
-  const [searchResult, setSearchResult] = useState<AddressAPIResult>([]);
 
   const handleSearch = async () => {
-    const results = await getStoreByKeyword(searchInput, coords);
-    setSearchResult(results);
+    dispatch(getAddress({ keyword: searchInput, coords }));
   };
 
   return (
@@ -49,9 +46,9 @@ function AddressForm({ coords, setAddress }: AddressFormProps) {
         onSubmitEditing={handleSearch}
       />
       <AddressList
-        data={searchResult}
+        data={data}
         renderItem={({ item }: AddressItemProps) => (
-          <AddressItem key={item.id} data={item} setAddress={setAddress} />
+          <AddressItem key={item.id} data={item} />
         )}
       />
     </AddressWrapper>
