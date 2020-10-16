@@ -2,10 +2,15 @@ import axios from 'axios';
 import { AddressAPIResult } from '@base/types/api';
 import { Coords } from '@base/types/SignUpAddress';
 
-export const getStoreByKeyword = async (
-  keyword: string,
-  coords: Coords
-): Promise<AddressAPIResult> => {
+type getStoreByKeywordProps = {
+  keyword: string;
+  coords: Coords;
+};
+
+export const getStoreByKeyword = async ({
+  keyword,
+  coords,
+}: getStoreByKeywordProps): Promise<AddressAPIResult> => {
   try {
     const cafeResults = await axios.get(
       `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(

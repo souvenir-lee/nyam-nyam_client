@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import SignUpAddressScreen from '../components/SignUpAddressScreen';
 import useLocation from '@base/hooks/useLocation';
 import { Props } from '@base/types/SignUpNavigation';
+import { updateLocation } from '@base/modules/signup';
 
 export default function SignUpAddressContainer({ navigation }: Props) {
+  const dispatch = useDispatch();
   const location = useLocation({ navigation });
-  const [coords, setCoords] = useState({ x: -1, y: -1 });
 
   useEffect(() => {
     if (location) {
       const {
         coords: { longitude, latitude },
       } = location;
-      setCoords({ x: longitude, y: latitude });
+      if (location) {
+        dispatch(updateLocation({ x: longitude, y: latitude }));
+      }
     }
-  }, [location]);
+  }, [location, dispatch]);
 
-  return <SignUpAddressScreen coords={coords} />;
+  return <SignUpAddressScreen />;
 }

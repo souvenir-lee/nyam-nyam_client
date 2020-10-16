@@ -1,0 +1,165 @@
+import { call, put } from 'redux-saga/effects';
+import { AsyncState } from '@base/types/utils';
+import { AnyAction } from 'redux';
+
+type AnyState = { [key: string]: any };
+
+export const reducerUtils = {
+  initial: <T, E = any>(initialData?: T): AsyncState<T, E> => ({
+    loading: false,
+    data: initialData || null,
+    error: null,
+  }),
+  // 로딩중 상태. prevState의 경우엔 기본값은 null 이지만
+  // 따로 값을 지정하면 null 로 바꾸지 않고 다른 값을 유지시킬 수 있습니다.
+  loading: <T, E = any>(prevState?: T): AsyncState<T, E> => ({
+    loading: true,
+    data: prevState || null,
+    error: null,
+  }),
+  // 성공 상태
+  success: <T, E = any>(payload: T): AsyncState<T, E> => ({
+    loading: false,
+    data: payload,
+    error: null,
+  }),
+  // 실패 상태
+  error: <T, E = any>(error: E): AsyncState<T, E> => ({
+    loading: false,
+    data: null,
+    error: error,
+  }),
+};
+
+type PromiseCreatorFunction<P, T> =
+  | ((payload: P) => Promise<T>)
+  | (() => Promise<T>);
+
+// 프로미스를 기다렸다가 결과를 디스패치하는 사가
+export function createPromiseSaga<P1, P2>(
+  type: string,
+  promiseCreator: PromiseCreatorFunction<P1, P2>
+) {
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return function* saga(action: AnyAction) {
+    try {
+      // 재사용성을 위하여 promiseCreator 의 파라미터엔 action.payload 값을 넣도록 설정합니다.
+      const payload = yield call(promiseCreator, action.payload);
+      yield put({ type: SUCCESS, payload });
+    } catch (e) {
+      yield put({ type: ERROR, error: true, payload: e });
+    }
+  };
+}
+
+// 특정 id의 데이터를 조회하는 용도로 사용하는 사가
+// API를 호출 할 때 파라미터는 action.payload를 넣고,
+// id 값을 action.meta로 설정합니다.
+export function createPromiseSagaById<P1, P2>(
+  type: string,
+  promiseCreator: PromiseCreatorFunction<P1, P2>
+) {
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return function* saga(action: AnyAction) {
+    const id = action.meta;
+    try {
+      const payload = yield call(promiseCreator, action.payload);
+      yield put({ type: SUCCESS, payload, meta: id });
+    } catch (e) {
+      yield put({ type: ERROR, error: e, meta: id });
+    }
+  };
+}
+
+export function handleAsyncActions<P extends AnyState>(
+  type: string,
+  key: string,
+  keepData = false
+) {
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return (state: P, action: AnyAction): P => {
+    switch (action.type) {
+      case type:
+        return {
+          ...state,
+          [key]: {
+            loading: true,
+            error: false,
+            data: keepData ? state[key].data : null,
+          },
+        };
+      case SUCCESS:
+        return {
+          ...state,
+          [key]: {
+            loading: false,
+            data: action.payload,
+          },
+        };
+      case ERROR:
+        return {
+          ...state,
+          [key]: {
+            loading: false,
+            error: true,
+            data: action.payload,
+          },
+        };
+      default:
+        return state;
+    }
+  };
+}
+
+export function handleAsyncActionsById<P extends AnyState>(
+  type: string,
+  key: string,
+  keepData = false
+) {
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return (state: P, action: AnyAction): P => {
+    const id = action.meta;
+    switch (action.type) {
+      case type:
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: true,
+            error: false,
+            data: {
+              ...state[key].data,
+              [id]: keepData ? state[key][id] && state[key][id].data : null,
+            },
+          },
+        };
+      case SUCCESS:
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: false,
+            data: {
+              ...state[key].data,
+              [id]: action.payload,
+            },
+          },
+        };
+      case ERROR:
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: false,
+            error: true,
+            data: {
+              ...state[key].data,
+              [id]: action.payload,
+            },
+          },
+        };
+      default:
+        return state;
+    }
+  };
+}
