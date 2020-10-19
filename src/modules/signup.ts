@@ -84,10 +84,12 @@ export default function signup(
     case GET_ADDRESS:
     case GET_ADDRESS_SUCCESS:
     case GET_ADDRESS_ERROR:
-      return handleAsyncActions<SignupState>(GET_ADDRESS, 'address')(
-        state,
-        action
-      );
+      return handleAsyncActions<SignupState>(
+        GET_ADDRESS,
+        'address',
+        [],
+        true
+      )(state, action);
     case ADD_PICKED_ADDRESS:
       if (action.meta in state.picked_address) {
         return state;

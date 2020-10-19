@@ -74,6 +74,7 @@ export function createPromiseSagaById<P1, P2>(
 export function handleAsyncActions<P extends AnyState>(
   type: string,
   key: string,
+  initialData: any,
   keepData = false
 ) {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
@@ -85,7 +86,7 @@ export function handleAsyncActions<P extends AnyState>(
           [key]: {
             loading: true,
             error: false,
-            data: keepData ? state[key].data : null,
+            data: keepData ? state[key].data : initialData,
           },
         };
       case SUCCESS:

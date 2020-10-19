@@ -15,7 +15,7 @@ export const getStoreByKeyword = async ({
     const cafeResults = await axios.get(
       `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(
         keyword
-      )}&x=${coords.x}&y=${coords.y}&size=15`,
+      )}&x=${coords.x}&y=${coords.y}`,
       {
         headers: {
           Authorization: 'KakaoAK 00bb9e39dfdc4d620c37f49660ac625a',
