@@ -10,9 +10,14 @@ export default function useLocation({ navigation }: Props) {
 
   useEffect(() => {
     const requestAndGetLocation = async () => {
+      const isLocationActivated = await Location.hasServicesEnabledAsync();
+      if (!isLocationActivated) {
+        Alert.alert('가게 검색을 위해서는 위치 기능이 필요합니다.');
+        navigation.goBack();
+      }
       const { status } = await Location.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('가게 등록을 위해서는 위치 권한이 필요합니다.');
+        Alert.alert('가게 검색을 위해서는 위치 권한이 필요합니다.');
         navigation.goBack();
       }
 

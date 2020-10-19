@@ -6,10 +6,6 @@ import { AddressObject } from '@base/types/api';
 import { PickedAddressObject } from '@base/types/SignUpAddress';
 import { addAddress } from '@base/modules/signup';
 
-const AddressItemWrapper = styled.TouchableOpacity``;
-const AddressItemName = styled.Text``;
-const AddressItemLocation = styled.Text``;
-
 type AddressItemProps = {
   data: AddressObject;
 };
@@ -18,7 +14,7 @@ function AddressItem({ data }: AddressItemProps) {
   const dispatch = useDispatch();
 
   const handlePress = () => {
-    const newAddress = {
+    const newAddress: PickedAddressObject = {
       id: data.id,
       address_name: data.address_name,
       place_name: data.place_name,
@@ -31,11 +27,20 @@ function AddressItem({ data }: AddressItemProps) {
   };
 
   return (
-    <AddressItemWrapper onPress={handlePress}>
+    <AddressItemOpacity onPress={handlePress}>
       <AddressItemName>{data.place_name}</AddressItemName>
       <AddressItemLocation>{data.address_name}</AddressItemLocation>
-    </AddressItemWrapper>
+    </AddressItemOpacity>
   );
 }
+
+const AddressItemOpacity = styled.TouchableOpacity`
+  padding: 7px 0px;
+`;
+const AddressItemName = styled.Text`
+  font-size: 15px;
+  font-weight: bold;
+`;
+const AddressItemLocation = styled.Text``;
 
 export default React.memo(AddressItem);
