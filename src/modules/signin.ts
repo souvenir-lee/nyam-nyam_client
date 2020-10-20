@@ -1,8 +1,9 @@
 import { State } from 'react-native-gesture-handler';
-import { action, ActionType } from 'typesafe-actions';
+import { ActionType } from 'typesafe-actions';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import * as authAPI from '@base/api/auth';
 import { signinInfo, SigninState, SigninType, User } from '@base/types/auth';
+import { storeTokens } from '@base/lib/auth';
 
 //액션 타입
 const SET_SIGNIN_TYPE = 'signin/SIGNIN_TYPE' as const;
@@ -35,21 +36,35 @@ export const requestSignin = (signinInfo: signinInfo) => ({
     payload: signinInfo
 });
 
-type SigninAction =
-    | ReturnType<typeof setSigninType>
-    | ReturnType<typeof signinSuccess>
-    | ReturnType<typeof signinError>
-    | ReturnType<typeof requestSignin>;
+const actions = {
+    setSigninType,
+    signinSuccess,
+    signinError,
+    requestSignin
+};
 
+type SigninAction = ActionType<typeof actions>
 
 //리덕스 사가
-function* requestSigninSaga(action: any){
-    const signinInfo = action.signinInfo;
+function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
+    const signinInfo = action.payload;
     let response;
 
     try{
         response = yield call(authAPI.signin, signinInfo)
-        yield put(signinSuccess(response.userData))
+        const userdata = response.userdata
+        let { access_token, refresh_token } = userdata;
+        
+        delete userdata['access_token'];
+        delete userdata['refresh_token'];
+
+        yield put(signinSuccess(userdata));
+
+        //access token, refresh token 저장
+        access_token = JSON.stringify(access_token);
+        refresh_token = JSON.stringify(refresh_token);
+        storeTokens(access_token, refresh_token);
+
     } catch(e){
         yield put(signinError(response.status))
     }
@@ -66,6 +81,8 @@ const initialState: SigninState = {
     error: null
 };
 
+
+//리듀서
 export default function signin(
     state: SigninState = initialState,
     action: SigninAction

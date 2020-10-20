@@ -39,7 +39,6 @@ export default function Signin({ route, navigation }: SigninProps) {
   };
 
   if(isSignin) navigation.navigate('Main');
-  
 
   return (
     <>
@@ -56,6 +55,7 @@ export default function Signin({ route, navigation }: SigninProps) {
         handleEmailChange={handleEmailChange}
         handlePasswordChange={handlePasswordChange}
         handleSignupPress={handleSignupPress}
+        handleSigninPress={handleSigninPress}
       />
     </>
   );

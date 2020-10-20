@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
 import Signin from '../screens/Signin';
-import SignupStackNavigation from './signup';
+import SignupStackNavigation from './signupAddress';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 

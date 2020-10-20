@@ -1,56 +1,73 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
+import { InputField } from '@base/types/auth';
 
 type SignupScreenProps = {
-  email: string;
-  password: string;
-  passwordCheck: string;
-  username: string;
-  handleEmailChange: (text: string) => void;
-  handlePasswordChange: (text: string) => void;
-  handlePasswordCheckChange: (text: string) => void;
-  handleUsernameChange: (text: string) => void;
+  emailField: InputField;
+  passwordField: InputField;
+  passwordCheckField: InputField;
+  usernameField: InputField;
+  handleEmailFieldChange: (text: string) => void;
+  handlePasswordFieldChange: (text: string) => void;
+  handlePasswordCheckFieldChange: (text: string) => void;
+  handleUsernameFieldChange: (text: string) => void;
   handleNextButtonPress: (text: string) => void;
 };
 
 export default function SigninScreen({
-  email,
-  password,
-  passwordCheck,
-  username,
-  handleEmailChange,
-  handlePasswordChange,
-  handlePasswordCheckChange,
-  handleUsernameChange,
+  emailField,
+  passwordField,
+  passwordCheckField,
+  usernameField,
+  handleEmailFieldChange,
+  handlePasswordFieldChange,
+  handlePasswordCheckFieldChange,
+  handleUsernameFieldChange,
   handleNextButtonPress,
 }: SignupScreenProps) {
+
   return (
     <SignupContainer>
       <Title>사장님 회원가입</Title>
 
       <SignupForm>
-        <SignupInput
-          placeholder={'이메일'}
-          onChangeText={handleEmailChange}
-          value={email}
-        />
-        <SignupInput
-          placeholder={'비밀번호'}
-          onChangeText={handlePasswordChange}
-          value={password}
-        />
+        <SignupField>
+          <SignupInput
+            placeholder={'이메일'}
+            onChangeText={handleEmailFieldChange}
+            value={emailField.input}
+          />
+          {emailField.errMsg ? <ErrMsg>{emailField.errMsg}</ErrMsg> : null}
+        </SignupField>
 
-        <SignupInput
-          placeholder={'비밀번호 확인'}
-          onChangeText={handlePasswordCheckChange}
-          value={passwordCheck}
-        />
+        <SignupField>
+          <SignupInput
+            secureTextEntry={true}
+            placeholder={'비밀번호'}
+            onChangeText={handlePasswordFieldChange}
+            value={passwordField.input}
+          />
+          {passwordField.errMsg ? <ErrMsg>{passwordField.errMsg}</ErrMsg> : null}
+        </SignupField>
 
-        <SignupInput
-          placeholder={'이름'}
-          onChangeText={handleUsernameChange}
-          value={username}
-        />
+        <SignupField>
+          <SignupInput
+            secureTextEntry={true}
+            placeholder={'비밀번호 확인'}
+            onChangeText={handlePasswordCheckFieldChange}
+            value={passwordCheckField.input}
+          />
+          {passwordCheckField.errMsg ? <ErrMsg>{passwordCheckField.errMsg}</ErrMsg> : null}
+        </SignupField>
+
+        <SignupField>
+          <SignupInput
+            placeholder={'이름'}
+            onChangeText={handleUsernameFieldChange}
+            value={usernameField.input}
+          />
+          {usernameField.errMsg ? <ErrMsg>{usernameField.errMsg}</ErrMsg> : null}
+        </SignupField>
       </SignupForm>
 
       <NextButton title="다음" onPress={handleNextButtonPress} />
@@ -75,6 +92,10 @@ const SignupForm = styled.View`
   margin: 10% 0;
 `;
 
+const SignupField = styled.View`
+  padding: 8px 5px;
+`;
+
 const SignupInput = styled.TextInput`
   padding: 3%;
   background: white;
@@ -82,5 +103,9 @@ const SignupInput = styled.TextInput`
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 `;
+
+const ErrMsg = styled.Text`
+  color:red;
+`
 
 const NextButton = styled.Button``;

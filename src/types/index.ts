@@ -24,7 +24,7 @@ export type SigninProps = StackScreenProps<RootStackParamList, 'Signin'>;
 
 export type SignupProps = StackScreenProps<SignupParamList, 'Signup'>;
 
-export type StoreRegisterProps = StackScreenProps<
+export type SignupAddressProps = StackScreenProps<
   SignupParamList,
   'SignUpAddress'
 >;

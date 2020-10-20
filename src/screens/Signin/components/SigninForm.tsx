@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text } from 'react-native';
 import styled from 'styled-components/native';
 
 type SigninFormProps = {
@@ -8,6 +8,7 @@ type SigninFormProps = {
   handleEmailChange: (text: string) => void;
   handlePasswordChange: (text: string) => void;
   handleSignupPress: (text: string) => void;
+  handleSigninPress: (text: string) => void;
 };
 
 export default function SigninForm({
@@ -16,6 +17,7 @@ export default function SigninForm({
   handleEmailChange,
   handlePasswordChange,
   handleSignupPress,
+  handleSigninPress,
 }: SigninFormProps) {
   return (
     <SigninFormContainer>
@@ -26,12 +28,13 @@ export default function SigninForm({
           value={email}
         />
         <SigninInput
+          secureTextEntry={true}
           placeholder={'비밀번호'}
           onChangeText={handlePasswordChange}
           value={password}
         />
 
-        <SigninButton title="로그인" onPress={() => Alert.alert('login')} />
+        <SigninButton title="로그인" onPress={handleSigninPress} />
       </LocalSigninForm>
 
       <SignupView>

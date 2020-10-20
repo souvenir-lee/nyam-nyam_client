@@ -10,8 +10,12 @@ import {
 } from '@base/lib/asyncUtils';
 import { getStoreByKeyword } from '@base/api';
 import { AddressAPIProps, AddressObject } from '@base/types/api';
+import { UserInfo } from '@base/types/auth';
 import { PickedAddressObject, Coords } from '@base/types/SignUpAddress';
 import { SignupState } from '@base/types/utils';
+
+//액션 타입
+const INPUT_USER_INFO = 'signup/INPUT_USER_INFO' as const;
 
 const GET_ADDRESS = 'signup/GET_ADDRESS' as const;
 const GET_ADDRESS_SUCCESS = 'signup/GET_ADDRESS_SUCCESS' as const;
@@ -21,6 +25,13 @@ const ADD_PICKED_ADDRESS = 'signup/ADD_ADDRESS' as const;
 const REMOVE_PICKED_ADDRESS = 'signup/REMOVE_ADDRESS' as const;
 
 const UPDATE_LOCATION = 'signup/UPDATE_LOCATION' as const;
+
+
+//액션 생성자
+export const inputUserInfo = (userInfo: UserInfo) => ({
+  type: INPUT_USER_INFO,
+  payload: userInfo
+});
 
 export const getAddress = (info: AddressAPIProps) => ({
   type: GET_ADDRESS,
@@ -54,13 +65,16 @@ export const updateLocation = (coords: Coords) => ({
   payload: coords,
 });
 
+//리덕스 사가
 const getAddressSaga = createPromiseSaga(GET_ADDRESS, getStoreByKeyword);
 
 export function* signupSaga() {
   yield takeEvery(GET_ADDRESS, getAddressSaga);
 }
 
+
 const actions = {
+  inputUserInfo,
   getAddress,
   getAddressSuccess,
   getAddressError,
@@ -68,19 +82,33 @@ const actions = {
   removeAddress,
   updateLocation,
 };
+
 type SignupAction = ActionType<typeof actions>;
 
+
 const initialState = {
+  userInfo: {
+    email: '',
+    password: '',
+    username: ''
+  },
   address: reducerUtils.initial([]),
   picked_address: reducerUtils.initial({}),
   coords: null,
 };
 
+
+//리듀서
 export default function signup(
   state: SignupState = initialState,
   action: SignupAction
 ): SignupState {
   switch (action.type) {
+    case INPUT_USER_INFO:
+      return {
+        ...state,
+        userInfo: action.payload 
+      };
     case GET_ADDRESS:
     case GET_ADDRESS_SUCCESS:
     case GET_ADDRESS_ERROR:
