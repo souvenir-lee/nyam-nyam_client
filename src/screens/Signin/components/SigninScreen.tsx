@@ -11,7 +11,7 @@ type SigninScreenProps = {
   handleSignupPress: (text: string) => void;
 };
 
-export default function SigninScrren({
+export default function SigninScreen({
   title,
   email,
   password,

@@ -1,3 +1,5 @@
+import { Coords } from './SignUpAddress';
+
 export type AddressObject = {
   address_name: string;
   category_group_code: string;
@@ -13,4 +15,5 @@ export type AddressObject = {
   y: string;
 };
 
+export type AddressAPIProps = { keyword: string; coords: Coords | null };
 export type AddressAPIResult = AddressObject[];
