@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SignupProps } from '@base/types';
 import { InputField } from '@base/types/auth';
 import SignupScreen from '../components/SignupScreen';
-import { Alert } from 'react-native';
-import { inputUserInfo } from '@base/modules/signup';
+import { RootState } from '@base/modules';
+import { inputUserFields } from '@base/modules/signup';
+
+import { ErrorMsg, ErrorText } from '@base/styles';
 
 export default function Signup({ route, navigation }: SignupProps) {
   const [emailField, setEmailField] = useState<InputField>(initialInputField);
   const [passwordField, setPasswordField] = useState<InputField>(initialInputField);
   const [passwordCheckField, setPasswordCheckField] = useState<InputField>(initialInputField);
   const [usernameField, setUsernameField] = useState<InputField>(initialInputField);
+  const { userFields, isEmailValid, errMsg } = useSelector((state: RootState) => state.signup);
+  const { email, password, username } = userFields;
   const dispatch = useDispatch();
 
   const handleEmailFieldChange = (input: string) => {
@@ -58,37 +62,51 @@ export default function Signup({ route, navigation }: SignupProps) {
   const handleNextButtonPress = () => {
     if(emailField.errMsg || passwordField.errMsg || passwordCheckField.errMsg 
       || usernameField.errMsg){
-        return Alert.alert('회원정보가 올바르지 않습니다.');
+        return 
       }
 
-    dispatch(inputUserInfo({
+    dispatch(inputUserFields({
       email: emailField.input,
       password: passwordField.input,
       username: usernameField.input
     }));
     
-    navigation.navigate('SignUpAddress');
   };
 
-  useEffect(function initialize(){
-    handleEmailFieldChange('');
-    handlePasswordFieldChange('');
+  useEffect(function initializeFields(){
+    handleEmailFieldChange(email);
+    handlePasswordFieldChange(password);
     handlePasswordCheckFieldChange('');
-    handleUsernameFieldChange('');
-  }, [])
-
+    handleUsernameFieldChange(username);
+  }, []);
+  
+  useEffect(() => {
+    console.log('email is ', isEmailValid);
+  }, [isEmailValid])
+  
+  console.log('render');
   return (
-    <SignupScreen
-      emailField={emailField}
-      passwordField={passwordField}
-      passwordCheckField={passwordCheckField}
-      usernameField={usernameField}
-      handleEmailFieldChange={handleEmailFieldChange}
-      handlePasswordFieldChange={handlePasswordFieldChange}
-      handlePasswordCheckFieldChange={handlePasswordCheckFieldChange}
-      handleUsernameFieldChange={handleUsernameFieldChange}
-      handleNextButtonPress={handleNextButtonPress}
-    />
+    <>
+      {
+        errMsg ? 
+          <ErrorMsg>
+            <ErrorText>{errMsg}</ErrorText>
+          </ErrorMsg>
+         : null
+      }
+
+      <SignupScreen
+        emailField={emailField}
+        passwordField={passwordField}
+        passwordCheckField={passwordCheckField}
+        usernameField={usernameField}
+        handleEmailFieldChange={handleEmailFieldChange}
+        handlePasswordFieldChange={handlePasswordFieldChange}
+        handlePasswordCheckFieldChange={handlePasswordCheckFieldChange}
+        handleUsernameFieldChange={handleUsernameFieldChange}
+        handleNextButtonPress={handleNextButtonPress}
+      />
+    </>
   );
 }
 

@@ -4,7 +4,6 @@ export type RootStackParamList = {
   Initial: undefined;
   Signin: {
     title: string;
-    signinType: 'customer' | 'store';
   };
   Signup: undefined;
 };

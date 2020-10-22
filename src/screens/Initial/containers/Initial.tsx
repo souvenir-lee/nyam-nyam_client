@@ -10,7 +10,6 @@ export default function Initial({ route, navigation }: InitialProps) {
 
   const handleStoreButtonPress = (): void => {
     navigation.navigate('Signin', {
-      signinType: 'store',
       title: '사장님 로그인',
     });
   };

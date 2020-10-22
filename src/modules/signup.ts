@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { ActionType } from 'typesafe-actions';
 import { AxiosError } from 'axios';
 
@@ -10,12 +10,16 @@ import {
 } from '@base/lib/asyncUtils';
 import { getStoreByKeyword } from '@base/api';
 import { AddressAPIProps, AddressObject } from '@base/types/api';
-import { UserInfo } from '@base/types/auth';
+import { UserFields, SignupState } from '@base/types/auth';
 import { PickedAddressObject, Coords } from '@base/types/SignUpAddress';
-import { SignupState } from '@base/types/utils';
+import * as authAPI from '@base/api/auth';
+import * as RootNavigation from '@base/navigation';
+
 
 //액션 타입
-const INPUT_USER_INFO = 'signup/INPUT_USER_INFO' as const;
+const INPUT_USER_FIELDS = 'signup/INPUT_USER_FIELDS' as const;
+const EMAIL_IS_VALID ='signup/EMAIL_IS_VALID' as const;
+const EMAIL_IS_INVALID ='signup/EMAIL_IS_INVALID' as const;
 
 const GET_ADDRESS = 'signup/GET_ADDRESS' as const;
 const GET_ADDRESS_SUCCESS = 'signup/GET_ADDRESS_SUCCESS' as const;
@@ -28,9 +32,19 @@ const UPDATE_LOCATION = 'signup/UPDATE_LOCATION' as const;
 
 
 //액션 생성자
-export const inputUserInfo = (userInfo: UserInfo) => ({
-  type: INPUT_USER_INFO,
-  payload: userInfo
+export const inputUserFields = (userFields: UserFields) => ({
+  type: INPUT_USER_FIELDS,
+  payload: userFields
+});
+
+export const emailIsValid = () => ({
+  type: EMAIL_IS_VALID
+});
+
+
+export const emailIsInValid = (errMsg: string) => ({
+  type: EMAIL_IS_INVALID,
+  payload:errMsg
 });
 
 export const getAddress = (info: AddressAPIProps) => ({
@@ -66,15 +80,43 @@ export const updateLocation = (coords: Coords) => ({
 });
 
 //리덕스 사가
+function* confirmEmailSaga(action: ReturnType<typeof inputUserFields>){
+  const email = action.payload.email;
+  let res;
+
+  try{
+    res = yield call(authAPI.confirmEmail, email);
+    console.log('confirm email:', res);
+
+    yield put(emailIsValid());
+  
+    RootNavigation.navigate('SignUpAddress', {});
+  } catch(e){
+    res = e.response;
+    console.log('res: ', res);
+
+    if(res.status == 400){
+      yield put(emailIsInValid('잘못된 이메일입니다.'));
+    } else if(res.status === 409){
+      yield put(emailIsInValid('이미 존재하는 이메일입니다.'));
+    } else {
+      yield put(emailIsInValid(e.message));
+    }
+  }
+}
+
 const getAddressSaga = createPromiseSaga(GET_ADDRESS, getStoreByKeyword);
 
 export function* signupSaga() {
+  yield takeLatest(INPUT_USER_FIELDS, confirmEmailSaga);
   yield takeEvery(GET_ADDRESS, getAddressSaga);
 }
 
 
 const actions = {
-  inputUserInfo,
+  inputUserFields,
+  emailIsValid,
+  emailIsInValid,
   getAddress,
   getAddressSuccess,
   getAddressError,
@@ -85,13 +127,14 @@ const actions = {
 
 type SignupAction = ActionType<typeof actions>;
 
-
 const initialState = {
-  userInfo: {
+  userFields: {
     email: '',
     password: '',
     username: ''
   },
+  isEmailValid: false,
+  errMsg: null,
   address: reducerUtils.initial([]),
   picked_address: reducerUtils.initial({}),
   coords: null,
@@ -104,10 +147,21 @@ export default function signup(
   action: SignupAction
 ): SignupState {
   switch (action.type) {
-    case INPUT_USER_INFO:
+    case INPUT_USER_FIELDS:
       return {
         ...state,
-        userInfo: action.payload 
+        userFields: action.payload 
+      };
+    case EMAIL_IS_VALID:
+      return {
+        ...state,
+        isEmailValid: true
+      };
+    case EMAIL_IS_INVALID:
+      return {
+        ...state,
+        isEmailValid: false,
+        errMsg: action.payload
       };
     case GET_ADDRESS:
     case GET_ADDRESS_SUCCESS:

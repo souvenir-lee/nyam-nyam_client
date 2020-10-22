@@ -2,11 +2,10 @@ import { State } from 'react-native-gesture-handler';
 import { ActionType } from 'typesafe-actions';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import * as authAPI from '@base/api/auth';
-import { signinInfo, SigninState, SigninType, User } from '@base/types/auth';
+import { SigninInfo, SigninState, SigninUserData } from '@base/types/auth';
 import { storeTokens } from '@base/lib/auth';
 
 //액션 타입
-const SET_SIGNIN_TYPE = 'signin/SIGNIN_TYPE' as const;
 
 const SIGNIN_SUCCESS = 'signin/SIGNIN_SUCCESS' as const;
 
@@ -16,14 +15,13 @@ const REQUEST_SIGNIN = 'signin/REQUEST_SIGNIN' as const;
 
 
 //액션 생성자
-export const setSigninType = (signinType: SigninType) => ({
-    type: SET_SIGNIN_TYPE,
-    payload: signinType
-});
 
-export const signinSuccess = (userData: User) => ({
+export const signinSuccess = (userdata: SigninUserData, accessToken: string) => ({
     type: SIGNIN_SUCCESS,
-    payload: userData
+    payload: {
+        userdata,
+        accessToken
+    }
 });
 
 export const signinError = (msg: string) => ({
@@ -31,13 +29,12 @@ export const signinError = (msg: string) => ({
     payload: msg
 });
 
-export const requestSignin = (signinInfo: signinInfo) => ({
+export const requestSignin = (signinInfo: SigninInfo) => ({
     type: REQUEST_SIGNIN,
     payload: signinInfo
 });
 
 const actions = {
-    setSigninType,
     signinSuccess,
     signinError,
     requestSignin
@@ -48,25 +45,33 @@ type SigninAction = ActionType<typeof actions>
 //리덕스 사가
 function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
     const signinInfo = action.payload;
-    let response;
+    let res;
 
     try{
-        response = yield call(authAPI.signin, signinInfo)
-        const userdata = response.userdata
+        res = yield call(authAPI.signin, signinInfo)
+
+        const userdata = res.userdata
         let { access_token, refresh_token } = userdata;
         
         delete userdata['access_token'];
         delete userdata['refresh_token'];
 
-        yield put(signinSuccess(userdata));
+        yield put(signinSuccess(userdata, access_token));
 
         //access token, refresh token 저장
         access_token = JSON.stringify(access_token);
         refresh_token = JSON.stringify(refresh_token);
         storeTokens(access_token, refresh_token);
-
     } catch(e){
-        yield put(signinError(response.status))
+        res = e.response;
+
+        if (res.status == 400){
+            yield put(signinError('아이디 또는 비밀번호를 입력해주세요.'));
+        } else if (res.status == 404){
+            yield put(signinError('계정이 존재하지 않습니다.'));
+        } else {
+            yield put(signinError(e.message));
+        }
     }
 }
 
@@ -75,10 +80,10 @@ export function* signinSaga(){
 }
 
 const initialState: SigninState = {
-    signinType: null,
     isSignin: false,
     user: null,
-    error: null
+    error: null,
+    accessToken: null
 };
 
 
@@ -88,16 +93,13 @@ export default function signin(
     action: SigninAction
 ): SigninState {
     switch(action.type){
-        case SET_SIGNIN_TYPE:
-            return {
-                ...state,
-                signinType: action.payload
-            };
         case SIGNIN_SUCCESS:
             return {
                 ...state,
                 isSignin: true,
-                user: action.payload
+                user: action.payload.userdata,
+                error: null,
+                accessToken: action.payload.accessToken
             };
         case SIGNIN_ERROR:
             return {

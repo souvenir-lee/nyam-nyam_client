@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components/native';
 import { SigninProps } from '@base/types';
 import SigninScreen from '../components/SigninScreen';
-import { setSigninType, requestSignin } from '@base/modules/signin';
+import { requestSignin, signinError } from '@base/modules/signin';
 import { RootState } from '@base/modules';
-import { Alert } from 'react-native';
+
+import { ErrorMsg, ErrorText } from '@base/styles';
 
 export default function Signin({ route, navigation }: SigninProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { title, signinType } = route.params;
+  const { title } = route.params;
   const { isSignin, user, error } = useSelector((state: RootState) => state.signin);
   const dispatch = useDispatch();
 
@@ -22,7 +22,7 @@ export default function Signin({ route, navigation }: SigninProps) {
   };
   const handleSigninPress = () => {
     if(email.length === 0 || password.length === 0){
-      Alert.alert('이메일 또는 패스워드를 입력하세요.')
+      dispatch(signinError('아이디 또는 비밀번호를 입력해주세요.'));
       return;
     }    
 
@@ -37,8 +37,6 @@ export default function Signin({ route, navigation }: SigninProps) {
   const handleSignupPress = () => {
     navigation.navigate('Signup');
   };
-
-  if(isSignin) navigation.navigate('Main');
 
   return (
     <>
@@ -60,10 +58,3 @@ export default function Signin({ route, navigation }: SigninProps) {
     </>
   );
 }
-
-const ErrorMsg = styled.View`
-`;
-
-const ErrorText = styled.Text`
-  color: red;
-`;
