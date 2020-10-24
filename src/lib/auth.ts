@@ -26,34 +26,54 @@ export async function clearTokens(){
     try{
         await SecureStore.deleteItemAsync('access_token');
         await SecureStore.deleteItemAsync('refresh_token');
+        let t = await SecureStore.getItemAsync('access_token');
+        console.log('clear token:', t);
     } catch(e){
         console.error( e);
     }
 };
 
 //token 만료기간 체크
-export const isTokenExpired = (token: string) => {
+export function* isTokenExpired(token: string){
     //access token의 payload를 분리한 후 base64 디코딩
-    const payload = JSON.parse(decode(token.split('.')[1]));
-    console.log('token payload: ', payload);
-    const { exp } = payload;  //토큰 만료시간
-
-    if(exp < (Date.now() / 1000)) return true; //만료 시간이 지났다면
-    return false;
+    console.log('token: ', token); 
+    try{
+        const payload = JSON.parse(decode(token.split('.')[1]));
+        console.log('token payload: ', payload);
+        const { exp } = payload;  //토큰 만료시간
+    
+        if(exp < (Date.now() / 1000)) return true; //만료 시간이 지났다면
+  
+        return false;
+    } catch(e){
+        yield put(invalidToken(403));
+        throw Error('유효한 토큰이 아닙니다.');;
+    }
 };
 
 export function* checkToken(isAppLoaded: boolean = false){
     //secure storage에서 access token 얻기
     let accessToken;
     if(isAppLoaded){
-        accessToken = yield call(SecureStore.getItemAsync, 'access_token');
+        accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
     } else {
         accessToken = yield select(state => state.signin.accessToken);
     }
-
+    console.log('access token: ', accessToken);
     //access token이 존재한다면 만료기간 확인
     if(accessToken && typeof accessToken === 'string'){
-        if(isTokenExpired(accessToken)){
+        let isTokenExpired_;
+        try{
+            isTokenExpired_ = yield call(isTokenExpired, accessToken)
+        } catch(e) {
+            console.error('access token이 유효하지 않음');
+            yield put(invalidToken(403));
+            clearTokens();
+
+            return false;
+        }
+
+        if(isTokenExpired_){
             const refreshToken = yield call([SecureStore, 'getItemAsync'], 'refreshToken');
         
             if(refreshToken && typeof refreshToken === 'string'){
@@ -84,8 +104,8 @@ export function* checkToken(isAppLoaded: boolean = false){
                     } catch(e){  //refresh token이 유효하지 않다면 isSignin = false
                         res = e.response;
                         console.log('refresh result:', res);
-
-                        yield put(invalidToken(403));
+                        
+                        yield put(invalidToken(res.status));
 
                         return false;
                     } 
@@ -125,7 +145,6 @@ export function* checkToken(isAppLoaded: boolean = false){
 type Sagas = ((action: string) => void)[]
 
 export function createAuthCheckSaga(isAppLoaded: boolean = false){
-    
     if(isAppLoaded){
         return function* (){
             yield call(checkToken, isAppLoaded);
