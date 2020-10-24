@@ -3,7 +3,7 @@ import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 export type MainTabParamList = {
   SalesPredictNav: undefined;
   TrendNav: undefined;
-  SalesUploadNav: undefined;
+  SalesUpload: undefined;
   MyPageNav: undefined;
 };
 
@@ -17,7 +17,7 @@ export type TrendNavProps = MaterialTopTabScreenProps<
 >;
 export type SalesUploadNavProps = MaterialTopTabScreenProps<
   MainTabParamList,
-  'SalesUploadNav'
+  'SalesUpload'
 >;
 export type MyPageNavProps = MaterialTopTabScreenProps<
   MainTabParamList,

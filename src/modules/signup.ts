@@ -10,10 +10,7 @@ import {
 } from '@base/lib/asyncUtils';
 import { getStoreByKeyword } from '@base/api';
 import { AddressAPIProps, AddressObject } from '@base/types/api';
-import {
-  PickedAddressObject,
-  SignUpState,
-} from '@base/types/SignUpAddress';
+import { PickedAddressObject, SignUpState } from '@base/types/SignUpAddress';
 import { Coords } from '@base/types/defaultTypes';
 
 const GET_ADDRESS = 'signup/GET_ADDRESS' as const;

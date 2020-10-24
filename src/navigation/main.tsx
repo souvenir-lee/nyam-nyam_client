@@ -45,7 +45,7 @@ const TabNavigation = () => {
         }}
       />
       <Tab.Screen
-        name="SalesUploadNav"
+        name="SalesUpload"
         component={salesUpload}
         options={{
           title: '내역 업로드',
