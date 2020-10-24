@@ -7,10 +7,14 @@ import { invalidToken, validToken } from '@base/modules/signin';
 import * as authAPI from '@base/api/auth';
 
 //access token, refresh token 저장
-export async function storeTokens(accessToken: string, refreshToken: string){
+export async function storeTokens(accessToken: string, refreshToken?: string){
     try{
         await SecureStore.setItemAsync('access_token', accessToken);
-        await SecureStore.setItemAsync('refresh_token', refreshToken);
+
+        if(refreshToken){
+            await SecureStore.setItemAsync('refresh_token', refreshToken);
+        }
+
         let token = await SecureStore.getItemAsync('access_token');
         console.log('token: ', token);
     } catch(e){
@@ -50,7 +54,7 @@ export function* checkToken(isAppLoaded: boolean = false){
     //access token이 존재한다면 만료기간 확인
     if(accessToken && typeof accessToken === 'string'){
         if(isTokenExpired(accessToken)){
-            const refreshToken = yield call([SecureStore, 'getItemAsync'], 'refresh_token');
+            const refreshToken = yield call([SecureStore, 'getItemAsync'], 'refreshToken');
         
             if(refreshToken && typeof refreshToken === 'string'){
                 //refresh token의 만료기간을 확인한다
@@ -63,15 +67,17 @@ export function* checkToken(isAppLoaded: boolean = false){
                 } else { //refresh token의 만료 기간이 유효하다면 access token을 새로 발급받는다 
                     let res;
                     try{
-                        res = yield call([authAPI, 'refresh'], 'accessToken', 'refreshToken');
+                        res = yield call(authAPI.refresh, accessToken, refreshToken, true);
                         console.log('refresh result:', res);
-                        const { access_token, refresh_token } = res.data; //유저 정보도 받아와야 함
 
-                        storeTokens(access_token, refresh_token);
+                        //access token 재발급이 성공했다면
+                        const { access_token, userdata } = res.data; //유저 정보도 받아와야 함
+
+                        storeTokens(access_token);
 
                         if(isAppLoaded){
                             //토큰과 유저정보 저장
-                            yield put(validToken(accessToken));
+                            yield put(validToken(accessToken, userdata));
                         }                        
 
                         return true;
@@ -89,11 +95,23 @@ export function* checkToken(isAppLoaded: boolean = false){
                 yield put(invalidToken(400));
                 return false;
             }
+
         } else {  //access token의 만료 기간이 유효하다면
             //토큰을 체크하는 api 요청해서 응답으로 유저정보를 받아와야 함
-            
-            //토큰이 유효하지 않거나 해당 유저정보가 없을 때 에러 처리
+            let res;
+            try{
+                res = yield call(authAPI.checkToken, accessToken);
+                const { userdata } = res;
+                //token check가 성공했을 떄
+                if(isAppLoaded){
+                    yield put(validToken(accessToken, userdata))
+                }
 
+                return true;
+            } catch(e){
+                //토큰이 유효하지 않거나 해당 유저정보가 없을 때 isSignin = false
+                yield put(invalidToken(res.status));
+            }
 
             return true;
         }
@@ -102,27 +120,25 @@ export function* checkToken(isAppLoaded: boolean = false){
         
         return false;
     }
-
 };
 
 type Sagas = ((action: string) => void)[]
 
-export function createAuthCheckSaga(isAppLoaded: boolean = false, 
-    actions: string[] | undefined, sagas: Sagas | undefined){
+export function createAuthCheckSaga(isAppLoaded: boolean = false){
     
     if(isAppLoaded){
         return function* (){
-            
+            yield call(checkToken, isAppLoaded);
         }
     } else {
-        return function* (){
+        return function* (actions: string[], sagas: Sagas){
             
             while(true){
                 const action = yield take(actions);
                 console.log('saga action: ', action);
         
                 const isTokenValid = yield call(checkToken);
-                if(isTokenValid && ){
+                if(isTokenValid){
                     for(let i = 0; i < sagas.length; i++){
                         //사가에서 api요청 보낼 때 헤더에 access token 추가
                         yield fork(sagas[i], action);  

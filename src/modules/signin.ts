@@ -53,9 +53,9 @@ export const invalidToken = (statusCode: number | string) => ({
     payload: statusCode
 });
 
-export const validToken = (accessToken: string | null = null) => ({
+export const validToken = (accessToken: string, userdata: SigninUserData) => ({
     type: VALID_TOKEN,
-    payload: accessToken
+    payload: { accessToken, userdata }
 });
 
 const actions = {
@@ -108,10 +108,10 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
     }
 }
 
-const AuthCheckSaga = createAuthCheckSaga()
+const startAuthCheckSaga = createAuthCheckSaga(true);
 
 export function* signinSaga(){
-    yield takeEvery(CHECK_TOKEN, );
+    yield takeEvery(CHECK_TOKEN, startAuthCheckSaga);
     yield takeLatest(REQUEST_SIGNIN, requestSigninSaga);
 }
 
@@ -174,7 +174,8 @@ export default function signin(
             return {
                 ...state,
                 isSignin: true,
-                accessToken: action.payload
+                accessToken: action.payload.accessToken,
+                user: action.payload.userdata
             };
         case INVALID_TOKEN:
             return {
