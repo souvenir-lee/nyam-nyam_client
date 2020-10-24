@@ -2,6 +2,7 @@ import React, { useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
 import Signin from '../screens/Signin';
@@ -18,15 +19,16 @@ export default function Navigation() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('navigation check token');
     dispatch(checkToken());
-  });
+  }, []);
 
   console.log('isSignin: ', isSignin);
   return (
     <NavigationContainer ref={navigationRef}>
       <RootStack.Navigator>
         {isSignin ? (
-          <Main>{'Main'}</Main>
+          <RootStack.Screen name="Main" component={Main} />
         ) : (
           <>
             <RootStack.Screen name="Initial" component={Initial} />
@@ -47,4 +49,13 @@ export function navigate(name: string, params: any){
   navigationRef.current?.navigate(name, params);
 }
 
-const Main = styled.View``;
+function Main(){
+  return (
+    <View>
+      <Text>Main</Text>
+    </View>
+  )
+}
+
+const View = styled.View``;
+const Text = styled.Text``;

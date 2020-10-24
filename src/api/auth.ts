@@ -25,6 +25,7 @@ const makeAuthHeaders = (acceesToken: string, refreshToken?: RefreshToken) => {
 
 
 export const signin = async (signinInfo: SigninInfo) => {
+    console.log('before request signin ');
     const res = await client.post('/login', JSON.stringify(signinInfo));
 
     return res;

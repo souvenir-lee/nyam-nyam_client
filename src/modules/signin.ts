@@ -17,9 +17,12 @@ const VALID_TOKEN = 'signin/VALID_TOKEN' as const;
 
 //액션 생성자
 
-export const initializeSignin = () => ({
-    type: INITIALIZE_SIGNIN
-});
+export const initializeSignin = (service: 'customer' | 'store') => {
+    return {
+        type: INITIALIZE_SIGNIN,
+        payload:service
+    }
+};
 
 export const requestSignin = (signinInfo: SigninInfo) => ({
     type: REQUEST_SIGNIN,
@@ -74,12 +77,14 @@ type SigninAction = ActionType<typeof actions>
 function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
     const signinInfo = action.payload;
     let res;
+    console.log('before signin');
 
     try{
-        res = yield call(authAPI.signin, signinInfo)
-
-        const userdata = res.userdata
+        res = yield call(authAPI.signin, signinInfo);
+        console.log('res success: ', res.data.userdata);
+        const userdata = res.data.userdata
         let { access_token, refresh_token } = userdata;
+        
         
         delete userdata['access_token'];
         delete userdata['refresh_token'];
@@ -92,7 +97,7 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
         storeTokens(access_token, refresh_token);
     } catch(e){
         res = e.response;
-
+        console.log('error:', res, e);
         if(!res){
             yield put(signinError('알려지지 않은 에러가 발생했습니다.'))
             return;
@@ -117,6 +122,7 @@ export function* signinSaga(){
 
 const initialState: SigninState = {
     isSignin: false,
+    service: null,
     user: null,
     loading: false,
     error: null,
@@ -144,6 +150,7 @@ export default function signin(
         case INITIALIZE_SIGNIN:
             return {
                 ...state,
+                service: action.payload,
                 user: null,
                 loading: false,
                 error: null,
@@ -180,6 +187,7 @@ export default function signin(
         case INVALID_TOKEN:
             return {
                 ...initialState,
+                service: state.service,
                 error: getAuthErrMsg(action.payload)
             };
         default:

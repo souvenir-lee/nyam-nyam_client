@@ -16,7 +16,6 @@ export async function storeTokens(accessToken: string, refreshToken?: string){
         }
 
         let token = await SecureStore.getItemAsync('access_token');
-        console.log('token: ', token);
     } catch(e){
         console.error('cannot store tokens:', e);
     }
@@ -36,7 +35,6 @@ export async function clearTokens(){
 //token 만료기간 체크
 export function* isTokenExpired(token: string){
     //access token의 payload를 분리한 후 base64 디코딩
-    console.log('token: ', token); 
     try{
         const payload = JSON.parse(decode(token.split('.')[1]));
         console.log('token payload: ', payload);
@@ -52,6 +50,13 @@ export function* isTokenExpired(token: string){
 };
 
 export function* checkToken(isAppLoaded: boolean = false){
+    //리소스 요청 중에 인증 실패해서 인증 페이지로 이동했을 때는 토큰 체크 안함
+    const { error, service } = yield select(state => state.signin);
+    if(error && service){  //서비스 중에 에러가 난 것이기 때문에 리소스 요청 중에 인증이 실패한 것
+        console.log('리소스 요청 중에 인증 실패');
+        return false;
+    }    
+
     //secure storage에서 access token 얻기
     let accessToken;
     if(isAppLoaded){
@@ -130,6 +135,7 @@ export function* checkToken(isAppLoaded: boolean = false){
                 return true;
             } catch(e){
                 //토큰이 유효하지 않거나 해당 유저정보가 없을 때 isSignin = false
+                res = e.response;
                 yield put(invalidToken(res.status));
             }
 
@@ -147,6 +153,7 @@ type Sagas = ((action: string) => void)[]
 export function createAuthCheckSaga(isAppLoaded: boolean = false){
     if(isAppLoaded){
         return function* (){
+            console.log('check token in loading');
             yield call(checkToken, isAppLoaded);
         }
     } else {
