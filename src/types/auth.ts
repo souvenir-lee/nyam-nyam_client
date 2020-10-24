@@ -25,6 +25,7 @@ export type SigninResponse = SigninSuccess | string;
 
 export type SigninState = {
     isSignin: boolean;
+    service: 'customer' | 'store' | null;
     user : SigninUserData;
     loading: boolean;
     error: string | null;

@@ -8,10 +8,10 @@ import { ErrorMsg, ErrorText } from '@base/styles';
 import Loading from '@base/components/loading'
 
 export default function Signin({ route, navigation }: SigninProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { title } = route.params;
-  const { isSignin, user, error, loading } = useSelector((state: RootState) => state.signin);
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const { title, service, initial } = route.params;
+  const { error, loading } = useSelector((state: RootState) => state.signin);
   const dispatch = useDispatch();
 
   const handleEmailChange = (text: string) => {
@@ -39,7 +39,13 @@ export default function Signin({ route, navigation }: SigninProps) {
   };
 
   useEffect(() => {
-    dispatch(initializeSignin());
+     const initializeWhenFirstSignin = () => {
+       if(initial){
+         dispatch(initializeSignin(service));
+       }
+     }
+
+     initializeWhenFirstSignin();
   }, []);
 
   return (
