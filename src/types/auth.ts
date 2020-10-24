@@ -26,6 +26,7 @@ export type SigninResponse = SigninSuccess | string;
 export type SigninState = {
     isSignin: boolean;
     user : SigninUserData;
+    loading: boolean;
     error: string | null;
     accessToken: string | null;
 };
@@ -41,9 +42,20 @@ export type UserFields = {
   username: string;
 };
 
+export type SignupInfo = {
+  email: string;
+  password: string;
+  userName: string;
+  storeName: string;
+  storeAddress: string;
+  latitude: number;
+  longitude: number;
+}
+
 export type SignupState = {
   userFields: UserFields;
   isEmailValid: boolean;
+  loading: boolean;
   errMsg: string | null;
   address: AsyncState<AddressObject[], AxiosError>;
   picked_address: AsyncState<
@@ -53,4 +65,5 @@ export type SignupState = {
     AxiosError
   >;
   coords: Coords | null;
+  signupInfo: SignupInfo | null;
 };

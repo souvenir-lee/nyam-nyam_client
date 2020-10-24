@@ -4,7 +4,7 @@ import { SignupProps } from '@base/types';
 import { InputField } from '@base/types/auth';
 import SignupScreen from '../components/SignupScreen';
 import { RootState } from '@base/modules';
-import { inputUserFields } from '@base/modules/signup';
+import { initializeSignup, inputUserFields } from '@base/modules/signup';
 
 import { ErrorMsg, ErrorText } from '@base/styles';
 
@@ -74,6 +74,7 @@ export default function Signup({ route, navigation }: SignupProps) {
   };
 
   useEffect(function initializeFields(){
+    dispatch(initializeSignup());
     handleEmailFieldChange(email);
     handlePasswordFieldChange(password);
     handlePasswordCheckFieldChange('');

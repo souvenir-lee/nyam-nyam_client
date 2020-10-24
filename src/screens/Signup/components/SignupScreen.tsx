@@ -25,7 +25,6 @@ export default function SigninScreen({
   handleUsernameFieldChange,
   handleNextButtonPress,
 }: SignupScreenProps) {
-
   return (
     <SignupContainer>
       <Title>사장님 회원가입</Title>

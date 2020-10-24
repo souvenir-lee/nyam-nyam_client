@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SigninProps } from '@base/types';
 import SigninScreen from '../components/SigninScreen';
-import { requestSignin, signinError } from '@base/modules/signin';
+import { initializeSignin, requestSignin, signinError } from '@base/modules/signin';
 import { RootState } from '@base/modules';
-
 import { ErrorMsg, ErrorText } from '@base/styles';
+import Loading from '@base/components/loading'
 
 export default function Signin({ route, navigation }: SigninProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { title } = route.params;
-  const { isSignin, user, error } = useSelector((state: RootState) => state.signin);
+  const { isSignin, user, error, loading } = useSelector((state: RootState) => state.signin);
   const dispatch = useDispatch();
 
   const handleEmailChange = (text: string) => {
@@ -38,23 +38,42 @@ export default function Signin({ route, navigation }: SigninProps) {
     navigation.navigate('Signup');
   };
 
+  useEffect(() => {
+    dispatch(initializeSignin());
+  }, []);
+
   return (
     <>
-      {!isSignin && error &&
-        <ErrorMsg>
-          <ErrorText>{error}</ErrorText>  
-        </ErrorMsg>
+      {
+        loading ? 
+        (
+          <Loading />
+        ) : 
+        (
+          <>
+            {
+              error ? 
+              (
+                <ErrorMsg>
+                  <ErrorText>{error}</ErrorText>  
+                </ErrorMsg>
+
+              ) : null
+            }
+
+            <SigninScreen
+              title={title}
+              email={email}
+              password={password}
+              handleEmailChange={handleEmailChange}
+              handlePasswordChange={handlePasswordChange}
+              handleSignupPress={handleSignupPress}
+              handleSigninPress={handleSigninPress}
+            />
+          </>
+        )
       }
 
-      <SigninScreen
-        title={title}
-        email={email}
-        password={password}
-        handleEmailChange={handleEmailChange}
-        handlePasswordChange={handlePasswordChange}
-        handleSignupPress={handleSignupPress}
-        handleSigninPress={handleSigninPress}
-      />
     </>
   );
 }
