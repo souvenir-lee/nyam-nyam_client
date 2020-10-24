@@ -9,15 +9,17 @@ type SigninScreenProps = {
   handleEmailChange: (text: string) => void;
   handlePasswordChange: (text: string) => void;
   handleSignupPress: (text: string) => void;
+  handleSigninPress: (text: string) => void;
 };
 
-export default function SigninScrren({
+export default function SigninScreen({
   title,
   email,
   password,
   handleEmailChange,
   handlePasswordChange,
   handleSignupPress,
+  handleSigninPress
 }: SigninScreenProps) {
   return (
     <SigninContainer>
@@ -29,6 +31,7 @@ export default function SigninScrren({
         handleEmailChange={handleEmailChange}
         handlePasswordChange={handlePasswordChange}
         handleSignupPress={handleSignupPress}
+        handleSigninPress={handleSigninPress}
       />
     </SigninContainer>
   );
@@ -45,4 +48,4 @@ const Title = styled.Text`
   font-size: 20px;
   margin: 10% 0;
   font-weight: bold;
-`;
+`;  

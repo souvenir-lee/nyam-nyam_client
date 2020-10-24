@@ -4,7 +4,6 @@ export type RootStackParamList = {
   Initial: undefined;
   Signin: {
     title: string;
-    signinType: 'customer' | 'store';
   };
   Signup: undefined;
 };
@@ -24,7 +23,7 @@ export type SigninProps = StackScreenProps<RootStackParamList, 'Signin'>;
 
 export type SignupProps = StackScreenProps<SignupParamList, 'Signup'>;
 
-export type StoreRegisterProps = StackScreenProps<
+export type SignupAddressProps = StackScreenProps<
   SignupParamList,
   'SignUpAddress'
 >;
