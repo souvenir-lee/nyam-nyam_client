@@ -1,15 +1,15 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SignUpParamList } from '../types/Navigation/SignUpNavigation';
-import SignUp from '../screens/Signup';
+import { SignupParamList } from '../types';
+import Signup from '../screens/Signup';
 import SignUpAddress from '../screens/SignUpAddress';
 
-const SignupStack = createStackNavigator<SignUpParamList>();
+const SignupStack = createStackNavigator<SignupParamList>();
 
-export default function SignUpStackNavigation() {
+export default function SignupStackNavigation() {
   return (
     <SignupStack.Navigator>
-      <SignupStack.Screen name="SignUp" component={SignUp} />
+      <SignupStack.Screen name="Signup" component={Signup} />
       <SignupStack.Screen name="SignUpAddress" component={SignUpAddress} />
     </SignupStack.Navigator>
   );
