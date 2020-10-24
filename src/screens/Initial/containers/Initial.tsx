@@ -1,12 +1,12 @@
 import React from 'react';
 import { Alert } from 'react-native';
-import { InitialProps } from '@base/types';
+import { InitialProps } from '@base/types/Navigation';
 import InitialScreen from '../components/InitialScreen';
 
 export default function Initial({ route, navigation }: InitialProps) {
   const handleStoreButtonPress = (): void => {
-    navigation.navigate('Signin', {
-      signinType: 'store',
+    navigation.navigate('SignIn', {
+      signInType: 'store',
       title: '사장님 로그인',
     });
   };

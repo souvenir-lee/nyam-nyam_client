@@ -3,9 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
 import AddressItem from './AddressItem';
-import { getStoreByKeyword } from '@base/api';
-import { AddressObject, AddressAPIResult } from '@base/types/api';
-import { getAddress } from '@base/modules/signup';
+import { AddressObject } from '@base/types/api';
+import { getAddress } from '@base/modules/signUp';
 import { RootState } from '@base/modules';
 import { View } from 'react-native';
 
@@ -51,7 +50,7 @@ function AddressForm() {
   );
 }
 
-const AddressWrapper = styled.SafeAreaView`
+const AddressWrapper = styled.View`
   width: 90%;
   height: 300px;
   align-self: center;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { SignupProps } from '@base/types';
-import SignupScreen from '../components/SignupScreen';
+import { SignUpProps } from '@base/types/Navigation/SignUpNavigation';
+import SignUpScreen from '../components/SignUpScreen';
 
-export default function Signup({ route, navigation }: SignupProps) {
+export default function SignUp({ route, navigation }: SignUpProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -26,7 +26,7 @@ export default function Signup({ route, navigation }: SignupProps) {
   };
 
   return (
-    <SignupScreen
+    <SignUpScreen
       email={email}
       password={password}
       passwordCheck={passwordCheck}

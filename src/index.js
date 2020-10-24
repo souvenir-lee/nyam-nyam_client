@@ -7,10 +7,9 @@ import logger from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
 
 import rootReducer, { rootSaga } from './modules';
-import { name as appName } from '../app.json';
 
 const sagaMiddleware = createSagaMiddleware();
-const store = createStore(rootReducer, applyMiddleware(sagaMiddleware, logger));
+const store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
 
 sagaMiddleware.run(rootSaga);
 

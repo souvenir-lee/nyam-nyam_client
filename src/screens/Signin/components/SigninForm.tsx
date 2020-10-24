@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Alert } from 'react-native';
 import styled from 'styled-components/native';
 
-type SigninFormProps = {
+type SignInFormProps = {
   email: string;
   password: string;
   handleEmailChange: (text: string) => void;
@@ -10,13 +10,13 @@ type SigninFormProps = {
   handleSignupPress: (text: string) => void;
 };
 
-export default function SigninForm({
+export default function SignInForm({
   email,
   password,
   handleEmailChange,
   handlePasswordChange,
   handleSignupPress,
-}: SigninFormProps) {
+}: SignInFormProps) {
   return (
     <SigninFormContainer>
       <LocalSigninForm>

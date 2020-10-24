@@ -10,8 +10,11 @@ import {
 } from '@base/lib/asyncUtils';
 import { getStoreByKeyword } from '@base/api';
 import { AddressAPIProps, AddressObject } from '@base/types/api';
-import { PickedAddressObject, Coords } from '@base/types/SignUpAddress';
-import { SignupState } from '@base/types/utils';
+import {
+  PickedAddressObject,
+  SignUpState,
+} from '@base/types/SignUpAddress';
+import { Coords } from '@base/types/defaultTypes';
 
 const GET_ADDRESS = 'signup/GET_ADDRESS' as const;
 const GET_ADDRESS_SUCCESS = 'signup/GET_ADDRESS_SUCCESS' as const;
@@ -68,7 +71,7 @@ const actions = {
   removeAddress,
   updateLocation,
 };
-type SignupAction = ActionType<typeof actions>;
+type SignUpAction = ActionType<typeof actions>;
 
 const initialState = {
   address: reducerUtils.initial([]),
@@ -77,14 +80,14 @@ const initialState = {
 };
 
 export default function signup(
-  state: SignupState = initialState,
-  action: SignupAction
-): SignupState {
+  state: SignUpState = initialState,
+  action: SignUpAction
+): SignUpState {
   switch (action.type) {
     case GET_ADDRESS:
     case GET_ADDRESS_SUCCESS:
     case GET_ADDRESS_ERROR:
-      return handleAsyncActions<SignupState>(
+      return handleAsyncActions<SignUpState>(
         GET_ADDRESS,
         'address',
         [],

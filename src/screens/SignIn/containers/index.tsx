@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { SigninProps } from '@base/types';
-import SigninScreen from '../components/SigninScreen';
+import { SignInProps } from '@base/types/Navigation';
+import SigninScreen from '../components/SignInScreen';
 
-export default function Signin({ route, navigation }: SigninProps) {
+export default function Signin({ route, navigation }: SignInProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { title, signinType } = route.params;
+  const { title, signInType } = route.params;
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -21,7 +20,7 @@ export default function Signin({ route, navigation }: SigninProps) {
     //...
   };
   const handleSignupPress = () => {
-    navigation.navigate('Signup');
+    navigation.navigate('SignUpNav');
   };
 
   return (

@@ -1,30 +1,35 @@
 import { call, put } from 'redux-saga/effects';
 import { AsyncState } from '@base/types/utils';
 import { AnyAction } from 'redux';
+import { AxiosError } from 'axios';
 
 type AnyState = { [key: string]: any };
 
 export const reducerUtils = {
-  initial: <T, E = any>(initialData?: T): AsyncState<T, E> => ({
-    loading: false,
+  initial: <T, E = AxiosError<any> | null>(
+    initialData?: T
+  ): AsyncState<T, E> => ({
+    loading: true,
     data: initialData || null,
     error: null,
   }),
   // 로딩중 상태. prevState의 경우엔 기본값은 null 이지만
   // 따로 값을 지정하면 null 로 바꾸지 않고 다른 값을 유지시킬 수 있습니다.
-  loading: <T, E = any>(prevState?: T): AsyncState<T, E> => ({
+  loading: <T, E = AxiosError<any> | null>(
+    prevState?: T
+  ): AsyncState<T, E> => ({
     loading: true,
     data: prevState || null,
     error: null,
   }),
   // 성공 상태
-  success: <T, E = any>(payload: T): AsyncState<T, E> => ({
+  success: <T, E = AxiosError<any> | null>(payload: T): AsyncState<T, E> => ({
     loading: false,
     data: payload,
     error: null,
   }),
   // 실패 상태
-  error: <T, E = any>(error: E): AsyncState<T, E> => ({
+  error: <T, E = AxiosError<any> | null>(error: E): AsyncState<T, E> => ({
     loading: false,
     data: null,
     error: error,

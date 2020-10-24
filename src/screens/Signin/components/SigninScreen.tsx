@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import SigninForm from './SigninForm';
+import SignInForm from './SignInForm';
 
-type SigninScreenProps = {
+type SignInScreenProps = {
   title: string;
   email: string;
   password: string;
@@ -11,19 +11,19 @@ type SigninScreenProps = {
   handleSignupPress: (text: string) => void;
 };
 
-export default function SigninScrren({
+export default function SignInScreen({
   title,
   email,
   password,
   handleEmailChange,
   handlePasswordChange,
   handleSignupPress,
-}: SigninScreenProps) {
+}: SignInScreenProps) {
   return (
     <SigninContainer>
       <Title>{title}</Title>
 
-      <SigninForm
+      <SignInForm
         email={email}
         password={password}
         handleEmailChange={handleEmailChange}

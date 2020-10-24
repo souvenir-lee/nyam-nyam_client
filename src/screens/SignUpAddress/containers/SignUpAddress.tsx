@@ -3,10 +3,12 @@ import { useDispatch } from 'react-redux';
 
 import SignUpAddressScreen from '../components/SignUpAddressScreen';
 import useLocation from '@base/hooks/useLocation';
-import { Props } from '@base/types/SignUpNavigation';
-import { updateLocation } from '@base/modules/signup';
+import { SignUpAddressProps } from '@base/types/Navigation/SignUpNavigation';
+import { updateLocation } from '@base/modules/signUp';
 
-export default function SignUpAddressContainer({ navigation }: Props) {
+export default function SignUpAddressContainer({
+  navigation,
+}: SignUpAddressProps) {
   const dispatch = useDispatch();
   const location = useLocation({ navigation });
 
@@ -15,9 +17,7 @@ export default function SignUpAddressContainer({ navigation }: Props) {
       const {
         coords: { longitude, latitude },
       } = location;
-      if (location) {
-        dispatch(updateLocation({ x: longitude, y: latitude }));
-      }
+      dispatch(updateLocation({ x: longitude, y: latitude }));
     }
   }, [location, dispatch]);
 

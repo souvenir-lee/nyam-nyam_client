@@ -1,4 +1,5 @@
-import { Coords } from './SignUpAddress';
+import { Coords } from './defaultTypes';
+import { WeatherIcon } from '@base/components/WeatherIcon';
 
 export type AddressObject = {
   address_name: string;
@@ -17,3 +18,41 @@ export type AddressObject = {
 
 export type AddressAPIProps = { keyword: string; coords: Coords | null };
 export type AddressAPIResult = AddressObject[];
+
+type Weather =
+  | 'Thunderstorm'
+  | 'Drizzle'
+  | 'Rain'
+  | 'Snow'
+  | 'Clear'
+  | 'Clouds'
+  | 'Mist'
+  | 'Smoke'
+  | 'Haze'
+  | 'Dust'
+  | 'Fog'
+  | 'Sand'
+  | 'Squall'
+  | 'Tornado';
+
+export type WeatherObject = {
+  description: string;
+  icon: WeatherIcon;
+  id: number;
+  main: Weather;
+};
+
+export type CurrentWeatherObject = {
+  temp: number;
+  weather: WeatherObject;
+};
+
+export type DailyWeatherObject = {
+  temp: number;
+  weather: WeatherObject;
+};
+
+export type WeatherAPIResults = {
+  current: CurrentWeatherObject | null;
+  daily: DailyWeatherObject[];
+};
