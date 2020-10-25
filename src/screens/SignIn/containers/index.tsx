@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { SignInProps } from '@base/types/Navigation';
-import SigninScreen from '../components/SignInScreen';
+import SigninScreen from '../components/SigninScreen';
+import { requestSignin } from '@base/modules/signin';
+import { RootState } from '@base/modules';
+import { ErrorMsg, ErrorText } from '@base/styles';
+import Loading from '@base/components/loading';
 
 export default function Signin({ route, navigation }: SignInProps) {
+  const { title } = route.params;
+  const { error, loading } = useSelector((state: RootState) => state.signin);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { title, signInType } = route.params;
+  const state = useSelector((state: RootState) => state);
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -14,23 +23,39 @@ export default function Signin({ route, navigation }: SignInProps) {
     setPassword(text);
   };
   const handleSigninPress = () => {
-    //로그인 성공
-    //navigation.navigate('SalePredict');
-    //로그인 실패
-    //...
+    if (email.length === 0 || password.length === 0) {
+      Alert.alert('아이디 또는 비밀번호를 입력해주세요.');
+      return;
+    }
+
+    const signinInfo = {
+      email,
+      password,
+    };
+
+    dispatch(requestSignin(signinInfo));
   };
   const handleSignupPress = () => {
     navigation.navigate('SignUpNav');
   };
 
   return (
-    <SigninScreen
-      title={title}
-      email={email}
-      password={password}
-      handleEmailChange={handleEmailChange}
-      handlePasswordChange={handlePasswordChange}
-      handleSignupPress={handleSignupPress}
-    />
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <SigninScreen
+            title={title}
+            email={email}
+            password={password}
+            handleEmailChange={handleEmailChange}
+            handlePasswordChange={handlePasswordChange}
+            handleSignupPress={handleSignupPress}
+            handleSigninPress={handleSigninPress}
+          />
+        </>
+      )}
+    </>
   );
 }

@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Alert } from 'react-native';
 import { InitialProps } from '@base/types/Navigation';
 import InitialScreen from '../components/InitialScreen';
 
 export default function Initial({ route, navigation }: InitialProps) {
+  const dispatch = useDispatch();
+
   const handleStoreButtonPress = (): void => {
     navigation.navigate('SignIn', {
       signInType: 'store',

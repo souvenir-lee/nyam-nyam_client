@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { Text } from 'react-native';
+import React from 'react';
 import styled from 'styled-components/native';
 
 import AddressForm from './AddressForm';
 import PickedAddressList from './PickedAddressList';
 
-export default function SignUpAddress() {
+type SignUpAddressProps = {
+  handleRegisterButtonPress: () => void;
+}
+
+export default function SignUpAddress({ handleRegisterButtonPress }: SignUpAddressProps) {
   return (
     <Container>
       <TextContainer>
@@ -16,7 +19,9 @@ export default function SignUpAddress() {
       </TextContainer>
       <AddressForm />
       <PickedAddressList />
-      <RegisterButton>
+      <RegisterButton
+        onPress={handleRegisterButtonPress}
+      >
         <RegisterText>회원가입</RegisterText>
       </RegisterButton>
     </Container>

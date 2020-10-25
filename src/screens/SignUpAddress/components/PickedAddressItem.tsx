@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
 import { PickedAddressObject } from '@base/types/SignUpAddress';
-import { removeAddress } from '@base/modules/signUp';
+import { removeAddress } from '@base/modules/signup';
 
 type PickedAddressListProps = {
   data: PickedAddressObject;

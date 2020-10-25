@@ -1,27 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
+import { InputField } from '@base/types/auth';
 
 type SignupScreenProps = {
-  email: string;
-  password: string;
-  passwordCheck: string;
-  username: string;
-  handleEmailChange: (text: string) => void;
-  handlePasswordChange: (text: string) => void;
-  handlePasswordCheckChange: (text: string) => void;
-  handleUsernameChange: (text: string) => void;
+  emailField: InputField;
+  passwordField: InputField;
+  passwordCheckField: InputField;
+  usernameField: InputField;
+  handleEmailFieldChange: (text: string) => void;
+  handlePasswordFieldChange: (text: string) => void;
+  handlePasswordCheckFieldChange: (text: string) => void;
+  handleUsernameFieldChange: (text: string) => void;
   handleNextButtonPress: (text: string) => void;
 };
 
-export default function SigninScreen({
-  email,
-  password,
-  passwordCheck,
-  username,
-  handleEmailChange,
-  handlePasswordChange,
-  handlePasswordCheckChange,
-  handleUsernameChange,
+export default function SignupScreen({
+  form,
+  handleFormChange,
   handleNextButtonPress,
 }: SignupScreenProps) {
   return (
@@ -29,28 +24,41 @@ export default function SigninScreen({
       <Title>사장님 회원가입</Title>
 
       <SignupForm>
-        <SignupInput
-          placeholder={'이메일'}
-          onChangeText={handleEmailChange}
-          value={email}
-        />
-        <SignupInput
-          placeholder={'비밀번호'}
-          onChangeText={handlePasswordChange}
-          value={password}
-        />
+        <SignupField>
+          <SignupInput
+            placeholder={'이메일'}
+            onChangeText={(text: string) => handleFormChange('email', text)}
+            value={form.email}
+          />
+        </SignupField>
 
-        <SignupInput
-          placeholder={'비밀번호 확인'}
-          onChangeText={handlePasswordCheckChange}
-          value={passwordCheck}
-        />
+        <SignupField>
+          <SignupInput
+            secureTextEntry={true}
+            placeholder={'비밀번호'}
+            onChangeText={(text: string) => handleFormChange('password', text)}
+            value={form.password}
+          />
+        </SignupField>
 
-        <SignupInput
-          placeholder={'이름'}
-          onChangeText={handleUsernameChange}
-          value={username}
-        />
+        <SignupField>
+          <SignupInput
+            secureTextEntry={true}
+            placeholder={'비밀번호 확인'}
+            onChangeText={(text: string) =>
+              handleFormChange('passwordCheck', text)
+            }
+            value={form.passwordCheck}
+          />
+        </SignupField>
+
+        <SignupField>
+          <SignupInput
+            placeholder={'이름'}
+            onChangeText={(text: string) => handleFormChange('username', text)}
+            value={form.username}
+          />
+        </SignupField>
       </SignupForm>
 
       <NextButton title="다음" onPress={handleNextButtonPress} />
@@ -73,6 +81,10 @@ const Title = styled.Text`
 
 const SignupForm = styled.View`
   margin: 10% 0;
+`;
+
+const SignupField = styled.View`
+  padding: 8px 5px;
 `;
 
 const SignupInput = styled.TextInput`

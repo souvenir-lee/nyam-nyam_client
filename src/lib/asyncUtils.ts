@@ -48,6 +48,7 @@ export function createPromiseSaga<P1, P2>(
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
   return function* saga(action: AnyAction) {
     try {
+      console.log('action: ', action);
       // 재사용성을 위하여 promiseCreator 의 파라미터엔 action.payload 값을 넣도록 설정합니다.
       const payload = yield call(promiseCreator, action.payload);
       yield put({ type: SUCCESS, payload });
@@ -90,7 +91,7 @@ export function handleAsyncActions<P extends AnyState>(
           ...state,
           [key]: {
             loading: true,
-            error: false,
+            error: null,
             data: keepData ? state[key].data : initialData,
           },
         };
@@ -99,6 +100,7 @@ export function handleAsyncActions<P extends AnyState>(
           ...state,
           [key]: {
             loading: false,
+            error: null,
             data: action.payload,
           },
         };
@@ -107,8 +109,8 @@ export function handleAsyncActions<P extends AnyState>(
           ...state,
           [key]: {
             loading: false,
-            error: true,
-            data: action.payload,
+            error: action.payload,
+            data: null,
           },
         };
       default:
@@ -132,7 +134,7 @@ export function handleAsyncActionsById<P extends AnyState>(
           [key]: {
             ...state[key],
             loading: true,
-            error: false,
+            error: null,
             data: {
               ...state[key].data,
               [id]: keepData ? state[key][id] && state[key][id].data : null,
@@ -145,6 +147,7 @@ export function handleAsyncActionsById<P extends AnyState>(
           [key]: {
             ...state[key],
             loading: false,
+            error: null,
             data: {
               ...state[key].data,
               [id]: action.payload,
@@ -157,11 +160,7 @@ export function handleAsyncActionsById<P extends AnyState>(
           [key]: {
             ...state[key],
             loading: false,
-            error: true,
-            data: {
-              ...state[key].data,
-              [id]: action.payload,
-            },
+            error: action.payload,
           },
         };
       default:

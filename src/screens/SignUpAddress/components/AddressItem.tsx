@@ -4,7 +4,7 @@ import styled from 'styled-components/native';
 
 import { AddressObject } from '@base/types/api';
 import { PickedAddressObject } from '@base/types/SignUpAddress';
-import { addAddress } from '@base/modules/signUp';
+import { addAddress } from '@base/modules/signup';
 
 type AddressItemProps = {
   data: AddressObject;
