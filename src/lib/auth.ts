@@ -1,10 +1,16 @@
 import * as SecureStore from 'expo-secure-store';
-import { TextPropTypes } from 'react-native';
 import { decode } from 'js-base64';
-import { fork, take, put, call, select } from 'redux-saga/effects';
+import { put, call, select } from 'redux-saga/effects';
 
-import { invalidToken, validToken } from '@base/modules/signin';
-import * as authAPI from '@base/api/auth';
+import {
+  checkTokenSuccess,
+  checkTokenFailure,
+  requestAccessToken,
+  requestAccessTokenSuccess,
+  requestAccessTokenFailure,
+  clearTokens,
+} from '@base/modules/auth';
+import { refresh } from '@base/api/auth';
 
 //access token, refresh token 저장
 export async function storeTokens(accessToken: string, refreshToken?: string){
@@ -62,7 +68,9 @@ export function* checkToken(isAppLoaded: boolean = false){
     if(isAppLoaded){
         accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
     } else {
-        accessToken = yield select(state => state.signin.accessToken);
+      console.log('not expired');
+      // 만료되지 않았다면 인증 성공
+      yield put(checkTokenSuccess(accessToken));
     }
     console.log('access token: ', accessToken);
     //access token이 존재한다면 만료기간 확인
@@ -173,7 +181,10 @@ export function createAuthCheckSaga(isAppLoaded: boolean = false){
             }
         };
     }
-
+  } else {
+    //refresh token이 없으면 isSignin = false
+    yield put(
+      requestAccessTokenFailure(new Error("Refresh Token Doesn't Exists"))
+    );
+  }
 }
-
-//리소스 api에서 인증 실패시 에러 처리

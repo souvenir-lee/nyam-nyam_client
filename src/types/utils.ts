@@ -1,5 +1,5 @@
-export type AsyncState<T, E = any> = {
-  data: T;
+export type AsyncState<T, E> = {
+  data: T | null;
   loading: boolean;
-  error: E;
+  error: E | null;
 };

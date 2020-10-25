@@ -18,11 +18,14 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "android": {
+      "softwareKeyboardLayoutMode": "pan"
+    },
     "ios": {
       "supportsTablet": true
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
   }
 }

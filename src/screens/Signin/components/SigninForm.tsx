@@ -11,7 +11,7 @@ type SigninFormProps = {
   handleSigninPress: (text: string) => void;
 };
 
-export default function SigninForm({
+export default function SignInForm({
   email,
   password,
   handleEmailChange,

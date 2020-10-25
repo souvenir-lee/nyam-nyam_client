@@ -14,15 +14,9 @@ type SignupScreenProps = {
   handleNextButtonPress: (text: string) => void;
 };
 
-export default function SigninScreen({
-  emailField,
-  passwordField,
-  passwordCheckField,
-  usernameField,
-  handleEmailFieldChange,
-  handlePasswordFieldChange,
-  handlePasswordCheckFieldChange,
-  handleUsernameFieldChange,
+export default function SignupScreen({
+  form,
+  handleFormChange,
   handleNextButtonPress,
 }: SignupScreenProps) {
   return (
@@ -33,39 +27,37 @@ export default function SigninScreen({
         <SignupField>
           <SignupInput
             placeholder={'이메일'}
-            onChangeText={handleEmailFieldChange}
-            value={emailField.input}
+            onChangeText={(text: string) => handleFormChange('email', text)}
+            value={form.email}
           />
-          {emailField.errMsg ? <ErrMsg>{emailField.errMsg}</ErrMsg> : null}
         </SignupField>
 
         <SignupField>
           <SignupInput
             secureTextEntry={true}
             placeholder={'비밀번호'}
-            onChangeText={handlePasswordFieldChange}
-            value={passwordField.input}
+            onChangeText={(text: string) => handleFormChange('password', text)}
+            value={form.password}
           />
-          {passwordField.errMsg ? <ErrMsg>{passwordField.errMsg}</ErrMsg> : null}
         </SignupField>
 
         <SignupField>
           <SignupInput
             secureTextEntry={true}
             placeholder={'비밀번호 확인'}
-            onChangeText={handlePasswordCheckFieldChange}
-            value={passwordCheckField.input}
+            onChangeText={(text: string) =>
+              handleFormChange('passwordCheck', text)
+            }
+            value={form.passwordCheck}
           />
-          {passwordCheckField.errMsg ? <ErrMsg>{passwordCheckField.errMsg}</ErrMsg> : null}
         </SignupField>
 
         <SignupField>
           <SignupInput
             placeholder={'이름'}
-            onChangeText={handleUsernameFieldChange}
-            value={usernameField.input}
+            onChangeText={(text: string) => handleFormChange('username', text)}
+            value={form.username}
           />
-          {usernameField.errMsg ? <ErrMsg>{usernameField.errMsg}</ErrMsg> : null}
         </SignupField>
       </SignupForm>
 
@@ -102,9 +94,5 @@ const SignupInput = styled.TextInput`
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 `;
-
-const ErrMsg = styled.Text`
-  color:red;
-`
 
 const NextButton = styled.Button``;

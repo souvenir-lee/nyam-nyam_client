@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import SigninForm from './SigninForm';
+import SignInForm from './SigninForm';
 
-type SigninScreenProps = {
+type SignInScreenProps = {
   title: string;
   email: string;
   password: string;
@@ -19,13 +19,13 @@ export default function SigninScreen({
   handleEmailChange,
   handlePasswordChange,
   handleSignupPress,
-  handleSigninPress
-}: SigninScreenProps) {
+  handleSigninPress,
+}: SignInScreenProps) {
   return (
     <SigninContainer>
       <Title>{title}</Title>
 
-      <SigninForm
+      <SignInForm
         email={email}
         password={password}
         handleEmailChange={handleEmailChange}
@@ -48,4 +48,4 @@ const Title = styled.Text`
   font-size: 20px;
   margin: 10% 0;
   font-weight: bold;
-`;  
+`;

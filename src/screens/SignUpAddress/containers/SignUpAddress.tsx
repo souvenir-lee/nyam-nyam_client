@@ -1,32 +1,27 @@
 import React, { useEffect } from 'react';
+import { Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-import SignUpAddressScreen from '../components/SignUpAddressScreen';
 import useLocation from '@base/hooks/useLocation';
-import { Props } from '@base/types/SignUpNavigation';
-import { requestSignup, updateLocation } from '@base/modules/signup';
+import { SignUpAddressProps } from '@base/types/Navigation/SignUpNavigation';
+import { requestSignup, updateLocation, cleanUp } from '@base/modules/signup';
 import rootReducer, { RootState } from '@base/modules';
 import { SignupInfo } from '@base/types/auth';
 import { ErrorMsg, ErrorText } from '@base/styles';
 import Loading from '@base/components/loading';
-import { ActivityIndicator } from 'react-native'
+import SignUpAddressScreen from '../components/SignUpAddressScreen';
 
-
-export default function SignUpAddressContainer({ navigation }: Props) {
+export default function SignUpAddressContainer({
+  navigation,
+}: SignUpAddressProps) {
   const dispatch = useDispatch();
-  const { email, password, username } = useSelector((state: RootState) => (
-    state.signup.userFields))
-  const { errMsg, loading } = useSelector((state: RootState) => state.signup);
+  const { loading, data, error } = useSelector(
+    (state: RootState) => state.signup.signupSuccess
+  );
   const location = useLocation({ navigation });
 
   const handleRegisterButtonPress = () => {
-    const signupInfo: SignupInfo = {
-      email,
-      password,
-      userName: username,
-      ...fakeData
-    };
-    dispatch(requestSignup(signupInfo));
+    dispatch(requestSignup());
   };
 
   useEffect(() => {
@@ -34,38 +29,22 @@ export default function SignUpAddressContainer({ navigation }: Props) {
       const {
         coords: { longitude, latitude },
       } = location;
-      if (location) {
-        dispatch(updateLocation({ x: longitude, y: latitude }));
-      }
+      dispatch(updateLocation({ x: longitude, y: latitude }));
     }
   }, [location, dispatch]);
-  console.log('loading: ', loading, 'err Msg:', errMsg);
-  return (
-    <>
-      {loading ? 
-        <Loading />
-        : 
-      <>
-        {
-          errMsg ? (
-            <ErrorMsg>
-              <ErrorText>{errMsg}</ErrorText>
-            </ErrorMsg>
-          ) : null
-        }
-        <SignUpAddressScreen 
-          handleRegisterButtonPress={handleRegisterButtonPress}
-        />
-      </>
-    }     
-       
-    </>
-  )
-}
 
-const fakeData = { 
-  longitude: 126.993606, 
-  latitude: 37.588227, 
-  storeName: 'test store',
-  storeAddress: 'test address'
-};
+  useEffect(() => {
+    if (!loading && data) {
+      dispatch(cleanUp());
+      navigation.goBack();
+      navigation.goBack();
+    } else if (error) {
+      Alert.alert('회원가입에 실패했습니다.');
+    }
+  }, [loading, data, error]);
+  return (
+    <SignUpAddressScreen
+      handleRegisterButtonPress={handleRegisterButtonPress}
+    />
+  );
+}

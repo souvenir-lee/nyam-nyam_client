@@ -19,8 +19,8 @@ function AddressItem({ data }: AddressItemProps) {
       address_name: data.address_name,
       place_name: data.place_name,
       coord: {
-        x: data.x,
-        y: data.y,
+        x: parseInt(data.x, 10),
+        y: parseInt(data.y, 10),
       },
     };
     dispatch(addAddress(newAddress));

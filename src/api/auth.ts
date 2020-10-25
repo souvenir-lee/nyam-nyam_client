@@ -2,72 +2,72 @@ import axios from 'axios';
 import { SigninInfo, SignupInfo } from '@base/types/auth';
 
 const domain = 'http://10.0.2.2:4000';
-//const domain = 'http://127.0.0.1:4000';
+// const domain = 'http://127.0.0.1:4000';
 
 const client = axios.create({
-    baseURL: domain + '/users',
-    method: 'post',
-    headers:{ 'Content-Type': 'application/json'},
-    responseType: 'json',
-    withCredentials: true
+  baseURL: domain + '/users',
+  method: 'post',
+  headers: { 'Content-Type': 'application/json' },
+  responseType: 'json',
+  withCredentials: true,
 });
 
 type RefreshToken = string | null | undefined;
 
 const makeAuthHeaders = (acceesToken: string, refreshToken?: RefreshToken) => {
-    let headers: any =  {
-        'x-access-token': acceesToken,
-    };
-    refreshToken ? headers['x-refresh-token'] = refreshToken : null;
+  const headers: any = {
+    'x-access-token': acceesToken,
+  };
+  refreshToken ? (headers['x-refresh-token'] = refreshToken) : null;
 
-    return headers;
+  return headers;
 };
-
 
 export const signin = async (signinInfo: SigninInfo) => {
-    console.log('before request signin ');
-    const res = await client.post('/login', JSON.stringify(signinInfo));
+  console.log('before request signin ');
+  const res = await client.post('/login', JSON.stringify(signinInfo));
 
-    return res;
+  return res;
 };
 
-export const confirmEmail = async (email: string) => {
-    const res = await client.post('/emailconfirm', JSON.stringify({ email }));
-
-    return res;
+export const confirmEmail = async (form) => {
+  await client.post('/emailconfirm', JSON.stringify({ email: form.email }));
+  return form;
 };
 
 export const requestSignup = async (signupInfo: SignupInfo) => {
-    console.log('before reqest signup');
-    const res = await client.post('/signup', JSON.stringify(signupInfo));
-    console.log('request signup api: ', res);
-    return res;
+  const res = await client.post('/signup', JSON.stringify(signupInfo));
+  console.log('request signup api: ', res);
+  return res;
 };
 
-export const refresh = async (accessToken: string, refreshToken: string, 
-    isUserdataRequired: boolean = false) => {
-
-    console.log('before refresh');
-    const res = await client.post('./token', {
-        headers: {
-            ...makeAuthHeaders(accessToken, refreshToken)
-        },
-        data: {
-            isUserdataRequired
-        }
-    });
-    console.log('refresh res: ', res);
-    return res;
-}
+export const refresh = async (
+  accessToken: string,
+  refreshToken: string,
+  isUserdataRequired = false
+) => {
+  console.log('before refresh');
+  const res = await client.post(
+    './token',
+    { isUserdataRequired },
+    {
+      headers: {
+        ...makeAuthHeaders(accessToken, refreshToken),
+      },
+    }
+  );
+  console.log('refresh res: ', res);
+  return res;
+};
 
 export const checkToken = async (accessToken: string) => {
-    console.log('before token check');
-    const res = await client.post('/token/check', {
-        headers: {
-            ...makeAuthHeaders(accessToken)
-        }
-    });
-    console.log('token check res:', res);
+  console.log('before token check');
+  const res = await client.post('/token/check', null, {
+    headers: {
+      ...makeAuthHeaders(accessToken),
+    },
+  });
+  console.log('token check res:', res);
 
-    return res;
-}
+  return res;
+};

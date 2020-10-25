@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SigninProps } from '@base/types';
 import SigninScreen from '../components/SigninScreen';
-import { initializeSignin, requestSignin, signinError } from '@base/modules/signin';
+import {
+  initializeSignin,
+  requestSignin,
+  signinError,
+} from '@base/modules/signin';
 import { RootState } from '@base/modules';
 import { ErrorMsg, ErrorText } from '@base/styles';
-import Loading from '@base/components/loading'
+import Loading from '@base/components/loading';
 
 export default function Signin({ route, navigation }: SigninProps) {
-  const [ email, setEmail ] = useState('');
-  const [ password, setPassword ] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { title, service, initial } = route.params;
   const { error, loading } = useSelector((state: RootState) => state.signin);
   const dispatch = useDispatch();
@@ -21,65 +25,55 @@ export default function Signin({ route, navigation }: SigninProps) {
     setPassword(text);
   };
   const handleSigninPress = () => {
-    if(email.length === 0 || password.length === 0){
+    if (email.length === 0 || password.length === 0) {
       dispatch(signinError('아이디 또는 비밀번호를 입력해주세요.'));
       return;
-    }    
+    }
 
     const signinInfo = {
       email,
-      password
+      password,
     };
-    
-    dispatch(requestSignin(signinInfo));
 
+    dispatch(requestSignin(signinInfo));
   };
   const handleSignupPress = () => {
     navigation.navigate('Signup');
   };
 
   useEffect(() => {
-     const initializeWhenFirstSignin = () => {
-       if(initial){
-         dispatch(initializeSignin(service));
-       }
-     }
+    const initializeWhenFirstSignin = () => {
+      if (initial) {
+        dispatch(initializeSignin(service));
+      }
+    };
 
-     initializeWhenFirstSignin();
+    initializeWhenFirstSignin();
   }, []);
 
   return (
     <>
-      {
-        loading ? 
-        (
-          <Loading />
-        ) : 
-        (
-          <>
-            {
-              error ? 
-              (
-                <ErrorMsg>
-                  <ErrorText>{error}</ErrorText>  
-                </ErrorMsg>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          {error ? (
+            <ErrorMsg>
+              <ErrorText>{error}</ErrorText>
+            </ErrorMsg>
+          ) : null}
 
-              ) : null
-            }
-
-            <SigninScreen
-              title={title}
-              email={email}
-              password={password}
-              handleEmailChange={handleEmailChange}
-              handlePasswordChange={handlePasswordChange}
-              handleSignupPress={handleSignupPress}
-              handleSigninPress={handleSigninPress}
-            />
-          </>
-        )
-      }
-
+          <SigninScreen
+            title={title}
+            email={email}
+            password={password}
+            handleEmailChange={handleEmailChange}
+            handlePasswordChange={handlePasswordChange}
+            handleSignupPress={handleSignupPress}
+            handleSigninPress={handleSigninPress}
+          />
+        </>
+      )}
     </>
   );
 }

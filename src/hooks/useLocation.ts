@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import * as Location from 'expo-location';
-import { Props } from '@base/types/SignUpNavigation';
+import { SignUpAddressProps } from '@base/types/Navigation/SignUpNavigation';
+import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 
-export default function useLocation({ navigation }: Props) {
+export default function useLocation({
+  navigation,
+}: SignUpAddressProps | SalesPredictProps) {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
