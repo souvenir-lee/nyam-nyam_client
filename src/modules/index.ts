@@ -1,12 +1,21 @@
 import { combineReducers } from 'redux';
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
 
-import auth, {
-  CHECK_TOKEN,
-  REQUEST_ACCESS_TOKEN,
-  CLEAR_TOKENS,
-  authSaga,
-} from './auth';
+import { createAuthCheckSaga } from '@base/lib/auth';
+
+const rootReducer = combineReducers({
+  signin,
+  signup,
+});
+
+//actions에는 각 modules에 있는 action들을 배열로 담아서 import한 다음에 추가해준다
+
+//import { resourceActionTypes } from '@base/modules/resource
+const actions = [
+  //...resourceActionTypes
+  //...resourceActionsTypes2
+  //...
+];
 
 import {
   checkTokenSaga,
@@ -14,62 +23,94 @@ import {
   clearTokensSaga,
 } from '../lib/auth';
 
-import salesPredict, { salesPredictSaga } from './salesPredict';
-import signup, {
-  signupSaga,
-  VERIFY_EMAIL,
-  GET_ADDRESS,
-  REQUEST_SIGNUP,
-  confirmEmailSaga,
-  getAddressSaga,
-  requestSignupSaga,
-} from './signup';
+//sagas에는 각 모듈에 있는 saga를 import해서 배열에 추가해준다.
 
-import signin, {
-  signinSaga,
-  requestSigninSaga,
-  requestSigninWithTokenSaga,
-  REQUEST_SIGNIN,
-  REQUEST_SIGNIN_WITH_TOKEN,
-} from './signin';
+//import { resourceSaga } from '@base/modules/resource
+const sagas = [
+  //resourceSaga,
+  //resourceSaga2
+  //...
+];
 
-const rootReducer = combineReducers({
-  auth,
-  signin,
-  signup,
-  salesPredict,
-});
+const fakeActions = ['TEST1', 'TEST2', 'TEST3'];
 
-const sagaList = {
-  [CHECK_TOKEN]: checkTokenSaga,
-  [REQUEST_ACCESS_TOKEN]: requestAccessTokenSaga,
-  [CLEAR_TOKENS]: clearTokensSaga,
-  [REQUEST_SIGNIN]: requestSigninSaga,
-  [REQUEST_SIGNIN_WITH_TOKEN]: requestSigninWithTokenSaga,
-  [VERIFY_EMAIL]: confirmEmailSaga,
-  [GET_ADDRESS]: getAddressSaga,
-  [REQUEST_SIGNUP]: requestSignupSaga,
-};
+const fakeSagas = [
+  function* test1(action: any) {
+    console.log('test1: ', action);
+  },
+  function* test2(action: any) {
+    console.log('test1: ', action);
+  },
+  function* test3(action: any) {
+    console.log('test1: ', action);
+  },
+];
 
-const sagaWithTokenList = {
-  [REQUEST_SIGNIN_WITH_TOKEN]: requestSigninWithTokenSaga,
-};
-
-function* sagaWithTokenCheck(action) {
-  // 토큰 검증이 필요한 액션이라면 토큰 검증부터 수행한다
-  if (action.type in sagaWithTokenList) {
-    yield call(checkTokenSaga);
-  }
-  // 모든 액션들을 call로 호출한다.
-  if (action.type in sagaList) {
-    yield call(sagaList[action.type], action);
-  }
-}
+const resourceAuthCheckSaga = createAuthCheckSaga();
 
 export function* rootSaga() {
-  yield takeEvery('*', sagaWithTokenCheck);
+  yield all([
+    signinSaga(),
+    signupSaga(),
+    resourceAuthCheckSaga(fakeActions, fakeSagas),
+  ]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
 }
 
 export type RootState = ReturnType<typeof rootReducer>;
 
 export default rootReducer;
+
+//function* testSaga(){
+//  yield all([signinSaga(), signupSaga(), authCheckSaga()]);
+//}
+//
+//const actions = [
+//  'TEST1',
+//  'TEST2',
+//  'TEST3',
+//  'TEST4',
+//  'TEST5',
+//  'TEST6',
+//  'TEST7',
+//  'TEST8',
+//  'TEST9'
+//];
+//
+//return function* authChekSaga(){
+//
+//  while(true){
+//      const action = yield take(actions);
+//      console.log('saga action: ', action);
+//
+//      const isTokenValid = yield call(checkToken);
+//      if(isTokenValid && ){
+//          for(let i = 0; i < sagas.length; i++){
+//              //사가에서 api요청 보낼 때 헤더에 access token 추가
+//              yield fork(sagas[i], action);
+//          }
+//      }
+//  }
+//};
+//
+//function* resourceApi1Saga(action: any){
+//  switch(action.type){
+//    case 'TEST1':
+//      return yield fork( function* test1(){ });
+//    case 'TEST2':
+//      return yield fork( function* test2(){ });
+//    case 'TEST3':
+//      return yield fork( function* test3(){ });
+//  }
+//}
+
+//function* resourceApi2Saga(){
+//  yield takeEvery('TEST4', function* test1(){ });
+//  yield takeEvery('TEST5', function* test2(){ });
+//  yield takeEvery('TEST6', function* test3(){ });
+//}
+
+//function* resourceApi3Saga(){
+//  yield takeEvery('TEST7', function* test1(){ });
+//  yield takeEvery('TEST8', function* test2(){ });
+//  yield takeEvery('TEST9', function* test3(){ });
+//}

@@ -12,12 +12,6 @@ const client = axios.create({
   withCredentials: true,
 });
 
-const token = axios.create({
-  baseURL: domain + '/token',
-  method: 'post',
-  withCredentials: true,
-});
-
 type RefreshToken = string | null | undefined;
 
 const makeAuthHeaders = (acceesToken: string, refreshToken?: RefreshToken) => {
@@ -30,7 +24,9 @@ const makeAuthHeaders = (acceesToken: string, refreshToken?: RefreshToken) => {
 };
 
 export const signin = async (signinInfo: SigninInfo) => {
+  console.log('before request signin ');
   const res = await client.post('/login', JSON.stringify(signinInfo));
+
   return res;
 };
 
@@ -45,21 +41,33 @@ export const requestSignup = async (signupInfo: SignupInfo) => {
   return res;
 };
 
-export const refresh = async (accessToken: string, refreshToken: string) => {
-  const res = await token.post('/refresh', null, {
-    headers: {
-      ...makeAuthHeaders(accessToken, refreshToken),
-    },
-  });
+export const refresh = async (
+  accessToken: string,
+  refreshToken: string,
+  isUserdataRequired = false
+) => {
+  console.log('before refresh');
+  const res = await client.post(
+    './token',
+    { isUserdataRequired },
+    {
+      headers: {
+        ...makeAuthHeaders(accessToken, refreshToken),
+      },
+    }
+  );
+  console.log('refresh res: ', res);
   return res;
 };
 
-export const signinWithToken = async (accessToken: string) => {
-  const res = await token.post('/login', null, {
+export const checkToken = async (accessToken: string) => {
+  console.log('before token check');
+  const res = await client.post('/token/check', null, {
     headers: {
       ...makeAuthHeaders(accessToken),
     },
   });
+  console.log('token check res:', res);
 
   return res;
 };

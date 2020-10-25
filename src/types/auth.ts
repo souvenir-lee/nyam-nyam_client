@@ -25,9 +25,11 @@ export type SigninResponse = SigninSuccess | string;
 
 export type SigninState = {
   isSignin: boolean;
-  userdata: SigninUserData;
+  service: 'customer' | 'store' | null;
+  user: SigninUserData;
   loading: boolean;
   error: string | null;
+  accessToken: string | null;
 };
 
 export type InputField = {
