@@ -5,12 +5,15 @@ import { Button } from 'react-native-elements';
 
 import { MINT, MINT_RGBA_LINE, MINT_STRONG } from '@base/baseColors';
 import { MyPageProps } from '@base/types/Navigation/MyPageNavigation';
-
+import { MyInfo } from '@base/types/mypage';
+ 
 type MyPageScreenProps = {
   navigation: MyPageProps['navigation'];
+  myPageInfo: any
 };
 
-export default function MyPageScreen({ navigation }: MyPageScreenProps) {
+export default function MyPageScreen({ navigation, myPageInfo }: MyPageScreenProps) {
+  const { username, email, store, production, uploadSales } = myPageInfo; 
   return (
     <MyPageContainer>
 
@@ -21,24 +24,24 @@ export default function MyPageScreen({ navigation }: MyPageScreenProps) {
           source={require('@base/../assets/images/default_user_avatar.jpg')}
         />
         <UserTextWrapper>
-          <UserNameText>이혁원</UserNameText>
-          <UserInfoText>hw3053919@gmail.com{'\n'}사장님</UserInfoText>
+          <UserNameText>{username}</UserNameText>
+          <UserInfoText>{email} {'\n'}사장님</UserInfoText>
         </UserTextWrapper>
       </MyPageUserInfo>
 
       <MyPageBriefInfo>
         <BriefInfoRow>
-          <BriefInfoContent>2</BriefInfoContent>
+          <BriefInfoContent>{store || 0}</BriefInfoContent>
           <BriefInfoTitle>내 가게</BriefInfoTitle>
         </BriefInfoRow>
 
         <BriefInfoRow>
-          <BriefInfoContent>24</BriefInfoContent>
+          <BriefInfoContent>{production || 0}</BriefInfoContent>
           <BriefInfoTitle>내 상품 수</BriefInfoTitle>
         </BriefInfoRow>
         <BriefInfoRow>
-        
-          <BriefInfoContent>365</BriefInfoContent>
+
+          <BriefInfoContent>{uploadSales || 0}</BriefInfoContent>
           <BriefInfoTitle>내역 업로드 수</BriefInfoTitle>
         </BriefInfoRow>
       </MyPageBriefInfo>
