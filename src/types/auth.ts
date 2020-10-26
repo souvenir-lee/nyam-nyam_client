@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
-import { AddressObject } from './api';
 import { PickedAddressObject } from './SignUpAddress';
+import { AddressObject } from './kakaomap';
 import { Coords } from './defaultTypes';
 import { AsyncState } from './utils';
 
@@ -11,7 +11,7 @@ export type SigninInfo = {
 
 export type SigninUserData = {
   id: number | string;
-  email: string ;
+  email: string;
   username: string;
   userImg: any;
   social: string | null;

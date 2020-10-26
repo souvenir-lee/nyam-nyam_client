@@ -1,12 +1,14 @@
-
-import React, { useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigationContainerRef,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
-import Signin from '../screens/Signin';
+import Signin from '../screens/SignIn';
 import SignupStackNavigation from './signup';
 import { RootState } from '@base/modules';
 import { checkToken } from '@base/modules/signin';
@@ -28,14 +30,9 @@ export default function Navigation() {
   console.log('isSignin: ', isSignin);
   return (
     <NavigationContainer ref={navigationRef}>
-      <RootStack.Navigator 
-        headerMode={isSignin ? 'none' : 'screen'}
-      >
+      <RootStack.Navigator headerMode={isSignin ? 'none' : 'screen'}>
         {isSignin ? (
-          <RootStack.Screen 
-            name="Main" 
-            component={MainTabNavigation}
-          />
+          <RootStack.Screen name="Main" component={MainTabNavigation} />
         ) : (
           <>
             <RootStack.Screen name="Initial" component={Initial} />
@@ -52,16 +49,16 @@ export default function Navigation() {
 const navigationRef = React.createRef<NavigationContainerRef>();
 
 //리덕스 사가 또는 그 외 모든 모듈에서 import 가능
-export function navigate(name: string, params: any){
+export function navigate(name: string, params: any) {
   navigationRef.current?.navigate(name, params);
 }
 
-function Main(){
+function Main() {
   return (
     <View>
       <Text>Main</Text>
     </View>
-  )
+  );
 }
 
 const View = styled.View``;

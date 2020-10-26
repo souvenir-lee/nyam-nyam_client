@@ -122,6 +122,7 @@ export function handleAsyncActions<P extends AnyState>(
 export function handleAsyncActionsById<P extends AnyState>(
   type: string,
   key: string,
+  initialData: any,
   keepData = false
 ) {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
@@ -137,7 +138,9 @@ export function handleAsyncActionsById<P extends AnyState>(
             error: null,
             data: {
               ...state[key].data,
-              [id]: keepData ? state[key][id] && state[key][id].data : null,
+              [id]: keepData
+                ? state[key][id] && state[key][id].data
+                : initialData,
             },
           },
         };
