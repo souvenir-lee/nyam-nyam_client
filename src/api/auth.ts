@@ -11,6 +11,13 @@ export const confirmEmail = async (email: string) => {
     return res;
 };
 
+export const signin = async (signinInfo: SigninInfo) => {
+    console.log('before request signin ');
+    const res = await client.post('users/login', JSON.stringify(signinInfo));
+
+    return res;
+};
+
 export const requestSignup = async (signupInfo: SignupInfo) => {
     console.log('before reqest signup');
     const res = await client.post('users/signup', JSON.stringify(signupInfo));
