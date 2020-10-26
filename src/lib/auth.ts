@@ -79,12 +79,14 @@ export function* checkToken(isAppLoaded: boolean = false){
         }
 
         if(isTokenExpired_){
-            const refreshToken = yield call([SecureStore, 'getItemAsync'], 'refreshToken');
+            console.log('access token의 만료기간 지남');
+            const refreshToken = yield call([SecureStore, 'getItemAsync'], 'refresh_token');
         
             if(refreshToken && typeof refreshToken === 'string'){
                 //refresh token의 만료기간을 확인한다
                 if(isTokenExpired(refreshToken)){
-                    //isSignin = false -> navigation rerendering  
+                    //isSignin = false -> navigation rerendering
+                    console.error('refresh token이 유효하지 않음')
                     yield put(invalidToken(401));
                     clearTokens();
 
@@ -108,7 +110,7 @@ export function* checkToken(isAppLoaded: boolean = false){
                         return true;
                     } catch(e){  //refresh token이 유효하지 않다면 isSignin = false
                         res = e.response;
-                        console.log('refresh result:', res);
+                        console.log('refresh error:', res);
                         
                         yield put(invalidToken(res.status));
 
@@ -117,6 +119,7 @@ export function* checkToken(isAppLoaded: boolean = false){
                 }
 
             } else { //refresh token이 없으면 isSignin = false
+                console.error('refresh token이 존재하지 않음')
                 yield put(invalidToken(400));
                 return false;
             }
@@ -125,16 +128,18 @@ export function* checkToken(isAppLoaded: boolean = false){
             //토큰을 체크하는 api 요청해서 응답으로 유저정보를 받아와야 함
             let res;
             try{
-                res = yield call(authAPI.checkToken, accessToken);
-                const { userdata } = res;
                 //token check가 성공했을 떄
                 if(isAppLoaded){
+                    res = yield call(authAPI.checkToken, accessToken);
+                    const { userdata } = res;
+                    console.log('token check success:', res);
                     yield put(validToken(accessToken, userdata))
                 }
 
                 return true;
             } catch(e){
                 //토큰이 유효하지 않거나 해당 유저정보가 없을 때 isSignin = false
+                console.error('access token invalid or have not userinfo:', e);
                 res = e.response;
                 yield put(invalidToken(res.status));
             }
@@ -142,6 +147,7 @@ export function* checkToken(isAppLoaded: boolean = false){
             return true;
         }
     } else { //access token이 존재하지 않다면 isSignin = false
+        console.log('access token이 존재하지 않음');
         yield put(invalidToken(400));
         
         return false;
@@ -165,9 +171,11 @@ export function createAuthCheckSaga(isAppLoaded: boolean = false){
         
                 const isTokenValid = yield call(checkToken);
                 if(isTokenValid){
+                    const accessToken = yield select(state => state.signin.accessToken);
+
                     for(let i = 0; i < sagas.length; i++){
                         //사가에서 api요청 보낼 때 헤더에 access token 추가
-                        yield fork(sagas[i], action);  
+                        yield fork(sagas[i], action, accessToken);  
                     }
                 }
             }
@@ -176,4 +184,28 @@ export function createAuthCheckSaga(isAppLoaded: boolean = false){
 
 }
 
+export const getAuthErrMsg = (statusCode: string | number) => {
+    if(statusCode == 400){
+        return '토큰이 존재하지 않습니다.'
+    } else if(statusCode == 401){
+        return  '토큰 만료기간이 지났습니다';
+    } else if (statusCode == 403){
+        return '유효한 토큰이 아닙니다.';
+    }
+    
+    return null;
+};
+
+
 //리소스 api에서 인증 실패시 에러 처리
+export function* handleIfAuthError(statusCode: number | string){
+    if(statusCode == 401){
+        yield put(invalidToken(statusCode));
+        return true;
+    } else if(statusCode == 403){
+        yield put(invalidToken(statusCode));
+        return true;
+    }
+
+    return false;
+};

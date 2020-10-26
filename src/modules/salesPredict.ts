@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { takeEvery, takeLatest, put, call } from 'redux-saga/effects';
+import { takeLatest, put, call, fork } from 'redux-saga/effects';
 import { ActionType } from 'typesafe-actions';
 import { AxiosError } from 'axios';
 
@@ -64,22 +64,40 @@ function* getWeatherSaga(action: ActionType<typeof getWeather>) {
   }
 }
 
-function* getPredictDataSaga(action: ActionType<typeof getPredictData>) {
+function* getPredictDataSaga(
+  action: ActionType<typeof getPredictData>,
+  accessToken: string
+) {
   try {
     const day = action.payload;
     // TODO: state에 저장되어 있는 day 날짜의 날씨 정보를 기준으로 날씨 선정
     const weather = '맑음';
     const storeId = 1;
-    const payload = yield call(getPredictDataOfWeather, { weather, storeId });
+    const payload = yield call(getPredictDataOfWeather, {
+      weather,
+      storeId,
+      accessToken,
+    });
     // 재사용성을 위하여 promiseCreator 의 파라미터엔 action.payload 값을 넣도록 설정합니다.
     yield put({ type: GET_PREDICT_DATA_SUCCESS, payload, meta: day });
   } catch (error) {
     yield put({ type: GET_PREDICT_DATA_ERROR, payload: error });
   }
 }
+
+export function* salesPredictWithAuthSaga(
+  action: ActionsWithAuth,
+  accessToken: string
+) {
+  console.log(accessToken);
+  switch (action.type) {
+    case GET_PREDICT_DATA:
+      return yield fork(getPredictDataSaga, action, accessToken);
+  }
+}
+
 export function* salesPredictSaga() {
-  yield takeEvery(GET_WEATHER, getWeatherSaga);
-  yield takeLatest(GET_PREDICT_DATA, getPredictDataSaga);
+  yield takeLatest(GET_WEATHER, getWeatherSaga);
 }
 
 const actions = {
@@ -92,6 +110,8 @@ const actions = {
 };
 
 type SalesPredictAction = ActionType<typeof actions>;
+
+export const ActionsWithAuth = [getPredictData];
 
 const initialState = {
   weather: reducerUtils.initial({ current: null, daily: [] }),

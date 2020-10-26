@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
-import Signin from '../screens/Signin';
+import Signin from '../screens/SignIn';
 import SignupStackNavigation from './signup';
 import { RootState } from '@base/modules';
 import { checkToken } from '@base/modules/signin';

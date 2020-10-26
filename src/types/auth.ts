@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
-import { AddressObject } from './weather';
-import { PickedAddressObject, Coords } from './SignUpAddress';
+import { PickedAddressObject } from './SignUpAddress';
+import { AddressObject } from './kakaomap';
+import { Coords } from './defaultTypes';
 import { AsyncState } from './utils';
 
 export type SigninInfo = {
@@ -10,10 +11,10 @@ export type SigninInfo = {
 
 export type SigninUserData = {
   id: number | string;
-  email: string | null;
-  nickname: string | null;
+  email: string;
+  username: string;
   userImg: any;
-  social: boolean | null;
+  social: string | null;
 } | null;
 
 export type SigninSuccess = {

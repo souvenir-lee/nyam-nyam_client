@@ -47,7 +47,8 @@ export const refresh = async (
 
 export const checkToken = async (accessToken: string) => {
   console.log('before token check');
-  const res = await client.post('/token/check', null, {
+  console.log('acceess token in checToken:', accessToken);
+  const res = await client.post('/autologin', null, {
     headers: {
       ...makeAuthHeaders(accessToken),
     },

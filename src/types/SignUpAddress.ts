@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
-import { AddressObject } from './weather';
+import { AddressObject } from './kakaomap';
 import { AsyncState } from './utils';
-import { Coords } from '@base/types/defaultTypes';
+import { Coords } from './defaultTypes';
 
 export type PickedAddressObject = {
   id: string;
