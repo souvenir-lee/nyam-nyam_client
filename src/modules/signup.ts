@@ -1,4 +1,6 @@
-import { select, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+/* eslint-disable no-case-declarations */
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { Alert } from 'react-native';
 import { ActionType } from 'typesafe-actions';
 import { AxiosError } from 'axios';
 
@@ -10,39 +12,42 @@ import {
 import { getStoreByKeyword } from '@base/api';
 import { AddressAPIProps, AddressObject } from '@base/types/api';
 import { UserFields, SignupState, SignupInfo } from '@base/types/auth';
-import { PickedAddressObject } from '@base/types/SignUpAddress';
-import { Coords } from '@base/types/defaultTypes';
+import { PickedAddressObject, Coords } from '@base/types/SignUpAddress';
 import * as authAPI from '@base/api/auth';
 import * as RootNavigation from '@base/navigation';
 
 //액션 타입
-export const VERIFY_EMAIL = 'signup/VERIFY_EMAIL' as const;
-export const VERIFY_EMAIL_SUCCESS = 'signup/VERIFY_EMAIL_SUCCESS' as const;
-export const VERIFY_EMAIL_ERROR = 'signup/VERIFY_EMAIL_ERROR' as const;
-export const GET_ADDRESS = 'signup/GET_ADDRESS' as const;
-export const GET_ADDRESS_SUCCESS = 'signup/GET_ADDRESS_SUCCESS' as const;
-export const GET_ADDRESS_ERROR = 'signup/GET_ADDRESS_ERROR' as const;
-export const ADD_PICKED_ADDRESS = 'signup/ADD_ADDRESS' as const;
-export const REMOVE_PICKED_ADDRESS = 'signup/REMOVE_ADDRESS' as const;
-export const UPDATE_LOCATION = 'signup/UPDATE_LOCATION' as const;
-export const REQUEST_SIGNUP = 'signup/REQUEST_SIGNUP' as const;
-export const REQUEST_SIGNUP_SUCCESS = 'signup/REQUEST_SIGNUP_SUCCESS' as const;
-export const REQUEST_SIGNUP_ERROR = 'signup/REQUEST_SIGNUP_ERROR' as const;
-export const CLEANUP = 'signup/CLEANUP' as const;
+const INITIALIZE_SIGNUP = 'signup/INITIALIZE_SIGNUP' as const;
+const INPUT_USER_FIELDS = 'signup/INPUT_USER_FIELDS' as const;
+const EMAIL_IS_VALID ='signup/EMAIL_IS_VALID' as const;
+const EMAIL_IS_INVALID ='signup/EMAIL_IS_INVALID' as const;
+const GET_ADDRESS = 'signup/GET_ADDRESS' as const;
+const GET_ADDRESS_SUCCESS = 'signup/GET_ADDRESS_SUCCESS' as const;
+const GET_ADDRESS_ERROR = 'signup/GET_ADDRESS_ERROR' as const;
+const ADD_PICKED_ADDRESS = 'signup/ADD_ADDRESS' as const;
+const REMOVE_PICKED_ADDRESS = 'signup/REMOVE_ADDRESS' as const;
+const UPDATE_LOCATION = 'signup/UPDATE_LOCATION' as const;
+const REQUEST_SIGNUP = 'signup/REQUEST_SIGNUP' as const;
+const SIGNUP_SUCCESS = 'signup/SIGNUP_SUCCESS' as const;
+const SIGNUP_ERROR = 'signup/SIGNUP_ERROR' as const;
 
 //액션 생성자
-export const verifyEmail = (userFields) => ({
-  type: VERIFY_EMAIL,
-  payload: userFields,
+export const initializeSignup = () => ({
+  type: INITIALIZE_SIGNUP
 });
 
-export const verifyEmailSuccess = () => ({
-  type: VERIFY_EMAIL_SUCCESS,
+export const inputUserFields = (userFields: UserFields) => ({
+  type: INPUT_USER_FIELDS,
+  payload: userFields
 });
 
-export const verifyEmailFailure = (error: AxiosError) => ({
-  type: VERIFY_EMAIL_ERROR,
-  payload: error,
+export const emailIsValid = () => ({
+  type: EMAIL_IS_VALID
+});
+
+export const emailIsInValid = (errMsg: string) => ({
+  type: EMAIL_IS_INVALID,
+  payload:errMsg
 });
 
 export const getAddress = (info: AddressAPIProps) => ({
@@ -77,74 +82,87 @@ export const updateLocation = (coords: Coords) => ({
   payload: coords,
 });
 
-export const requestSignup = () => ({
+export const requestSignup = (signupInfo: SignupInfo)  => ({
   type: REQUEST_SIGNUP,
+  payload: signupInfo
 });
 
-export const requestSignupSuccess = () => ({
-  type: REQUEST_SIGNUP_SUCCESS,
-  payload: true,
+export const signupSuccess = () => ({
+  type:SIGNUP_SUCCESS
 });
 
-export const requestSignupFailure = (error) => ({
-  type: REQUEST_SIGNUP_ERROR,
-  payload: error,
-});
-
-export const cleanUp = () => ({
-  type: CLEANUP,
+export const signupError = (errMsg: string) => ({
+  type:SIGNUP_ERROR,
+  payload: errMsg
 });
 
 //리덕스 사가
-export const confirmEmailSaga = createPromiseSaga(
-  VERIFY_EMAIL,
-  authAPI.confirmEmail
-);
-export const getAddressSaga = createPromiseSaga(GET_ADDRESS, getStoreByKeyword);
-export function* requestSignupSaga() {
-  const {
-    userFields: {
-      data: { email, username, password },
-    },
-    picked_address: { data },
-  } = yield select((state) => state.signup);
-  try {
-    const picked_address_arr = [];
-    for (const key in data) {
-      picked_address_arr.push(data[key]);
+function* confirmEmailSaga(action: ReturnType<typeof inputUserFields>){
+  const email = action.payload.email;
+  let res;
+
+  try{
+    res = yield call(authAPI.confirmEmail, email);
+    console.log('confirm email:', res);
+
+    yield put(emailIsValid());
+  
+    RootNavigation.navigate('SignUpAddress', {});
+  } catch(e){
+    res = e.response;
+    console.log('res: ', res);
+
+    if(!res){
+      yield put(signupError('알려지지 않은 에러가 발생했습니다.'));
+    } else if(res.status == 400){
+      yield put(emailIsInValid('잘못된 이메일입니다.'));
+    } else if(res.status === 409){
+      yield put(emailIsInValid('이미 존재하는 이메일입니다.'));
+    } else {
+      yield put(emailIsInValid(e.message));
     }
+  }
+}
 
-    if (!picked_address_arr.length) {
-      throw new Error('선택된 가게가 없습니다.');
+const getAddressSaga = createPromiseSaga(GET_ADDRESS, getStoreByKeyword);
+
+function* requestSignupSaga(action: ReturnType<typeof requestSignup>){
+  const signupInfo = action.payload;
+  let res; 
+  try{
+    res = yield call(authAPI.requestSignup, signupInfo);
+    console.log('signup saga:', signupInfo);
+    console.log('res in try: ', res);
+    Alert.alert('회원가입에 성공하셨습니다.');
+    RootNavigation.navigate('Signin', {});
+  } catch(e){
+    res = e.response;
+    console.log('res in catch: ', res);
+    
+    if(!res){
+      yield put(signupError('알려지지 않은 에러가 발생했습니다.'))
+    } else if(res.status === 400){
+      yield put(signupError('잘못된 요청입니다.'));
+    } else if(res.status === 409){
+      yield put(signupError('이미 존재하는 이메일입니다.'));
+    } else {
+      yield put(signupError(e.message));
     }
-
-    const signupInfo = {
-      email,
-      username,
-      password,
-      storename: picked_address_arr[0].place_name,
-      storeaddress: picked_address_arr[0].address_name,
-      latitude: picked_address_arr[0].coord.x,
-      longitude: picked_address_arr[0].coord.y,
-    };
-
-    yield call(authAPI.requestSignup, signupInfo);
-    yield put(requestSignupSuccess());
-  } catch (error) {
-    yield put(requestSignupFailure(error));
   }
 }
 
 export function* signupSaga() {
-  yield takeLatest(VERIFY_EMAIL, confirmEmailSaga);
+  yield takeLatest(INPUT_USER_FIELDS, confirmEmailSaga);
   yield takeEvery(GET_ADDRESS, getAddressSaga);
   yield takeLatest(REQUEST_SIGNUP, requestSignupSaga);
 }
 
+
 const actions = {
-  verifyEmail,
-  verifyEmailSuccess,
-  verifyEmailFailure,
+  initializeSignup,
+  inputUserFields,
+  emailIsValid,
+  emailIsInValid,
   getAddress,
   getAddressSuccess,
   getAddressError,
@@ -152,31 +170,57 @@ const actions = {
   removeAddress,
   updateLocation,
   requestSignup,
-  requestSignupSuccess,
-  requestSignupFailure,
-  cleanUp,
+  signupSuccess,
+  signupError,
 };
 
 type SignupAction = ActionType<typeof actions>;
 
 const initialState = {
-  userFields: reducerUtils.initial({}),
+  userFields: {
+    email: '',
+    password: '',
+    username: ''
+  },
+  isEmailValid: false,
+  loading:false,
+  errMsg: null,
   address: reducerUtils.initial([]),
   picked_address: reducerUtils.initial({}),
   coords: null,
-  signupSuccess: reducerUtils.initial(false),
+  signupInfo: null
 };
+
 
 //리듀서
 export default function signup(
-  state = initialState,
+  state: SignupState = initialState,
   action: SignupAction
 ): SignupState {
   switch (action.type) {
-    case VERIFY_EMAIL:
-    case VERIFY_EMAIL_SUCCESS:
-    case VERIFY_EMAIL_ERROR:
-      return handleAsyncActions(VERIFY_EMAIL, 'userFields', {})(state, action);
+    case INITIALIZE_SIGNUP:
+      return {
+        ...state,
+        isEmailValid: false,
+        loading: false,
+        errMsg: null
+      };
+    case INPUT_USER_FIELDS:
+      return {
+        ...state,
+        userFields: action.payload 
+      };
+    case EMAIL_IS_VALID:
+      return {
+        ...state,
+        isEmailValid: true
+      };
+    case EMAIL_IS_INVALID:
+      return {
+        ...state,
+        isEmailValid: false,
+        errMsg: action.payload
+      };
     case GET_ADDRESS:
     case GET_ADDRESS_SUCCESS:
     case GET_ADDRESS_ERROR:
@@ -219,30 +263,19 @@ export default function signup(
     case REQUEST_SIGNUP:
       return {
         ...state,
-        signupSuccess: {
-          loading: true,
-        },
+        loading: true,
+        signupInfo: action.payload
       };
-    case REQUEST_SIGNUP_SUCCESS:
+    case SIGNUP_SUCCESS:
+      return {
+        ...initialState
+      };
+    case SIGNUP_ERROR:
       return {
         ...state,
-        signupSuccess: {
-          loading: false,
-          error: null,
-          data: true,
-        },
+        loading: false,
+        errMsg: action.payload
       };
-    case REQUEST_SIGNUP_ERROR:
-      return {
-        ...state,
-        signupSuccess: {
-          loading: false,
-          error: action.payload,
-          data: false,
-        },
-      };
-    case CLEANUP:
-      return initialState;
     default:
       return state;
   }

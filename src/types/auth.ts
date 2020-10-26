@@ -58,13 +58,13 @@ export type SignupState = {
   isEmailValid: boolean;
   loading: boolean;
   errMsg: string | null;
-  address: AsyncState<AddressObject[], AxiosError>;
+  address: AsyncState<AddressObject[], AxiosError> | null;
   picked_address: AsyncState<
     {
       [key: string]: PickedAddressObject;
     },
     AxiosError
-  >;
+  > | null;
   coords: Coords | null;
   signupInfo: SignupInfo | null;
 };
