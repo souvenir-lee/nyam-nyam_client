@@ -4,47 +4,35 @@ import signin, { signinSaga } from './signin';
 import { all, fork, take, takeEvery } from 'redux-saga/effects';
 
 import { createAuthCheckSaga } from '@base/lib/auth';
+import salesPredict, 
+{ 
+  salesPredictSaga, 
+  actionsWithAuth as salesPredictActions, 
+  sagasWithAuth  as salesPredictSagas 
+} 
+from './salesPredict';
 
 const rootReducer = combineReducers({
   signin,
   signup,
+  salesPredict
 });
 
-//actions에는 각 modules에 있는 action들을 배열로 담아서 import한 다음에 추가해준다
-
-//import { resourceActionTypes } from '@base/modules/resource
+//actions에는 각 modules에 있는 인증이 필요한 action들을 배열로 담아서 import한 다음에 추가해준다
 const actions = [
-  //...resourceActionTypes
-  //...resourceActionsTypes2
-  //...
+  ...salesPredictActions
 ];
 
-
-//sagas에는 각 모듈에 있는 saga를 import해서 배열에 추가해준다.
-
-//import { resourceSaga } from '@base/modules/resource
+//sagas에는 각 모듈에 있는 인증이 필요한 saga를 import해서 배열에 추가해준다.
 const sagas = [
-  //resourceSaga,
-  //resourceSaga2
-  //...
+  ...salesPredictSagas
 ];
 
-const fakeActions = [
-  'TEST1',
-  'TEST2',
-  'TEST3'
-];
-
-const fakeSagas = [
-  function* test1(action: any){ console.log('test1: ', action) },
-  function* test2(action: any){ console.log('test1: ', action) },
-  function* test3(action: any){ console.log('test1: ', action) },
-];
-
-const resourceAuthCheckSaga = createAuthCheckSaga()
+const resourceAPIAuthCheckSaga = createAuthCheckSaga();
 
 export function* rootSaga() {
-  yield all([signinSaga(), signupSaga(), resourceAuthCheckSaga(fakeActions, fakeSagas)]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
+  yield all([signinSaga(), signupSaga(), salesPredictSaga(),
+    resourceAPIAuthCheckSaga(actions, sagas)]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
 }
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -83,16 +71,16 @@ export default rootReducer;
 //  }
 //};
 //
-function* resourceApi1Saga(action: any){
-  switch(action.type){
-    case 'TEST1':
-      return yield fork( function* test1(){ });
-    case 'TEST2':
-      return yield fork( function* test2(){ });
-    case 'TEST3':
-      return yield fork( function* test3(){ });  
-  }
-}
+//function* resourceApi1Saga(action: any){
+//  switch(action.type){
+//    case 'TEST1':
+//      return yield fork( function* test1(){ });
+//    case 'TEST2':
+//      return yield fork( function* test2(){ });
+//    case 'TEST3':
+//      return yield fork( function* test3(){ });  
+//  }
+//}
 
 //function* resourceApi2Saga(){
 //  yield takeEvery('TEST4', function* test1(){ });

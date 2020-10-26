@@ -43,6 +43,15 @@ const actions = {
   getWeatherFailure,
 };
 
+//인증이 필요한 action들과 saga들을 배열에 담아서 export 해준다.
+export const actionsWithAuth = [
+  GET_WEATHER
+];
+
+export const sagasWithAuth = [
+  getWeather
+];
+
 type SalesPredictAction = ActionType<typeof actions>;
 
 const initialState = {

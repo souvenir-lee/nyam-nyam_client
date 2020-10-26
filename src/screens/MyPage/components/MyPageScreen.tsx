@@ -13,7 +13,9 @@ type MyPageScreenProps = {
 export default function MyPageScreen({ navigation }: MyPageScreenProps) {
   return (
     <MyPageContainer>
+
       <MyPageTitle>내 정보</MyPageTitle>
+
       <MyPageUserInfo>
         <UserAvatar
           source={require('@base/../assets/images/default_user_avatar.jpg')}
@@ -23,20 +25,24 @@ export default function MyPageScreen({ navigation }: MyPageScreenProps) {
           <UserInfoText>hw3053919@gmail.com{'\n'}사장님</UserInfoText>
         </UserTextWrapper>
       </MyPageUserInfo>
+
       <MyPageBriefInfo>
         <BriefInfoRow>
           <BriefInfoContent>2</BriefInfoContent>
           <BriefInfoTitle>내 가게</BriefInfoTitle>
         </BriefInfoRow>
+
         <BriefInfoRow>
           <BriefInfoContent>24</BriefInfoContent>
           <BriefInfoTitle>내 상품 수</BriefInfoTitle>
         </BriefInfoRow>
         <BriefInfoRow>
+        
           <BriefInfoContent>365</BriefInfoContent>
           <BriefInfoTitle>내역 업로드 수</BriefInfoTitle>
         </BriefInfoRow>
       </MyPageBriefInfo>
+
       <MyPageNavContainer>
         <Button
           title="내 정보 수정"

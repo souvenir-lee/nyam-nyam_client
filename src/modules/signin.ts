@@ -113,10 +113,10 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
     }
 }
 
-const startAuthCheckSaga = createAuthCheckSaga(true);
+const signinAuthCheckSaga = createAuthCheckSaga(true);
 
 export function* signinSaga(){
-    yield takeEvery(CHECK_TOKEN, startAuthCheckSaga);
+    yield takeEvery(CHECK_TOKEN, signinAuthCheckSaga);
     yield takeLatest(REQUEST_SIGNIN, requestSigninSaga);
 }
 
