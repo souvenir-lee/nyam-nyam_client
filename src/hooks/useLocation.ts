@@ -5,8 +5,8 @@ import { SignUpAddressProps } from '@base/types/Navigation/SignUpNavigation';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 
 export default function useLocation({
-  navigation,
-}: SignUpAddressProps | SalesPredictProps) {
+  navigation
+}: any) {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );

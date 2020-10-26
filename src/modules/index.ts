@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
-import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
+import signup, { signupSaga } from './signup';
+import signin, { signinSaga } from './signin';
+import { all, fork, take, takeEvery } from 'redux-saga/effects';
 
 import { createAuthCheckSaga } from '@base/lib/auth';
 
@@ -17,11 +19,6 @@ const actions = [
   //...
 ];
 
-import {
-  checkTokenSaga,
-  requestAccessTokenSaga,
-  clearTokensSaga,
-} from '../lib/auth';
 
 //sagas에는 각 모듈에 있는 saga를 import해서 배열에 추가해준다.
 
@@ -32,28 +29,22 @@ const sagas = [
   //...
 ];
 
-const fakeActions = ['TEST1', 'TEST2', 'TEST3'];
-
-const fakeSagas = [
-  function* test1(action: any) {
-    console.log('test1: ', action);
-  },
-  function* test2(action: any) {
-    console.log('test1: ', action);
-  },
-  function* test3(action: any) {
-    console.log('test1: ', action);
-  },
+const fakeActions = [
+  'TEST1',
+  'TEST2',
+  'TEST3'
 ];
 
-const resourceAuthCheckSaga = createAuthCheckSaga();
+const fakeSagas = [
+  function* test1(action: any){ console.log('test1: ', action) },
+  function* test2(action: any){ console.log('test1: ', action) },
+  function* test3(action: any){ console.log('test1: ', action) },
+];
+
+const resourceAuthCheckSaga = createAuthCheckSaga()
 
 export function* rootSaga() {
-  yield all([
-    signinSaga(),
-    signupSaga(),
-    resourceAuthCheckSaga(fakeActions, fakeSagas),
-  ]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
+  yield all([signinSaga(), signupSaga(), resourceAuthCheckSaga(fakeActions, fakeSagas)]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
 }
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -77,7 +68,7 @@ export default rootReducer;
 //];
 //
 //return function* authChekSaga(){
-//
+//            
 //  while(true){
 //      const action = yield take(actions);
 //      console.log('saga action: ', action);
@@ -86,22 +77,22 @@ export default rootReducer;
 //      if(isTokenValid && ){
 //          for(let i = 0; i < sagas.length; i++){
 //              //사가에서 api요청 보낼 때 헤더에 access token 추가
-//              yield fork(sagas[i], action);
+//              yield fork(sagas[i], action);  
 //          }
 //      }
 //  }
 //};
 //
-//function* resourceApi1Saga(action: any){
-//  switch(action.type){
-//    case 'TEST1':
-//      return yield fork( function* test1(){ });
-//    case 'TEST2':
-//      return yield fork( function* test2(){ });
-//    case 'TEST3':
-//      return yield fork( function* test3(){ });
-//  }
-//}
+function* resourceApi1Saga(action: any){
+  switch(action.type){
+    case 'TEST1':
+      return yield fork( function* test1(){ });
+    case 'TEST2':
+      return yield fork( function* test2(){ });
+    case 'TEST3':
+      return yield fork( function* test3(){ });  
+  }
+}
 
 //function* resourceApi2Saga(){
 //  yield takeEvery('TEST4', function* test1(){ });
