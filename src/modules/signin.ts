@@ -3,7 +3,7 @@ import { ActionType } from 'typesafe-actions';
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as authAPI from '@base/api/auth';
 import { SigninInfo, SigninState, SigninUserData } from '@base/types/auth';
-import { storeTokens, createAuthCheckSaga } from '@base/lib/auth';
+import { storeTokens, createAuthCheckSaga, getAuthErrMsg, clearTokens } from '@base/lib/auth';
 
 //액션 타입
 const INITIALIZE_SIGNIN =  'signnin/INITIALIZE_SIGNIN' as const;
@@ -85,15 +85,14 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>){
         const userdata = res.data.userdata
         let { access_token, refresh_token } = userdata;
         
-        
         delete userdata['access_token'];
         delete userdata['refresh_token'];
 
         yield put(signinSuccess(userdata, access_token));
 
         //access token, refresh token 저장
-        access_token = JSON.stringify(access_token);
-        refresh_token = JSON.stringify(refresh_token);
+        console.log('signin success -> store token: access Token:', access_token,
+            'refresh token: ', refresh_token);
         storeTokens(access_token, refresh_token);
     } catch(e){
         res = e.response;
@@ -129,17 +128,6 @@ const initialState: SigninState = {
     accessToken: null
 };
 
-const getAuthErrMsg = (statusCode: string | number) => {
-    if(statusCode == 400){
-        return '토큰이 존재하지 않습니다.'
-    } else if(statusCode == 401){
-        return  '토큰 만료기간이 지났습니다';
-    } else if (statusCode == 403){
-        return '유효한 토큰이 아닙니다.';
-    }
-
-    return null;
-};
 
 //리듀서
 export default function signin(

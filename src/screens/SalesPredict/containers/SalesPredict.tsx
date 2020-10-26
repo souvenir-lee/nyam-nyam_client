@@ -31,7 +31,7 @@ export default function SalesPredictContainer({
         dispatch(getWeather({ x: latitude, y: longitude }));
       }
     };
-
+    console.log('dispatch get weather');
     initWeather();
   }, [location, dispatch]);
 
