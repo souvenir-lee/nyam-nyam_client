@@ -148,7 +148,7 @@ export function* checkToken(isAppLoaded: boolean = false){
     }
 };
 
-type Sagas = ((action: string) => void)[]
+type Sagas = any[]
 
 export function createAuthCheckSaga(isAppLoaded: boolean = false){
     if(isAppLoaded){

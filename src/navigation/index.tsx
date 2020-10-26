@@ -10,6 +10,7 @@ import Signin from '../screens/Signin';
 import SignupStackNavigation from './signup';
 import { RootState } from '@base/modules';
 import { checkToken } from '@base/modules/signin';
+import MainTabNavigation from './main';
 
 import styled from 'styled-components/native';
 
@@ -27,9 +28,14 @@ export default function Navigation() {
   console.log('isSignin: ', isSignin);
   return (
     <NavigationContainer ref={navigationRef}>
-      <RootStack.Navigator>
+      <RootStack.Navigator 
+        headerMode={isSignin ? 'none' : 'screen'}
+      >
         {isSignin ? (
-          <RootStack.Screen name="Main" component={Main} />
+          <RootStack.Screen 
+            name="Main" 
+            component={MainTabNavigation}
+          />
         ) : (
           <>
             <RootStack.Screen name="Initial" component={Initial} />

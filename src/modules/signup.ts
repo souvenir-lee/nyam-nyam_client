@@ -12,7 +12,7 @@ import {
 import { getStoreByKeyword } from '@base/api';
 import { AddressAPIProps, AddressObject } from '@base/types/api';
 import { UserFields, SignupState, SignupInfo } from '@base/types/auth';
-import { PickedAddressObject, Coords } from '@base/types/SignUpAddress';
+import { PickedAddressObject } from '@base/types/SignUpAddress';
 import * as authAPI from '@base/api/auth';
 import * as RootNavigation from '@base/navigation';
 
@@ -77,7 +77,8 @@ export const removeAddress = (id: string) => ({
   meta: id,
 });
 
-export const updateLocation = (coords: Coords) => ({
+
+export const updateLocation = (coords: any) => ({
   type: UPDATE_LOCATION,
   payload: coords,
 });
@@ -134,7 +135,11 @@ function* requestSignupSaga(action: ReturnType<typeof requestSignup>){
     console.log('signup saga:', signupInfo);
     console.log('res in try: ', res);
     Alert.alert('회원가입에 성공하셨습니다.');
-    RootNavigation.navigate('Signin', {});
+    RootNavigation.navigate('Signin', {
+      title: '사장님 로그인',
+      service: 'store',
+      initial: true
+    });
   } catch(e){
     res = e.response;
     console.log('res in catch: ', res);

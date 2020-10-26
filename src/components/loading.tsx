@@ -6,13 +6,15 @@ export default function Loading() {
   console.log('load loading component');
   return (
     <LoadingContainer>
-      <LoadingImg size="large" />
-      <Text>로딩 중...</Text>
+      <ActivityIndicator size="large" />
     </LoadingContainer>
   );
 }
 
-const LoadingContainer = styled.View``;
+const LoadingContainer = styled.View`
+  flex:1;
+  justify-content: center;
+`;
 const LoadingImg = styled.ActivityIndicator``;
 const Text = styled.Text`
   text-align: center;
