@@ -1,27 +1,34 @@
 /* eslint-disable no-case-declarations */
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery, takeLatest, put, call } from 'redux-saga/effects';
 import { ActionType } from 'typesafe-actions';
 import { AxiosError } from 'axios';
 
 import {
   createPromiseSaga,
   handleAsyncActions,
+  handleAsyncActionsById,
   reducerUtils,
 } from '@base/lib/asyncUtils';
-import { getOpenWeather } from '@base/api';
+import { getOpenWeather } from '@base/api/weather';
+import { getPredictDataOfWeather } from '@base/api/predict';
 import { SalesPredictState } from '@base/types/SalesPredict';
 import { Coords } from '@base/types/defaultTypes';
+import { WeatherAPIResults } from '@base/types/weather';
+import { PredictDataAPIResults } from '@base/types/predict';
 
 const GET_WEATHER = 'salesPredict/GET_WEATHER' as const;
 const GET_WEATHER_SUCCESS = 'salesPredict/GET_WEATHER_SUCCESS' as const;
 const GET_WEATHER_ERROR = 'salesPredict/GET_WEATHER_ERROR' as const;
+const GET_PREDICT_DATA = 'salesPredict/GET_PREDICT_DATA' as const;
+const GET_PREDICT_DATA_SUCCESS = 'salesPredict/GET_PREDICT_DATA_SUCCESS' as const;
+const GET_PREDICT_DATA_ERROR = 'salesPredict/GET_PREDICT_DATA_ERROR' as const;
 
 export const getWeather = (info: Coords) => ({
   type: GET_WEATHER,
   payload: info,
 });
 
-export const getWeatherSuccess = (data: SalesPredictState) => ({
+export const getWeatherSuccess = (data: WeatherAPIResults) => ({
   type: GET_WEATHER_SUCCESS,
   payload: data,
 });
@@ -31,31 +38,64 @@ export const getWeatherFailure = (error: AxiosError) => ({
   payload: error,
 });
 
-const getWeatherSaga = createPromiseSaga(GET_WEATHER, getOpenWeather);
+export const getPredictData = (day: number) => ({
+  type: GET_PREDICT_DATA,
+  payload: day,
+});
 
+export const getPredictDataSuccess = (data: PredictDataAPIResults) => ({
+  type: GET_PREDICT_DATA_SUCCESS,
+  payload: data,
+});
+
+export const getPredictDataFailure = (error: AxiosError) => ({
+  type: GET_PREDICT_DATA_ERROR,
+  payload: error,
+});
+
+function* getWeatherSaga(action: ActionType<typeof getWeather>) {
+  try {
+    // 재사용성을 위하여 promiseCreator 의 파라미터엔 action.payload 값을 넣도록 설정합니다.
+    const payload = yield call(getOpenWeather, action.payload);
+    yield put({ type: GET_PREDICT_DATA, payload: 0 });
+    yield put({ type: GET_WEATHER_SUCCESS, payload });
+  } catch (e) {
+    yield put({ type: GET_WEATHER_ERROR, error: true, payload: e });
+  }
+}
+
+function* getPredictDataSaga(action: ActionType<typeof getPredictData>) {
+  try {
+    const day = action.payload;
+    // TODO: state에 저장되어 있는 day 날짜의 날씨 정보를 기준으로 날씨 선정
+    const weather = '맑음';
+    const storeId = 1;
+    const payload = yield call(getPredictDataOfWeather, { weather, storeId });
+    // 재사용성을 위하여 promiseCreator 의 파라미터엔 action.payload 값을 넣도록 설정합니다.
+    yield put({ type: GET_PREDICT_DATA_SUCCESS, payload, meta: day });
+  } catch (error) {
+    yield put({ type: GET_PREDICT_DATA_ERROR, payload: error });
+  }
+}
 export function* salesPredictSaga() {
   yield takeEvery(GET_WEATHER, getWeatherSaga);
+  yield takeLatest(GET_PREDICT_DATA, getPredictDataSaga);
 }
 
 const actions = {
   getWeather,
   getWeatherSuccess,
   getWeatherFailure,
+  getPredictData,
+  getPredictDataSuccess,
+  getPredictDataFailure,
 };
-
-//인증이 필요한 action들과 saga들을 배열에 담아서 export 해준다.
-export const actionsWithAuth = [
-  GET_WEATHER
-];
-
-export const sagasWithAuth = [
-  getWeather
-];
 
 type SalesPredictAction = ActionType<typeof actions>;
 
 const initialState = {
   weather: reducerUtils.initial({ current: null, daily: [] }),
+  predictData: reducerUtils.initial({}),
 };
 
 export default function salesPredict(
@@ -69,8 +109,17 @@ export default function salesPredict(
       return handleAsyncActions<SalesPredictState>(
         GET_WEATHER,
         'weather',
-        initialState,
+        { current: null, daily: [] },
         true
+      )(state, action);
+    case GET_PREDICT_DATA:
+    case GET_PREDICT_DATA_SUCCESS:
+    case GET_PREDICT_DATA_ERROR:
+      return handleAsyncActionsById<SalesPredictState>(
+        GET_PREDICT_DATA,
+        'predictData',
+        [],
+        false
       )(state, action);
     default:
       return state;

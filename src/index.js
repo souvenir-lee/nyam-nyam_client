@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import logger from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import rootReducer, { rootSaga } from './modules';
 
@@ -16,7 +17,9 @@ sagaMiddleware.run(rootSaga);
 const RNRedux = () => {
   return (
     <Provider store={store}>
-      <App />
+      <PaperProvider>
+        <App />
+      </PaperProvider>
     </Provider>
   );
 };

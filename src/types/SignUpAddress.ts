@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
-import { AddressObject } from './api';
+import { AddressObject } from './weather';
 import { AsyncState } from './utils';
+import { Coords } from '@base/types/defaultTypes';
 
 export type PickedAddressObject = {
   id: string;
@@ -18,9 +19,4 @@ export type SignUpState = {
     AxiosError | null
   >;
   coords: Coords | null;
-};
-
-export type Coords = {
-  x: number;
-  y: number;
 };

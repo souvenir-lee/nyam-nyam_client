@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { AddressObject } from './api';
+import { AddressObject } from './weather';
 import { PickedAddressObject, Coords } from './SignUpAddress';
 import { AsyncState } from './utils';
 
