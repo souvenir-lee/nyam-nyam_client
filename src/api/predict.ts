@@ -17,7 +17,6 @@ export const getPredictDataOfWeather = async ({
     {
       withCredentials: true,
       headers: {
-        'Content-Type': 'application/json',
         ...makeAuthHeaders(accessToken),
       },
       responseType: 'json',

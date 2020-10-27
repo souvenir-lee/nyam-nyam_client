@@ -11,12 +11,14 @@ import salesPredict, {
 } from './salesPredict';
 
 import myInfo, { myInfoSaga, actionsWithAuth as myInfoActions } from './mypage';
+import itemDetail, { itemDetailSaga } from './itemDetail';
 
 const rootReducer = combineReducers({
   signin,
   signup,
   salesPredict,
   myInfo,
+  itemDetail,
 });
 
 //actions에는 각 modules에 있는 인증이 필요한 action들을 배열로 담아서 import한 다음에 추가해준다
@@ -32,6 +34,7 @@ export function* rootSaga() {
     signinSaga(),
     signupSaga(),
     salesPredictSaga(),
+    itemDetailSaga(),
     resourceAPIAuthCheckSaga(actionsWithAuth, sagasWithAuth),
   ]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
 }
@@ -39,4 +42,3 @@ export function* rootSaga() {
 export type RootState = ReturnType<typeof rootReducer>;
 
 export default rootReducer;
-
