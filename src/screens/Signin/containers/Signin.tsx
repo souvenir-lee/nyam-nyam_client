@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Linking, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { SigninProps } from '@base/types';
 import SigninScreen from '../components/SigninScreen';
@@ -40,6 +41,17 @@ export default function Signin({ route, navigation }: SigninProps) {
   const handleSignupPress = () => {
     navigation.navigate('Signup');
   };
+  const handleSocialSigninPress = useCallback(async () => {
+    const url = 'http://10.0.2.2:4000/social/kakao';
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  }, []);
+
 
   useEffect(() => {
     const initializeWhenFirstSignin = () => {
@@ -71,6 +83,7 @@ export default function Signin({ route, navigation }: SigninProps) {
             handlePasswordChange={handlePasswordChange}
             handleSignupPress={handleSignupPress}
             handleSigninPress={handleSigninPress}
+            handleSocialSigninPress={handleSocialSigninPress}
           />
         </>
       )}

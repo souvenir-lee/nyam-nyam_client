@@ -70,9 +70,9 @@ export const invalidToken = (statusCode: number | string) => ({
   payload: statusCode,
 });
 
-export const validToken = (accessToken: string, userdata: SigninUserData) => ({
+export const validToken = (accessToken: string) => ({
   type: VALID_TOKEN,
-  payload: { accessToken, userdata },
+  payload: { accessToken },
 });
 
 export const signout = () => ({
@@ -114,13 +114,6 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
 
     yield put(signinSuccess(userdata, storedata, access_token));
 
-    //access token, refresh token 저장
-    console.log(
-      'signin success -> store token: access Token:',
-      access_token,
-      'refresh token: ',
-      refresh_token
-    );
     storeTokens(access_token, refresh_token);
   } catch (e) {
     res = e.response;
@@ -217,7 +210,6 @@ export default function signin(
         ...state,
         isSignin: true,
         accessToken: action.payload.accessToken,
-        user: action.payload.userdata,
       };
     case INVALID_TOKEN:
       return {
