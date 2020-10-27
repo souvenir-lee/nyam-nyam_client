@@ -63,12 +63,13 @@ function* getMyInfoSaga(
   }
 }
 
-export function* myInfoSaga(action: ActionsWithAuth, accessToken: string) {
-  switch (action.type) {
-    case GET_MY_INFO:
-      return yield fork(getMyInfoSaga, action, accessToken);
-  }
-}
+export function* myInfoSaga(action: ActionsWithAuth, accessToken: string){
+    console.log('saga pattern:', action);
+    switch(action.type){
+        case GET_MY_INFO:
+            return yield fork(getMyInfoSaga, action, accessToken);
+    }
+};
 
 const initialState: MyInfoState = {
   store: 0,

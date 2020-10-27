@@ -24,8 +24,8 @@ export default function MyPageScreen({ navigation, myPageInfo }: MyPageScreenPro
           source={require('@base/../assets/images/default_user_avatar.jpg')}
         />
         <UserTextWrapper>
-          <UserNameText>{username}</UserNameText>
-          <UserInfoText>{email} {'\n'}사장님</UserInfoText>
+          <UserNameText>{username || ''}</UserNameText>
+          <UserInfoText>{email || ''} {'\n'}사장님</UserInfoText>
         </UserTextWrapper>
       </MyPageUserInfo>
 
