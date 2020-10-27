@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { AddressObject } from './api';
+import { AddressObject } from './kakaomap';
 import { AsyncState } from './utils';
 import { Coords } from './defaultTypes';
 
@@ -20,4 +20,3 @@ export type SignUpState = {
   >;
   coords: Coords | null;
 };
-

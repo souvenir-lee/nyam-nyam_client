@@ -166,7 +166,7 @@ export function createAuthCheckSaga(isAppLoaded: boolean = false){
             yield call(checkToken, isAppLoaded);
         }
     } else {
-        return function* (actions: string[], sagas: Sagas){
+        return function* (actions: any[], sagas: Sagas){
             
             while(true){
                 const action = yield take(actions);

@@ -1,50 +1,40 @@
 import React, { useState } from 'react';
-import { DailyWeatherObject, CurrentWeatherObject } from '@base/types/api';
+import { DailyWeatherObject, CurrentWeatherObject } from '@base/types/weather';
+import { PredictDataAPIResults } from '@base/types/predict';
+import { weatherToKorean } from '@base/api/weather';
 import styled from 'styled-components/native';
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import WeatherIcon from '@base/components/WeatherIcon';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
+import SalesPredictItem from './SalesPredictItem';
 
 const dateToString = ['오늘', '내일', '모레'];
 
-const weatherToKorean = {
-  Thunderstorm: '번개',
-  Drizzle: '소나기',
-  Squall: '소나기',
-  Tornado: '태풍',
-  Rain: '비',
-  Snow: '눈',
-  Clear: '맑음',
-  Clouds: '구름',
-  Fog: '안개',
-  Mist: '안개',
-  Smoke: '안개',
-  Haze: '안개',
-  Sand: '황사',
-  Dust: '황사',
-};
-
 type SalesPredictScreenProps = {
   navigation: SalesPredictProps['navigation'];
-  data: DailyWeatherObject | CurrentWeatherObject;
+  weatherData: DailyWeatherObject | CurrentWeatherObject;
+  predictData: PredictDataAPIResults;
+  loading: boolean;
   date: number;
   setDate: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export default function SalesPredictScreen({
   navigation,
-  data,
+  weatherData,
   date,
+  predictData,
   setDate,
 }: SalesPredictScreenProps) {
-  const weatherName = weatherToKorean[data.weather.main];
+  const weatherName = weatherToKorean[weatherData.weather.main];
+  console.log(predictData);
   return (
     <SalesPredictContainer>
       <WeatherContainer>
         <WeatherTitle>{`${dateToString[date]}의 날씨`}</WeatherTitle>
-        <WeatherIcon icon={data.weather.icon} />
-        <WeatherContent>{`${data.temp}°C  ${weatherName}`}</WeatherContent>
+        <WeatherIcon icon={weatherData.weather.icon} />
+        <WeatherContent>{`${weatherData.temp}°C  ${weatherName}`}</WeatherContent>
       </WeatherContainer>
       <DropDownPickerWrapper>
         <DropDownPicker
@@ -71,12 +61,31 @@ export default function SalesPredictScreen({
           <DateText selected={date === 2}>모레</DateText>
         </DateItem>
       </DateSelector>
-      <MenuContainer />
+      <MenuContainer>
+        <MenuTitle>{`${dateToString[date]}의 예상 매출 Top`}</MenuTitle>
+        <MenuItemContainer>
+          {predictData
+            ? predictData.map((data, index) => {
+                const isLast = index === predictData.length - 1 ? true : false;
+                return (
+                  <SalesPredictItem
+                    key={index}
+                    rank={index + 1}
+                    navigation={navigation}
+                    data={data}
+                    isLast={isLast}
+                  />
+                );
+              })
+            : null}
+        </MenuItemContainer>
+      </MenuContainer>
     </SalesPredictContainer>
   );
 }
 
 const SalesPredictContainer = styled.View`
+  background-color: white;
   flex: 1;
 `;
 
@@ -122,6 +131,19 @@ const DateText = styled.Text`
   font-size: 20px;
 `;
 
-const MenuContainer = styled.View`
+const MenuContainer = styled.ScrollView`
   flex: 1;
+  padding: 0px 20px;
+  margin: 20px 0px;
+`;
+
+const MenuTitle = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+`;
+
+const MenuItemContainer = styled.View`
+  flex: 1;
+  align-items: center;
 `;

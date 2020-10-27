@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
 import AddressItem from './AddressItem';
-import { AddressObject } from '@base/types/api';
+import { AddressObject } from '@base/types/weather';
 import { getAddress } from '@base/modules/signup';
 import { RootState } from '@base/modules';
 import { View } from 'react-native';

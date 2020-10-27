@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 
-import { AddressObject } from '@base/types/api';
+import { AddressObject } from '@base/types/weather';
 import { PickedAddressObject } from '@base/types/SignUpAddress';
 import { addAddress } from '@base/modules/signup';
 
