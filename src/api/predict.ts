@@ -10,9 +10,10 @@ export const getPredictDataOfWeather = async ({
   storeId,
   accessToken,
 }: PredictDataAPIProps): Promise<PredictDataAPIResults> => {
-  const predictData = await axios.post(
-    `http://10.0.2.2:4000/predict/predict`,
-    JSON.stringify({ weather, storeId }),
+  const encoded_weather = encodeURIComponent(weather);
+  console.log(encoded_weather);
+  const predictData = await axios.get(
+    `http://10.0.2.2:4000/predict?storeId=${storeId}&weather=${weather}`,
     {
       withCredentials: true,
       headers: {
