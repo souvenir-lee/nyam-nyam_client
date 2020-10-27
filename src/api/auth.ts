@@ -57,3 +57,13 @@ export const checkToken = async (accessToken: string) => {
 
   return res;
 };
+
+export const signout = async (accessToken: string) => {
+  const res = await client.post('/users/logout', null, {
+    headers: {
+      ...makeAuthHeaders(accessToken),
+    },
+  });
+
+  return res;
+}

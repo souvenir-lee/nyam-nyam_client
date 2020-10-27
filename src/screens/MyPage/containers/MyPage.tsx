@@ -6,10 +6,11 @@ import MyPageScreen from '../components/MyPageScreen';
 import { MyPageProps } from '@base/types/Navigation/MyPageNavigation';
 import { RootState } from '@base/modules'
 import { getMyInfo } from '@base/modules/mypage';
+import { signout } from '@base/modules/signin';
 
 export default function MyPageContainer({ navigation }: MyPageProps) {
   const myInfo = useSelector((state: RootState) => state.myInfo);
-  const user = useSelector((state: RootState) => state.signin.user);
+  const { user, store } = useSelector((state: RootState) => state.signin);
   let myPageInfo = {
     username: '',
     email: '',
@@ -19,9 +20,15 @@ export default function MyPageContainer({ navigation }: MyPageProps) {
   };
   const dispatch = useDispatch();
 
+  const handleSignoutButtonPress = () => {
+    dispatch(signout());
+  };
+
   useEffect(() => {
+    if(user && store) return;
+
     dispatch(getMyInfo());
-  }, []);
+  }, [user, store]);
   
   useEffect(() => {
     const updateMyPageData = () => {
@@ -42,5 +49,6 @@ export default function MyPageContainer({ navigation }: MyPageProps) {
   return <MyPageScreen 
     navigation={navigation} 
     myPageInfo={myPageInfo}
+    handleSignoutButtonPress={handleSignoutButtonPress}
   />;
 }

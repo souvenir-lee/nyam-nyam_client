@@ -6,6 +6,27 @@ import { fork, take, put, call, select } from 'redux-saga/effects';
 import { invalidToken, validToken } from '@base/modules/signin';
 import * as authAPI from '@base/api/auth';
 
+//테스트 코드
+const testRefreshToken = async () => {
+    console.log('리프레시 토큰 테스트 시작');
+    const refreshToken = await SecureStore.getItemAsync('refresh_token');
+    console.log('refresh token:', refreshToken);
+    if(refreshToken){
+        try{
+            const payload = JSON.parse(decode(refreshToken.split('.')[1]));
+            console.log('test token payload: ', payload);
+            const { exp } = payload;  
+            console.log('exp: ', exp);
+            console.log('refresh token expired:', exp < (Date.now() / 1000));
+            return false;
+        } catch(e){
+            console.error('invalid token')
+        }
+    } else {
+        console.error('refresh token not exist');
+    }
+};
+
 //access token, refresh token 저장
 export async function storeTokens(accessToken: string, refreshToken?: string){
     try{
@@ -56,6 +77,7 @@ export function* checkToken(isAppLoaded: boolean = false){
         console.log('리소스 요청 중에 인증 실패');
         return false;
     }    
+    testRefreshToken();
 
     //secure storage에서 access token 얻기
     let accessToken;
@@ -73,7 +95,6 @@ export function* checkToken(isAppLoaded: boolean = false){
         } catch(e) {
             console.error('access token이 유효하지 않음');
             yield put(invalidToken(403));
-            clearTokens();
 
             return false;
         }
@@ -90,7 +111,6 @@ export function* checkToken(isAppLoaded: boolean = false){
                     const refresh = yield call([SecureStore, 'getItemAsync'], 'refresh_token');
                     console.error('refresh token이 유효하지 않음:' , refresh);
                     yield put(invalidToken(401));
-                    clearTokens();
 
                     return false;
                 } else { //refresh token의 만료 기간이 유효하다면 access token을 새로 발급받는다 
@@ -150,8 +170,10 @@ export function* checkToken(isAppLoaded: boolean = false){
             return true;
         }
     } else { //access token이 존재하지 않다면 isSignin = false
-        console.log('access token이 존재하지 않음');
-        yield put(invalidToken(400));
+        if(!isAppLoaded){
+            console.log('access token이 존재하지 않음');
+            yield put(invalidToken(400));
+        }
         
         return false;
     }
