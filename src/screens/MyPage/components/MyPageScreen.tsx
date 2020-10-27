@@ -9,10 +9,13 @@ import { MyInfo } from '@base/types/mypage';
  
 type MyPageScreenProps = {
   navigation: MyPageProps['navigation'];
-  myPageInfo: any
+  myPageInfo: any;
+  handleSignoutButtonPress: () => void;
 };
 
-export default function MyPageScreen({ navigation, myPageInfo }: MyPageScreenProps) {
+export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButtonPress }
+  : MyPageScreenProps) {
+
   const { username, email, store, production, uploadSales } = myPageInfo; 
   return (
     <MyPageContainer>
@@ -24,24 +27,24 @@ export default function MyPageScreen({ navigation, myPageInfo }: MyPageScreenPro
           source={require('@base/../assets/images/default_user_avatar.jpg')}
         />
         <UserTextWrapper>
-          <UserNameText>{username || ''}</UserNameText>
-          <UserInfoText>{email || ''} {'\n'}사장님</UserInfoText>
+          <UserNameText>{username}</UserNameText>
+          <UserInfoText>{email} {'\n'}사장님</UserInfoText>
         </UserTextWrapper>
       </MyPageUserInfo>
 
       <MyPageBriefInfo>
         <BriefInfoRow>
-          <BriefInfoContent>{store || 0}</BriefInfoContent>
+          <BriefInfoContent>{store}</BriefInfoContent>
           <BriefInfoTitle>내 가게</BriefInfoTitle>
         </BriefInfoRow>
 
         <BriefInfoRow>
-          <BriefInfoContent>{production || 0}</BriefInfoContent>
+          <BriefInfoContent>{production}</BriefInfoContent>
           <BriefInfoTitle>내 상품 수</BriefInfoTitle>
         </BriefInfoRow>
         <BriefInfoRow>
 
-          <BriefInfoContent>{uploadSales || 0}</BriefInfoContent>
+          <BriefInfoContent>{uploadSales}</BriefInfoContent>
           <BriefInfoTitle>내역 업로드 수</BriefInfoTitle>
         </BriefInfoRow>
       </MyPageBriefInfo>
@@ -77,7 +80,18 @@ export default function MyPageScreen({ navigation, myPageInfo }: MyPageScreenPro
           titleStyle={{ color: MINT_STRONG, fontSize: 20, fontWeight: 'bold' }}
           containerStyle={{ marginBottom: 20 }}
           buttonStyle={{ borderColor: MINT, borderWidth: 2 }}
-          onPress={() => Alert.alert('미구현')}
+          onPress={() => Alert.alert(
+            "로그아웃",
+            "로그아웃 하시겠습니까?",
+            [
+              {
+                text: "취소",
+                style: "cancel"
+              },
+              { text: "확인", onPress: handleSignoutButtonPress }
+            ],
+            { cancelable: false }
+          )}
         />
       </MyPageNavContainer>
     </MyPageContainer>

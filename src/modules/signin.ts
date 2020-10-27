@@ -1,8 +1,10 @@
 import { State } from 'react-native-gesture-handler';
 import { ActionType } from 'typesafe-actions';
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
+import * as SecureStore from 'expo-secure-store';
+
 import * as authAPI from '@base/api/auth';
-import { SigninInfo, SigninState, SigninUserData } from '@base/types/auth';
+import { SigninInfo, SigninState, SigninStoreData, SigninUserData } from '@base/types/auth';
 import {
   storeTokens,
   createAuthCheckSaga,
@@ -19,6 +21,8 @@ const REFRESH = 'signin/REFRESH' as const;
 const CHECK_TOKEN = 'signin/CHECK_TOKEN' as const;
 const INVALID_TOKEN = 'signin/INVALID_TOKEN' as const;
 const VALID_TOKEN = 'signin/VALID_TOKEN' as const;
+const SIGNOUT = 'signin/SIGNOUT' as const;
+const SIGNOUT_SUCCESS = 'signin/SIGNOUT_SUCCESS' as const;
 
 //액션 생성자
 
@@ -36,11 +40,13 @@ export const requestSignin = (signinInfo: SigninInfo) => ({
 
 export const signinSuccess = (
   userdata: SigninUserData,
+  storedata: SigninStoreData,
   accessToken: string
 ) => ({
   type: SIGNIN_SUCCESS,
   payload: {
     userdata,
+    storedata,
     accessToken,
   },
 });
@@ -69,6 +75,14 @@ export const validToken = (accessToken: string, userdata: SigninUserData) => ({
   payload: { accessToken, userdata },
 });
 
+export const signout = () => ({
+  type: SIGNOUT
+});
+
+export const signoutSuccess = () => ({
+  type: SIGNOUT_SUCCESS
+});
+
 const actions = {
   initializeSignin,
   signinSuccess,
@@ -77,6 +91,8 @@ const actions = {
   refresh,
   validToken,
   invalidToken,
+  signout,
+  signoutSuccess
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -90,13 +106,13 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
   try {
     res = yield call(authAPI.signin, signinInfo);
     console.log('res success: ', res.data.userdata);
-    const userdata = res.data.userdata;
+    const { userdata, storedata } = res.data;
     const { access_token, refresh_token } = userdata;
 
     delete userdata.access_token;
     delete userdata.refresh_token;
 
-    yield put(signinSuccess(userdata, access_token));
+    yield put(signinSuccess(userdata, storedata, access_token));
 
     //access token, refresh token 저장
     console.log(
@@ -124,17 +140,36 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
   }
 }
 
+function* signoutSaga(){
+  let res;
+  console.log('before signout');
+
+  const accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
+  try{
+    res = yield call(authAPI.signout, accessToken);
+
+  } catch(e){
+    console.error('서버에서 로그아웃 요청 처리 실패:', e);
+  } finally {
+    yield put(signoutSuccess());
+    clearTokens();
+  }
+
+}
+
 const signinAuthCheckSaga = createAuthCheckSaga(true);
 
 export function* signinSaga() {
   yield takeEvery(CHECK_TOKEN, signinAuthCheckSaga);
   yield takeLatest(REQUEST_SIGNIN, requestSigninSaga);
+  yield takeLatest(SIGNOUT, signoutSaga);
 }
 
 const initialState: SigninState = {
   isSignin: false,
   service: null,
   user: null,
+  store: null,
   loading: false,
   error: null,
   accessToken: null,
@@ -165,6 +200,7 @@ export default function signin(
         ...state,
         isSignin: true,
         user: action.payload.userdata,
+        store: action.payload.storedata,
         loading: false,
         error: null,
         accessToken: action.payload.accessToken,
@@ -188,6 +224,10 @@ export default function signin(
         ...initialState,
         service: state.service,
         error: getAuthErrMsg(action.payload),
+      };
+    case SIGNOUT_SUCCESS:
+      return {
+        ...initialState
       };
     default:
       return state;
