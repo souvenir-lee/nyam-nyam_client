@@ -17,6 +17,14 @@ export type SigninUserData = {
   social: string | null;
 } | null;
 
+export type SigninStoreData = {
+  id: number | string;
+  storeName: string;
+  storeAddress: string;
+  latitude: number;
+  longitude: number;
+} | null;
+
 export type SigninSuccess = {
   message: string;
   user: SigninUserData;
@@ -28,6 +36,7 @@ export type SigninState = {
   isSignin: boolean;
   service: 'customer' | 'store' | null;
   user: SigninUserData;
+  store: SigninStoreData;
   loading: boolean;
   error: string | null;
   accessToken: string | null;

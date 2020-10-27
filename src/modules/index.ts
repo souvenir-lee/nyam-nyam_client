@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
+import { all } from 'redux-saga/effects';
+
 import signup, { signupSaga } from './signup';
 import signin, { signinSaga } from './signin';
-import { all, fork, take, takeEvery } from 'redux-saga/effects';
-
 import { createAuthCheckSaga } from '@base/lib/auth';
 import salesPredict, {
   salesPredictSaga,
