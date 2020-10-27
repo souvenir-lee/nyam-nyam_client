@@ -10,6 +10,7 @@ type SignInScreenProps = {
   handlePasswordChange: (text: string) => void;
   handleSignupPress: (text: string) => void;
   handleSigninPress: (text: string) => void;
+  handleSocialSigninPress: () => void;
 };
 
 export default function SigninScreen({
@@ -20,6 +21,7 @@ export default function SigninScreen({
   handlePasswordChange,
   handleSignupPress,
   handleSigninPress,
+  handleSocialSigninPress
 }: SignInScreenProps) {
   return (
     <SigninContainer>
@@ -33,6 +35,15 @@ export default function SigninScreen({
         handleSignupPress={handleSignupPress}
         handleSigninPress={handleSigninPress}
       />
+
+      <SocialSigninWrapper>
+        <SocialSigninButton 
+          title='카카로 로그인'
+          onPress={handleSocialSigninPress}
+          color="#FFC87C"
+        >
+        </SocialSigninButton>
+      </SocialSigninWrapper>
     </SigninContainer>
   );
 }
@@ -49,3 +60,16 @@ const Title = styled.Text`
   margin: 10% 0;
   font-weight: bold;
 `;
+
+const SocialSigninWrapper = styled.View`
+  margin-top:50px;
+`
+
+const SocialSigninButton = styled.Button`
+  color: black;
+  background-color: yellow
+`
+
+const Text = styled.Text`
+  color:black;
+`

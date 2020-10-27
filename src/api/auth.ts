@@ -45,15 +45,14 @@ export const refresh = async (
   return res;
 };
 
-export const checkToken = async (accessToken: string) => {
-  console.log('before token check');
-  console.log('acceess token in checToken:', accessToken);
+export const autoSignin = async (accessToken: string) => {
+  console.log('before auto signin');
   const res = await client.post('/autologin', null, {
     headers: {
       ...makeAuthHeaders(accessToken),
     },
   });
-  console.log('token check res:', res);
+  console.log('auto signin res:', res);
 
   return res;
 };

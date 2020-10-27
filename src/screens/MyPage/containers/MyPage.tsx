@@ -10,10 +10,10 @@ import { signout } from '@base/modules/signin';
 
 export default function MyPageContainer({ navigation }: MyPageProps) {
   const myInfo = useSelector((state: RootState) => state.myInfo);
-  const { user, store } = useSelector((state: RootState) => state.signin);
+  const { user } = useSelector((state: RootState) => state.signin);
   let myPageInfo = {
-    username: '',
-    email: '',
+    username: user ? user.username: '',
+    email: user ? user.email : '',
     store: 0,
     production: 0,
     uploadSales: 0
@@ -25,26 +25,13 @@ export default function MyPageContainer({ navigation }: MyPageProps) {
   };
 
   useEffect(() => {
-    if(user && store) return;
-
-    dispatch(getMyInfo());
-  }, [user, store]);
-  
-  useEffect(() => {
-    const updateMyPageData = () => {
-      if(user){
-        const { username, email } = user;
-  
-        myPageInfo = {
-          ...myInfo,
-          username,
-          email
-        };
-      }
+    const fetchMyInfoData = () => {
+      dispatch(getMyInfo());
     }
 
-    updateMyPageData();
-  }, [user, myInfo]);
+    fetchMyInfoData();
+  }, [user]);
+
 
   return <MyPageScreen 
     navigation={navigation} 
