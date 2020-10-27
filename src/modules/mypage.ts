@@ -41,9 +41,9 @@ type ActionsWithAuth = ReturnType<typeof getMyInfo>;
 function* getMyInfoSaga(action: ReturnType<typeof getMyInfo>, accessToken: string){
     const userId = action.payload;
     let res;
-    console.log('before get myinfo');
     
     try{
+        console.log('before get myinfo');
         res = yield call(myInfoAPI.getMyInfo, accessToken);
         console.log('myinfo res success:', res);
         const myInfo = res.data;
@@ -53,6 +53,7 @@ function* getMyInfoSaga(action: ReturnType<typeof getMyInfo>, accessToken: strin
         res = e.response;
 
         if(!handleIfAuthError(res.status)){
+            console.error('resource api error');
             if(res.status == 404){
                 yield put(getMyInfoFail('내 정보가 존재하지 않습니다'));
             } else {
@@ -63,6 +64,7 @@ function* getMyInfoSaga(action: ReturnType<typeof getMyInfo>, accessToken: strin
 }
 
 export function* myInfoSaga(action: ActionsWithAuth, accessToken: string){
+    console.log('saga pattern:', action);
     switch(action.type){
         case GET_MY_INFO:
             return yield fork(getMyInfoSaga, action, accessToken);

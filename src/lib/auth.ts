@@ -78,6 +78,7 @@ export function* checkToken(isAppLoaded: boolean = false){
             return false;
         }
 
+        console.log('is token expired:', isTokenExpired_);
         if(isTokenExpired_){
             console.log('access token의 만료기간 지남');
             const refreshToken = yield call([SecureStore, 'getItemAsync'], 'refresh_token');
@@ -86,7 +87,8 @@ export function* checkToken(isAppLoaded: boolean = false){
                 //refresh token의 만료기간을 확인한다
                 if(isTokenExpired(refreshToken)){
                     //isSignin = false -> navigation rerendering
-                    console.error('refresh token이 유효하지 않음')
+                    const refresh = yield call([SecureStore, 'getItemAsync'], 'refresh_token');
+                    console.error('refresh token이 유효하지 않음:' , refresh);
                     yield put(invalidToken(401));
                     clearTokens();
 
@@ -135,7 +137,8 @@ export function* checkToken(isAppLoaded: boolean = false){
                     console.log('token check success:', res);
                     yield put(validToken(accessToken, userdata))
                 }
-
+                
+                console.log('token have valid time');
                 return true;
             } catch(e){
                 //토큰이 유효하지 않거나 해당 유저정보가 없을 때 isSignin = false
@@ -172,7 +175,7 @@ export function createAuthCheckSaga(isAppLoaded: boolean = false){
                 const isTokenValid = yield call(checkToken);
                 if(isTokenValid){
                     const accessToken = yield select(state => state.signin.accessToken);
-
+                    console.log('auth saga: true, ', accessToken);
                     for(let i = 0; i < sagas.length; i++){
                         //사가에서 api요청 보낼 때 헤더에 access token 추가
                         yield fork(sagas[i], action, accessToken);  
@@ -199,6 +202,7 @@ export const getAuthErrMsg = (statusCode: string | number) => {
 
 //리소스 api에서 인증 실패시 에러 처리
 export function* handleIfAuthError(statusCode: number | string){
+    console.error('auth error:', statusCode);
     if(statusCode == 401){
         yield put(invalidToken(statusCode));
         return true;
