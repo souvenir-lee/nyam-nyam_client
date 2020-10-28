@@ -5,6 +5,7 @@ import { fork, take, put, call, select } from 'redux-saga/effects';
 
 import { invalidToken, signinError, signinSuccess, validToken } from '@base/modules/signin';
 import * as authAPI from '@base/api/auth';
+import { isOfType } from 'typesafe-actions';
 
 //테스트 코드
 const testToken = async (token: string, type: string) => {
@@ -46,7 +47,7 @@ export async function storeTokens(accessToken: string, refreshToken?: string){
 
         let access = await SecureStore.getItemAsync('access_token');
         let refresh = await SecureStore.getItemAsync('access_token');
-        console.log('access:', access, 'refresh:', refresh);
+        //console.log('access:', access, 'refresh:', refresh);
     } catch(e){
         console.error('cannot store tokens:', e);
     }
@@ -69,10 +70,10 @@ export function* isTokenExpired(token: string){
     //access token의 payload를 분리한 후 base64 디코딩
     try{
         const payload = JSON.parse(decode(token.split('.')[1]));
-        console.log('token payload: ', payload);
+        //console.log('token payload: ', payload);
         const { exp } = payload;  //토큰 만료시간
         
-        console.log('is token expired: ', exp < (Date.now() / 1000));
+        //console.log('is token expired: ', exp < (Date.now() / 1000));
         if(exp < (Date.now() / 1000)) return true; //만료 시간이 지났다면
         else false
     } catch(e){
@@ -118,21 +119,21 @@ function* refresh(accessToken: string, refreshToken: string, isAppLoaded: boolea
         // 토큰과 유저정보 저장
         yield put(validToken(accessToken));
 
-        return true;
+        return [true, access_token];
     } catch(e){  //refresh token이 유효하지 않다면 
         res = e.response;
         console.error('refresh api error:', res);
 
         yield put(invalidToken(res.status));    
-        return false;
+        return [false, null];
     } 
 }
 
 function* fetchUserData(accessToken: string){
     try{
         const res = yield call(authAPI.autoSignin, accessToken);
-        const { userdata, storedata } = res;
-        console.log('auto signin success:', res);
+        const { userdata, storedata } = res.data;
+        console.log('auto signin success:', res.data);
 
         yield put(signinSuccess(userdata, storedata, accessToken));
     } catch(e){
@@ -143,22 +144,25 @@ function* fetchUserData(accessToken: string){
     }
 }
 
-export function* autoSignin(){
+export function* autoSignin(): any{
     const { error, service } = yield select(state => state.signin);
     
     //리소스 요청 중에 인증 실패해서 인증 페이지로 이동했을 때는 이전에 이미 토큰을 체크했기 때문에 토큰 체크 안함
     if(preventTokenCheckIfAlreadyChecked(error, service)){
-        return false;
+        return;
     }
 
-    const accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
+    let accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
     console.log('auto signin token:', accessToken);
 
     if(accessToken && typeof accessToken === 'string'){ //access token이 존재한다면
 
         const isAccessTokenInvalid = yield call(verifyToken, accessToken);
         //access token이 유효하지 않다면
-        if(isAccessTokenInvalid === null) return false; 
+        if(isAccessTokenInvalid === null) {
+            yield put(signinError(getAuthErrMsg(403) as string))
+            return;
+        }; 
 
         if(isAccessTokenInvalid){  //access token 만료기간이 유효하지 않다면
             console.log('access token의 만료기간 지남');
@@ -169,16 +173,22 @@ export function* autoSignin(){
                 //refresh token의 만료기간을 확인한다
                 const isRefreshTokenInvalid = yield call(verifyToken, refreshToken);
 
-                if(isRefreshTokenInvalid === null) false; //토큰이 유효하지 않다면
+                if(isRefreshTokenInvalid === null) {
+                    yield put(signinError(getAuthErrMsg(403) as string))
+                }; //토큰이 유효하지 않다면
 
                 if(isRefreshTokenInvalid){  //refresh token의 만료기간이 유효하지 않다면
                     console.error('refresh token is expired');
                     testToken(refreshToken, 'refresh'); 
 
-                    yield put(invalidToken(401));   
+                    yield put(signinError(getAuthErrMsg(401) as string));   
 
                 } else { //refresh token의 만료 기간이 유효하다면 access token을 새로 발급받는다 
-                    yield call(refresh, accessToken, refreshToken);
+                    let [isRefreshSuccess, refreshedAccessToken] = yield call(refresh, accessToken, refreshToken);
+                    
+                    if(isRefreshSuccess){
+                        yield call(fetchUserData, refreshedAccessToken);
+                    }
                 }   
             } else { //refresh token이 존재하지 않으면
                 console.error('refresh token이 존재하지 않음')
@@ -189,12 +199,12 @@ export function* autoSignin(){
         }
 
     } else { //access token이 존재하지 않다면
-        yield put(invalidToken(400));
+        yield put(signinError(getAuthErrMsg(400) as string));
     }
 }
 
 export function* checkToken(){
-
+    console.log('check token in api call')
     //secure storage에서 access token 얻기
     const accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
     console.log('access token when check token: ', accessToken);
@@ -247,18 +257,28 @@ type Sagas = any[]
 export function createAuthCheckSaga(isAppLoaded: boolean = false){
     if(isAppLoaded){
         return function* (){
-            console.log('check token in loading');
+            console.log('check token when app start');
             yield call(autoSignin);
         }
     } else {
+        let callCount = 0;
         return function* (actions: any[], sagas: Sagas){
             
             while(true){
 
                 const action = yield take(actions);
                 console.log('saga action: ', action);
-        
-                const isTokenValid = yield call(checkToken);
+                
+                //처음 앱을 켰을 때 auto sign만 dispatch
+                //자동 로그인 이후에는 check token dispatch
+                let isTokenValid;
+
+                if(callCount > 0){
+                    isTokenValid = yield call(checkToken);
+                } else {
+                    isTokenValid = yield select(state => state.signin.isSignin);
+                }
+
                 if(isTokenValid){
                     const accessToken = yield select(state => state.signin.accessToken);
                     console.log('auth saga: true, ', accessToken);
@@ -267,6 +287,8 @@ export function createAuthCheckSaga(isAppLoaded: boolean = false){
                         yield fork(sagas[i], action, accessToken);  
                     }
                 }
+
+                callCount++;
             }
         };
     }
