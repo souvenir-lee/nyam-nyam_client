@@ -208,7 +208,6 @@ export default function signin(
     case VALID_TOKEN:
       return {
         ...state,
-        isSignin: true,
         accessToken: action.payload.accessToken,
       };
     case INVALID_TOKEN:
