@@ -75,13 +75,9 @@ export const invalidToken = (statusCode: number | string) => ({
   payload: statusCode,
 });
 
-export const validToken = (
-  accessToken: string,
-  userdata: SigninUserData,
-  storedata
-) => ({
+export const validToken = (accessToken: string) => ({
   type: VALID_TOKEN,
-  payload: { accessToken, userdata, storedata },
+  payload: { accessToken },
 });
 
 export const signout = () => ({
@@ -115,28 +111,15 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
   try {
     res = yield call(authAPI.signin, signinInfo);
     console.log('res success: ', res.data.userdata);
-    let { storedata } = res.data;
-    storedata = storedata.reduce((acc, val) => {
-      const id = val.id;
-      acc[id] = val;
-      return acc;
-    }, {});
 
     const { userdata } = res.data;
-    const { access_token, refresh_token } = userdata;
+    const { access_token, refresh_token, storedata } = userdata;
 
     delete userdata.access_token;
     delete userdata.refresh_token;
 
     yield put(signinSuccess(userdata, storedata, access_token));
 
-    //access token, refresh token 저장
-    console.log(
-      'signin success -> store token: access Token:',
-      access_token,
-      'refresh token: ',
-      refresh_token
-    );
     storeTokens(access_token, refresh_token);
   } catch (e) {
     res = e.response;
@@ -249,10 +232,7 @@ export default function signin(
       return {
         ...state,
         error: null,
-        isSignin: true,
-        store: action.payload.storedata,
         accessToken: action.payload.accessToken,
-        user: action.payload.userdata,
       };
     case INVALID_TOKEN:
       return {
