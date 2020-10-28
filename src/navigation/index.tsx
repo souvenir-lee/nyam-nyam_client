@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
-import Signin from '../screens/SignIn';
+import Signin from '../screens/Signin';
 import SignupStackNavigation from './signup';
 import { RootState } from '@base/modules';
 import { checkToken } from '@base/modules/signin';
@@ -25,7 +25,7 @@ export default function Navigation() {
 
   useEffect(() => {
     console.log('navigation check token');
-    if(callCount === 0){
+    if (callCount === 0) {
       dispatch(checkToken());
     }
 
@@ -57,4 +57,3 @@ const navigationRef = React.createRef<NavigationContainerRef>();
 export function navigate(name: string, params: any) {
   navigationRef.current?.navigate(name, params);
 }
-

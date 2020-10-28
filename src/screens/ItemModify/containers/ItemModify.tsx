@@ -6,10 +6,7 @@ import { getItemDetail } from '@base/modules/itemDetail';
 import ItemModifyScreen from '../components/ItemModifyScreen';
 
 // 매출 예측 페이지, 시그니처 페이지, 검색 페이지
-export default function ItemDetailContainer({
-  navigation,
-  route,
-}: ItemDetailProps) {
+export default function ItemModifyContainer({ navigation, route }) {
   console.log(route);
   const { productionId } = route.params;
   const {
@@ -45,7 +42,7 @@ export default function ItemDetailContainer({
   };
 
   return loading ? null : (
-    <ItemDetailScreen
+    <ItemModifyScreen
       data={data}
       isMine={isMine}
       handleModifyPress={handleModifyPress}

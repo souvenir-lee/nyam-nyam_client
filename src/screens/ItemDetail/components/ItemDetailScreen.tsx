@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native';
 import styled from 'styled-components/native';
 
 import { ItemDetailProps } from '@base/types/Navigation/ItemDetail';
+import { ingredients, idToDessertType } from '@base/api/item';
 
 type MyMenuListInfoScreen = {
   navigation: ItemDetailProps['navigation'];
@@ -13,6 +14,7 @@ export default function MyMenuListInfoScreen({
   isMine,
   handleModifyPress,
 }: MyMenuListInfoScreen) {
+  console.log(data);
   return (
     <ScrollView
       contentContainerStyle={{
@@ -22,13 +24,13 @@ export default function MyMenuListInfoScreen({
         paddingHorizontal: 30,
         paddingVertical: 20,
       }}>
-      {/* {isMine ? (
+      {isMine ? (
         <ItemDetailModifyMenu>
           <ItemDetailModifyNav>
             <ItemDetailModifyText>수정하기</ItemDetailModifyText>
           </ItemDetailModifyNav>
         </ItemDetailModifyMenu>
-      ) : null} */}
+      ) : null}
       <ItemDetailModifyMenu>
         <ItemDetailModifyNav onPress={handleModifyPress}>
           <ItemDetailModifyText>수정하기</ItemDetailModifyText>
@@ -52,7 +54,17 @@ export default function MyMenuListInfoScreen({
       <DetailContainer>
         <DetailRow>
           <DetailTitle>가격</DetailTitle>
-          <DetailContent>{data.price ? data.price : 0}</DetailContent>
+          <DetailContent>{`${
+            data.price ? data.price : 0
+          }원 (개당)`}</DetailContent>
+        </DetailRow>
+        <DetailRow>
+          <DetailTitle>디저트 종류</DetailTitle>
+          <DetailContent>{idToDessertType[data.dessertType]}</DetailContent>
+        </DetailRow>
+        <DetailRow>
+          <DetailTitle>주재료</DetailTitle>
+          <DetailContent>{'초콜렛'}</DetailContent>
         </DetailRow>
       </DetailContainer>
       <DetailDescContainer>
@@ -120,9 +132,11 @@ const DetailContainer = styled.View`
 const DetailRow = styled.View`
   flex-direction: row;
   align-items: flex-start;
+  margin-bottom: 15px;
 `;
 
 const DetailTitle = styled.Text`
+  width: 100px;
   font-size: 20px;
   font-weight: bold;
   margin-right: 30px;
