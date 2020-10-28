@@ -45,6 +45,7 @@ export default function SalesPredictContainer({
     data: predict,
   } = predictData;
 
+  console.log('store', store);
   const currentWeatherData =
     storeId !== null && !weatherLoading && weatherData[storeId]
       ? date

@@ -230,7 +230,7 @@ const actions = {
 
 type SalesPredictAction = ActionType<typeof actions>;
 
-export const ActionsWithAuth = [getPredictData];
+export const ActionsWithAuth = [GET_PREDICT_DATA];
 
 const initialState = {
   // weather

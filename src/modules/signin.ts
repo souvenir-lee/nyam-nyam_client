@@ -110,10 +110,10 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
 
   try {
     res = yield call(authAPI.signin, signinInfo);
-    console.log('res success: ', res.data.userdata);
+    console.log('res success: ', res.data);
 
-    const { userdata } = res.data;
-    const { access_token, refresh_token, storedata } = userdata;
+    const { userdata, storedata } = res.data;
+    const { access_token, refresh_token } = userdata;
 
     delete userdata.access_token;
     delete userdata.refresh_token;
@@ -231,7 +231,6 @@ export default function signin(
     case VALID_TOKEN:
       return {
         ...state,
-        error: null,
         accessToken: action.payload.accessToken,
       };
     case INVALID_TOKEN:

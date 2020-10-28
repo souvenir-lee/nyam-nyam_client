@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   NavigationContainer,
@@ -20,11 +20,16 @@ const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function Navigation() {
   const isSignin = useSelector((state: RootState) => state.signin.isSignin);
+  const [callCount, setCallCount] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
     console.log('navigation check token');
-    dispatch(checkToken());
+    if(callCount === 0){
+      dispatch(checkToken());
+    }
+
+    setCallCount(callCount + 1);
   }, []);
 
   console.log('isSignin: ', isSignin);
@@ -53,13 +58,3 @@ export function navigate(name: string, params: any) {
   navigationRef.current?.navigate(name, params);
 }
 
-function Main() {
-  return (
-    <View>
-      <Text>Main</Text>
-    </View>
-  );
-}
-
-const View = styled.View``;
-const Text = styled.Text``;
