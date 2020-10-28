@@ -4,7 +4,12 @@ import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import * as SecureStore from 'expo-secure-store';
 
 import * as authAPI from '@base/api/auth';
-import { SigninInfo, SigninState, SigninStoreData, SigninUserData } from '@base/types/auth';
+import {
+  SigninInfo,
+  SigninState,
+  SigninStoreData,
+  SigninUserData,
+} from '@base/types/auth';
 import {
   storeTokens,
   createAuthCheckSaga,
@@ -76,11 +81,11 @@ export const validToken = (accessToken: string) => ({
 });
 
 export const signout = () => ({
-  type: SIGNOUT
+  type: SIGNOUT,
 });
 
 export const signoutSuccess = () => ({
-  type: SIGNOUT_SUCCESS
+  type: SIGNOUT_SUCCESS,
 });
 
 const actions = {
@@ -92,7 +97,7 @@ const actions = {
   validToken,
   invalidToken,
   signout,
-  signoutSuccess
+  signoutSuccess,
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -105,7 +110,8 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
 
   try {
     res = yield call(authAPI.signin, signinInfo);
-    console.log('res success: ', res.data.userdata);
+    console.log('res success: ', res.data);
+
     const { userdata, storedata } = res.data;
     const { access_token, refresh_token } = userdata;
 
@@ -133,21 +139,19 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
   }
 }
 
-function* signoutSaga(){
+function* signoutSaga() {
   let res;
   console.log('before signout');
 
   const accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
-  try{
+  try {
     res = yield call(authAPI.signout, accessToken);
-
-  } catch(e){
+  } catch (e) {
     console.error('서버에서 로그아웃 요청 처리 실패:', e);
   } finally {
     yield put(signoutSuccess());
     clearTokens();
   }
-
 }
 
 const signinAuthCheckSaga = createAuthCheckSaga(true);
@@ -162,6 +166,25 @@ const initialState: SigninState = {
   isSignin: false,
   service: null,
   user: null,
+  // store
+  /*
+    {
+      1: {
+        "id": 1,
+        "storeName": "공통",
+        "storeAddress": "전국(서울)",
+        "latitude": 38,
+        "longitude": 127
+      },
+      2: {
+        "id": 2,
+        "storeName": "공통",
+        "storeAddress": "전국(서울)",
+        "latitude": 38,
+        "longitude": 127
+      }
+    }
+  */
   store: null,
   loading: false,
   error: null,
@@ -218,7 +241,7 @@ export default function signin(
       };
     case SIGNOUT_SUCCESS:
       return {
-        ...initialState
+        ...initialState,
       };
     default:
       return state;

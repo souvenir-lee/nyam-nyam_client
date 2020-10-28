@@ -25,7 +25,10 @@ function SalesPredictItem({
   const [visible, setVisible] = useState(false);
 
   const handleItemPress = () => {
-    navigation.navigate('ItemDetailNav', { productionId: data.id });
+    navigation.navigate('ItemDetailNav', {
+      screen: 'ItemDetail',
+      params: { productionId: data.id },
+    });
   };
 
   const openMenu = () => setVisible(true);
@@ -35,7 +38,7 @@ function SalesPredictItem({
     setVisible(false);
     navigation.navigate('ItemDetailNav', {
       screen: 'ItemModify',
-      productionId: data.id,
+      params: { productionId: data.id },
     });
   };
 

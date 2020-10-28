@@ -22,6 +22,7 @@ export const signin = async (signinInfo: SigninInfo) => {
     return acc;
   }, {});
   res.data.storedata = storedata;
+  console.log('res', res);
   return res;
 };
 
