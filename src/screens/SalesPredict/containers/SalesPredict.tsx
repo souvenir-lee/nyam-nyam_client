@@ -1,50 +1,67 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import SalesPredictScreen from '../components/SalesPredictScreen';
-import useLocation from '@base/hooks/useLocation';
+import {
+  getPredictData,
+  changeStore,
+  changeDate,
+} from '@base/modules/salesPredict';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
-import { getWeather } from '@base/modules/salesPredict';
+import { initialize } from '@base/modules/salesPredict';
 import { RootState } from '@base/modules';
+
+function convertStoreObjToArray(store) {
+  const storeIds = Object.getOwnPropertyNames(store);
+  const storeLists = [];
+  storeIds.forEach((storeId) => {
+    storeLists.push(store[storeId]);
+  });
+  return storeLists;
+}
 
 export default function SalesPredictContainer({
   navigation,
 }: SalesPredictProps) {
+  const { store } = useSelector((state) => state.signin);
+  const {
+    currentDate: date,
+    currentStoreId: storeId,
+    weather,
+    predictData,
+  } = useSelector((state) => state.salesPredict);
+  const dispatch = useDispatch();
+
   const {
     loading: weatherLoading,
-    data: weatherData,
     error: weatherError,
-  } = useSelector((state: RootState) => state.salesPredict.weather);
-  const predictData = useSelector(
-    (state: RootState) => state.salesPredict.predictData
-  );
-  const dispatch = useDispatch();
-  // 테스트로 현재 위치 기반 좌표를 잡았으나, 이후에는 서버로부터 불러온 가게의 위치에 해당하는
-  // 위치를 기반으로 날씨를 가져올 것이다.
-  const location = useLocation({ navigation });
-  const [date, setDate] = useState(0);
+    data: weatherData,
+  } = weather;
+
+  const {
+    loading: predictLoading,
+    error: predictError,
+    data: predict,
+  } = predictData;
+
   const currentWeatherData =
-    !weatherLoading && weatherData
+    storeId !== null && !weatherLoading && weatherData[storeId]
       ? date
-        ? weatherData.daily[date]
-        : weatherData.current
+        ? weatherData[storeId].daily[date]
+        : weatherData[storeId].current
       : null;
-  const currentPredictData =
-    predictData && predictData.data[date] ? predictData.data[date] : null;
+
+  const currentData =
+    storeId !== null && !predictLoading && predict[storeId]
+      ? predict[storeId][date]
+      : null;
+
+  const storeArray = convertStoreObjToArray(store);
 
   useEffect(() => {
-    const initWeather = async () => {
-      if (location) {
-        const {
-          coords: { longitude, latitude },
-        } = location;
-        dispatch(getWeather({ x: latitude, y: longitude }));
-      }
-    };
-    console.log('dispatch get weather');
-    initWeather();
-  }, [location, dispatch]);
+    dispatch(initialize());
+  }, [dispatch]);
 
   useEffect(() => {
     if (weatherError) {
@@ -53,20 +70,33 @@ export default function SalesPredictContainer({
   }, [weatherError]);
 
   useEffect(() => {
-    if (predictData && predictData[date] && predictData[date].error) {
+    if (predictError) {
       Alert.alert('매출 예측 정보를 가져오는데 실패했습니다.');
     }
-  }, [predictData, date]);
+  }, [predictError]);
+
+  const onDateChange = (date) => {
+    dispatch(changeDate(date, storeId));
+  };
+  const onStoreChange = (storeId) => {
+    console.log('onStoreChange', storeId);
+    dispatch(changeStore(storeId));
+  };
 
   return weatherLoading ? (
-    <ActivityIndicator size="large" />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color="#000000" />
+    </View>
   ) : (
     <SalesPredictScreen
       navigation={navigation}
       weatherData={currentWeatherData}
-      predictData={currentPredictData}
+      predictData={currentData}
+      storeArray={storeArray}
+      onDateChange={onDateChange}
+      onStoreChange={onStoreChange}
       date={date}
-      setDate={setDate}
     />
   );
+  return null;
 }

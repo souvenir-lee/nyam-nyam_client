@@ -4,7 +4,7 @@ import { PredictDataAPIResults } from '@base/types/predict';
 import { weatherToKorean } from '@base/api/weather';
 import styled from 'styled-components/native';
 
-import DropDownPicker from 'react-native-dropdown-picker';
+import RNPickerSelect from 'react-native-picker-select';
 import WeatherIcon from '@base/components/WeatherIcon';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 import SalesPredictItem from './SalesPredictItem';
@@ -23,12 +23,16 @@ type SalesPredictScreenProps = {
 export default function SalesPredictScreen({
   navigation,
   weatherData,
-  date,
   predictData,
-  setDate,
+  storeArray,
+  onDateChange,
+  onStoreChange,
+  date,
 }: SalesPredictScreenProps) {
   const weatherName = weatherToKorean[weatherData.weather.main];
-  console.log(predictData);
+  const storeItems = storeArray.map((store) => {
+    return { label: store.storeName, value: store.id };
+  });
   return (
     <SalesPredictContainer>
       <WeatherContainer>
@@ -37,27 +41,26 @@ export default function SalesPredictScreen({
         <WeatherContent>{`${weatherData.temp}°C  ${weatherName}`}</WeatherContent>
       </WeatherContainer>
       <DropDownPickerWrapper>
-        <DropDownPicker
-          items={[
-            { label: '파리바게트', value: '파리바게트' },
-            { label: '뚜레쥬르', value: '뚜레쥬르' },
-          ]}
-          defaultValue={'파리바게트'}
-          containerStyle={{ height: 40 }}
+        <RNPickerSelect
+          items={storeItems}
+          // defaultValue={storeItems[0].value}
+          // containerStyle={{ height: 40 }}
           style={{ width: '65%' }}
-          labelStyle={{ textAlign: 'center' }}
-          dropDownStyle={{ width: '65%' }}
-          onChangeItem={(item) => console.log(item)}
+          // labelStyle={{ textAlign: 'center' }}
+          // dropDownStyle={{ width: '65%' }}
+          onValueChange={(value) => {
+            onStoreChange(Number(value));
+          }}
         />
       </DropDownPickerWrapper>
       <DateSelector>
-        <DateItem onPress={() => setDate(0)}>
+        <DateItem onPress={() => onDateChange(0)}>
           <DateText selected={date === 0}>오늘</DateText>
         </DateItem>
-        <DateItem onPress={() => setDate(1)}>
+        <DateItem onPress={() => onDateChange(1)}>
           <DateText selected={date === 1}>내일</DateText>
         </DateItem>
-        <DateItem onPress={() => setDate(2)}>
+        <DateItem onPress={() => onDateChange(2)}>
           <DateText selected={date === 2}>모레</DateText>
         </DateItem>
       </DateSelector>
@@ -111,7 +114,7 @@ const DropDownPickerWrapper = styled.View`
   align-items: center;
   background-color: #c7ecee;
   padding-bottom: 10px;
-  z-index: 100;
+  z-index: 10;
 `;
 
 const DateSelector = styled.View`

@@ -34,7 +34,15 @@ export const ingredients = [
   '소보루',
 ];
 
-export const 
+export const dessertType = {
+  케이크: 0,
+  마카롱: 1,
+  쿠키: 2,
+  타르트: 3,
+  '기타 빵': 4,
+  기타: 5,
+};
+
 export const getItemDetailInfo = async (productionId: string) => {
   const getItemDetail = await axios.get(
     `http://10.0.2.2:4000/managemenu/detail/${productionId}`,
@@ -65,5 +73,3 @@ export const getItemModifyInfo = async (
 
   return getItemDetail.data;
 };
-
-export const postItemModify = async();

@@ -4,16 +4,17 @@ import {
   PredictDataAPIResults,
 } from '@base/types/predict';
 import { makeAuthHeaders } from './utils';
+import { weatherToKorean } from './weather';
 
 export const getPredictDataOfWeather = async ({
-  weather,
-  storeId,
+  currentWeather,
+  store,
   accessToken,
 }: PredictDataAPIProps): Promise<PredictDataAPIResults> => {
-  const encoded_weather = encodeURIComponent(weather);
-  console.log(encoded_weather);
+  const encoded_weather = encodeURIComponent(weatherToKorean[currentWeather]);
+
   const predictData = await axios.get(
-    `http://10.0.2.2:4000/predict?storeId=${storeId}&weather=${weather}`,
+    `http://10.0.2.2:4000/predict?storeId=${store}&weather=${encoded_weather}`,
     {
       withCredentials: true,
       headers: {
