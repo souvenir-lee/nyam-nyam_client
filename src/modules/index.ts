@@ -12,6 +12,7 @@ import salesPredict, {
 
 import myInfo, { myInfoSaga, actionsWithAuth as myInfoActions } from './mypage';
 import itemDetail, { itemDetailSaga } from './itemDetail';
+import { getItemModifySaga, postItemModifySaga } from './itemModify';
 
 const rootReducer = combineReducers({
   signin,
@@ -48,7 +49,6 @@ export function* rootSaga() {
 //    fork(salesPredictSaga);
 //    fork(resourceAPIAuthCheckSaga, actionsWithAuth, sagasWithAuth);
 //}
-
 
 export type RootState = ReturnType<typeof rootReducer>;
 

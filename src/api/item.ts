@@ -43,6 +43,15 @@ export const dessertType = {
   기타: 5,
 };
 
+export const idToDessertType = [
+  '케이크',
+  '마카롱',
+  '쿠키',
+  '타르트',
+  '기타 빵',
+  '기타',
+];
+
 export const getItemDetailInfo = async (productionId: string) => {
   const getItemDetail = await axios.get(
     `http://10.0.2.2:4000/managemenu/detail/${productionId}`,
@@ -72,4 +81,23 @@ export const getItemModifyInfo = async (
   );
 
   return getItemDetail.data;
+};
+
+export const postItemModifyInfo = async (
+  data: FormData,
+  accessToken: string
+) => {
+  const postItemDetail = await axios.post(
+    'http://10.0.2.2:4000/managemenu/editmenu',
+    data,
+    {
+      withCredentials: true,
+      responseType: 'json',
+      headers: {
+        ...makeAuthHeaders(accessToken),
+      },
+    }
+  );
+
+  return postItemDetail;
 };
