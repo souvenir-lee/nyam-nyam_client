@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
-import Signin from '../screens/SignIn';
+import Signin from '../screens/Signin';
 import SignupStackNavigation from './signup';
 import { RootState } from '@base/modules';
 import { checkToken } from '@base/modules/signin';
@@ -18,21 +18,22 @@ import styled from 'styled-components/native';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
+let callCount = 0;
+
 export default function Navigation() {
   const isSignin = useSelector((state: RootState) => state.signin.isSignin);
-  const [callCount, setCallCount] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('navigation check token');
     if(callCount === 0){
+      console.log('navigation call count:', callCount);
       dispatch(checkToken());
     }
 
-    setCallCount(callCount + 1);
+    callCount++;
   }, []);
 
-  console.log('isSignin: ', isSignin);
+  console.log('isSignin in navigation: ', isSignin);
   return (
     <NavigationContainer ref={navigationRef}>
       <RootStack.Navigator headerMode={isSignin ? 'none' : 'screen'}>

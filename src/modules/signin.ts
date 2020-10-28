@@ -16,6 +16,7 @@ import {
   getAuthErrMsg,
   clearTokens,
 } from '@base/lib/auth';
+import { modifyMyInfo, MODIFY_MY_INFO } from './mypage'
 
 //액션 타입
 const INITIALIZE_SIGNIN = 'signnin/INITIALIZE_SIGNIN' as const;
@@ -98,6 +99,7 @@ const actions = {
   invalidToken,
   signout,
   signoutSuccess,
+  modifyMyInfo
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -149,7 +151,9 @@ function* signoutSaga() {
   } catch (e) {
     console.error('서버에서 로그아웃 요청 처리 실패:', e);
   } finally {
+    console.log('before signout success dispatch');
     yield put(signoutSuccess());
+    console.log('signout success');
     clearTokens();
   }
 }
@@ -159,7 +163,7 @@ const signinAuthCheckSaga = createAuthCheckSaga(true);
 export function* signinSaga() {
   yield takeEvery(CHECK_TOKEN, signinAuthCheckSaga);
   yield takeLatest(REQUEST_SIGNIN, requestSigninSaga);
-  yield takeLatest(SIGNOUT, signoutSaga);
+  yield takeEvery(SIGNOUT, signoutSaga);
 }
 
 const initialState: SigninState = {
@@ -243,6 +247,21 @@ export default function signin(
       return {
         ...initialState,
       };
+    case MODIFY_MY_INFO:
+      if(state.user === null){
+        return {
+          ...state,
+          user: null
+        }
+      } else {
+        return {
+          ...state,
+          user: {
+            ...state.user,
+            username: action.payload.username
+          }
+        }
+      }
     default:
       return state;
   }

@@ -306,9 +306,12 @@ export function createAuthCheckSaga(isAppLoaded = false) {
         //자동 로그인 이후에는 check token dispatch
         let isTokenValid;
 
+        console.log('call count in resource api auth  saga:', callCount);
         if (callCount > 0) {
+          console.log('start resource api authentication');
           isTokenValid = yield call(checkToken);
-        } else {
+        } else { //자동 로그인할 때 token 검증 안함
+          console.log('already auth checked in auto signin');
           isTokenValid = yield select((state) => state.signin.isSignin);
         }
 

@@ -74,5 +74,7 @@ export const signout = async (accessToken: string) => {
       ...makeAuthHeaders(accessToken),
     },
   });
+  console.log('after signout api call');
   return res;
 };
+
