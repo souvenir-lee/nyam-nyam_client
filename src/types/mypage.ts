@@ -4,10 +4,10 @@ export type MyInfo = {
     uploadSales: number;
 };
 
-export type MyInfoState = {
+export type MyPageState = {
     store: number;
     production: number;
     uploadSales: number;
     loading: boolean;
-    error: string | number | null
+    error: any
 };

@@ -15,6 +15,7 @@ import {
   getAuthErrMsg,
   clearTokens,
 } from '@base/lib/auth';
+import { modifyMyInfo, MODIFY_MY_INFO, removeSignin, REMOVE_SIGNIN } from './mypage'
 
 //액션 타입
 const INITIALIZE_SIGNIN = 'signnin/INITIALIZE_SIGNIN' as const;
@@ -30,7 +31,7 @@ const SIGNOUT_SUCCESS = 'signin/SIGNOUT_SUCCESS' as const;
 
 //액션 생성자
 
-export const initializeSignin = (service: 'customer' | 'store') => {
+export const initializeSignin = (service?: 'customer' | 'store') => {
   return {
     type: INITIALIZE_SIGNIN,
     payload: service,
@@ -97,6 +98,8 @@ const actions = {
   invalidToken,
   signout,
   signoutSuccess,
+  modifyMyInfo,
+  removeSignin
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -148,8 +151,10 @@ function* signoutSaga() {
   } catch (e) {
     console.error('서버에서 로그아웃 요청 처리 실패:', e);
   } finally {
+
     yield call(clearTokens);
     yield put(signoutSuccess());
+
   }
 }
 
@@ -158,7 +163,7 @@ const signinAuthCheckSaga = createAuthCheckSaga(true);
 export function* signinSaga() {
   yield takeEvery(CHECK_TOKEN, signinAuthCheckSaga);
   yield takeLatest(REQUEST_SIGNIN, requestSigninSaga);
-  yield takeLatest(SIGNOUT, signoutSaga);
+  yield takeEvery(SIGNOUT, signoutSaga);
 }
 
 const initialState: SigninState = {
@@ -199,7 +204,7 @@ export default function signin(
     case INITIALIZE_SIGNIN:
       return {
         ...state,
-        service: action.payload,
+        service: action.payload? action.payload : null,
         user: null,
         loading: false,
         error: null,
@@ -243,6 +248,25 @@ export default function signin(
       return {
         ...initialState,
       };
+    case MODIFY_MY_INFO:
+      if(state.user === null){
+        return {
+          ...state,
+          user: null
+        }
+      } else {
+        return {
+          ...state,
+          user: {
+            ...state.user,
+            username: action.payload.username
+          }
+        }
+      };
+    case REMOVE_SIGNIN:
+      return {
+        ...initialState
+      }
     default:
       return state;
   }

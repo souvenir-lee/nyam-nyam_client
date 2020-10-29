@@ -8,11 +8,16 @@ import { ModifyMyInfoProps } from '@base/types/Navigation/MyPageNavigation';
 
 type ModifyMyInfoScreenProps = {
   navigation: ModifyMyInfoProps['navigation'];
+  username: string;
+  email: string;
+  onUsernameChange: (text: string) => void;
+  onUnregisterSubmit: () => void
 };
 
 export default function ModifyMyInfoScreen({
-  navigation,
+  navigation, username, email, onUsernameChange, onUnregisterSubmit
 }: ModifyMyInfoScreenProps) {
+
   return (
     <Container>
       <MyPageUserInfo>
@@ -20,20 +25,20 @@ export default function ModifyMyInfoScreen({
           source={require('@base/../assets/images/default_user_avatar.jpg')}
         />
         <UserTextWrapper>
-          <UserNameText>이혁원</UserNameText>
+          <UserNameText>{username}</UserNameText>
           <UserInfoText>사장님</UserInfoText>
         </UserTextWrapper>
       </MyPageUserInfo>
       <MyPageUserForm>
         <MyPageUserRow>
           <RowTitle>이메일</RowTitle>
-          <RowContent>hw3053919@gmail.com</RowContent>
+          <RowContent>{email}</RowContent>
         </MyPageUserRow>
         <MyPageUserRow>
           <RowTitle>닉네임</RowTitle>
           <RowInput
-            value="이혁원"
-            onChangeText={(text: string) => console.log(text)}
+            defaultValue={username}
+            onChangeText={onUsernameChange}
             onSubmitEditing={() => console.log('submit')}
           />
         </MyPageUserRow>
@@ -51,7 +56,7 @@ export default function ModifyMyInfoScreen({
           titleStyle={{ color: MINT_STRONG, fontSize: 20, fontWeight: 'bold' }}
           containerStyle={{ marginBottom: 20 }}
           buttonStyle={{ borderColor: MINT, borderWidth: 2 }}
-          onPress={() => console.log('회원탈퇴')}
+          onPress={onUnregisterSubmit}
         />
       </MyPageUserForm>
     </Container>

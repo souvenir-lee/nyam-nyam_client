@@ -18,21 +18,23 @@ import styled from 'styled-components/native';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
+let callCount = 0;
+
 export default function Navigation() {
   const isSignin = useSelector((state: RootState) => state.signin.isSignin);
-  const [callCount, setCallCount] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
+
     console.log('navigation check token');
     if (callCount === 0) {
       dispatch(checkToken());
     }
 
-    setCallCount(callCount + 1);
+    callCount++;
   }, []);
 
-  console.log('isSignin: ', isSignin);
+  console.log('isSignin in navigation: ', isSignin);
   return (
     <NavigationContainer ref={navigationRef}>
       <RootStack.Navigator headerMode={isSignin ? 'none' : 'screen'}>
