@@ -98,7 +98,7 @@ export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButt
   );
 }
 
-const MyPageContainer = styled.View`
+const MyPageContainer = styled.ScrollView`
   flex: 1;
   background-color: white;
 `;

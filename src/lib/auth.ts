@@ -13,7 +13,7 @@ import * as authAPI from '@base/api/auth';
 import { isOfType } from 'typesafe-actions';
 
 //테스트 코드
-const testToken = async (token: string, type: string) => {
+const testToken = async (type: string, token?: string,) => {
   console.log('리프레시 토큰 테스트 시작');
 
   if (!token) {
@@ -44,15 +44,18 @@ const testToken = async (token: string, type: string) => {
 //access token, refresh token 저장
 export async function storeTokens(accessToken: string, refreshToken?: string) {
   try {
+    console.log('store tokens: access:', accessToken, 'refresh:', refreshToken);
+    console.log('access type:', typeof accessToken, 'refresh type:', typeof refreshToken);
     await SecureStore.setItemAsync('access_token', accessToken);
 
     if (refreshToken) {
       await SecureStore.setItemAsync('refresh_token', refreshToken);
     }
-
+    
     const access = await SecureStore.getItemAsync('access_token');
-    const refresh = await SecureStore.getItemAsync('access_token');
-    //console.log('access:', access, 'refresh:', refresh);
+    const refresh = await SecureStore.getItemAsync('refresh_token');
+    console.log('after store tokens: access:', access, 'refresh:', refresh);
+
   } catch (e) {
     console.error('cannot store tokens:', e);
   }
@@ -74,10 +77,10 @@ export function* isTokenExpired(token: string) {
   //access token의 payload를 분리한 후 base64 디코딩
   try {
     const payload = JSON.parse(decode(token.split('.')[1]));
-    //console.log('token payload: ', payload);
+    console.log('token payload: ', payload);
     const { exp } = payload; //토큰 만료시간
 
-    //console.log('is token expired: ', exp < (Date.now() / 1000));
+    console.log('is token expired: ', exp < (Date.now() / 1000));
     if (exp < Date.now() / 1000) return true;
     //만료 시간이 지났다면
     else false;
@@ -117,12 +120,12 @@ function* verifyToken(token: string) {
 function* refresh(
   accessToken: string,
   refreshToken: string,
-  isAppLoaded = false
 ) {
   let res;
-
+  
+  console.log('before refresh tokens[access, refresh]: ', accessToken, refreshToken)
   try {
-    res = yield call(authAPI.refresh, accessToken, refreshToken, isAppLoaded);
+    res = yield call(authAPI.refresh, accessToken, refreshToken);
     console.log('refresh result:', res);
     //access token 재발급이 성공했다면
     const { access_token } = res.data; //유저 정보도 받아와야 함
@@ -159,6 +162,7 @@ function* fetchUserData(accessToken: string) {
 }
 
 export function* autoSignin(): any {
+
   const { error, service } = yield select((state) => state.signin);
 
   //리소스 요청 중에 인증 실패해서 인증 페이지로 이동했을 때는 이전에 이미 토큰을 체크했기 때문에 토큰 체크 안함
@@ -190,10 +194,12 @@ export function* autoSignin(): any {
       if (refreshToken && typeof refreshToken === 'string') {
         //refresh token의 만료기간을 확인한다
         const isRefreshTokenInvalid = yield call(verifyToken, refreshToken);
-
-        if (isRefreshTokenInvalid === null) {
+        
+        if (isRefreshTokenInvalid === null) { 
+          //토큰이 유효하지 않다면
+          console.error('refresh token is invalid');
           yield put(signinError(getAuthErrMsg(403) as string));
-        } //토큰이 유효하지 않다면
+        } 
 
         if (isRefreshTokenInvalid) {
           //refresh token의 만료기간이 유효하지 않다면
@@ -306,9 +312,12 @@ export function createAuthCheckSaga(isAppLoaded = false) {
         //자동 로그인 이후에는 check token dispatch
         let isTokenValid;
 
+        console.log('call count in resource api auth  saga:', callCount);
         if (callCount > 0) {
+          console.log('start resource api authentication');
           isTokenValid = yield call(checkToken);
-        } else {
+        } else { //자동 로그인할 때 token 검증 안함
+          console.log('already auth checked in auto signin');
           isTokenValid = yield select((state) => state.signin.isSignin);
         }
 
@@ -341,7 +350,6 @@ export const getAuthErrMsg = (statusCode: string | number) => {
 
 //리소스 api에서 인증 실패시 에러 처리
 export function* handleIfAuthError(statusCode: number | string) {
-  console.error('auth error:', statusCode);
   if (statusCode == 401) {
     yield put(invalidToken(statusCode));
     return true;

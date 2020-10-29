@@ -27,7 +27,8 @@ function convertStoreObjToArray(store) {
 export default function SalesPredictContainer({
   navigation,
 }: SalesPredictProps) {
-  const { store } = useSelector((state) => state.signin);
+  console.log('sales predict page rendering');
+  const { store, isSignin } = useSelector((state) => state.signin);
   const {
     currentDate: date,
     currentStoreId: storeId,
@@ -85,7 +86,12 @@ export default function SalesPredictContainer({
     console.log('onStoreChange', storeId);
     dispatch(changeStore(storeId));
   };
+  if (!isSignin) {
+    return null;
+  }
 
+  console.log('weatherLoading', weatherLoading);
+  console.log('storeArray', storeArray);
   return weatherLoading || !storeArray.length ? (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" color="#000000" />
