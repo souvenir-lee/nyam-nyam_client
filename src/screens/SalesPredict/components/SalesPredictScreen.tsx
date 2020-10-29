@@ -20,10 +20,11 @@ type SalesPredictScreenProps = {
   setDate: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export default function SalesPredictScreen({
+function SalesPredictScreen({
   navigation,
   weatherData,
   predictData,
+  storeId,
   storeArray,
   onDateChange,
   onStoreChange,
@@ -43,11 +44,24 @@ export default function SalesPredictScreen({
       <DropDownPickerWrapper>
         <RNPickerSelect
           items={storeItems}
-          // defaultValue={storeItems[0].value}
-          // containerStyle={{ height: 40 }}
-          style={{ width: '65%' }}
-          // labelStyle={{ textAlign: 'center' }}
-          // dropDownStyle={{ width: '65%' }}
+          useNativeAndroidPickerStyle={false}
+          placeholder={{}}
+          InputAccessoryView={() => null}
+          value={storeId}
+          style={{
+            inputIOS: {
+              fontSize: 20,
+              color: 'black',
+              fontWeight: 'bold',
+              paddingHorizontal: 40, // to ensure the text is never behind the icon
+            },
+            inputAndroid: {
+              fontSize: 20,
+              color: 'black',
+              fontWeight: 'bold',
+              paddingHorizontal: 40, // to ensure the text is never behind the icon
+            },
+          }}
           onValueChange={(value) => {
             onStoreChange(Number(value));
           }}
@@ -150,3 +164,5 @@ const MenuItemContainer = styled.View`
   flex: 1;
   align-items: center;
 `;
+
+export default React.memo(SalesPredictScreen);

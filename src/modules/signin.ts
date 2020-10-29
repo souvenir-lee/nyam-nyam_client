@@ -1,4 +1,3 @@
-import { State } from 'react-native-gesture-handler';
 import { ActionType } from 'typesafe-actions';
 import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import * as SecureStore from 'expo-secure-store';
@@ -148,14 +147,14 @@ function* signoutSaga() {
 
   const accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
   try {
-    res = yield call(authAPI.signout, accessToken);
+    yield call(authAPI.signout, accessToken);
   } catch (e) {
     console.error('서버에서 로그아웃 요청 처리 실패:', e);
   } finally {
-    console.log('before signout success dispatch');
+
+    yield call(clearTokens);
     yield put(signoutSuccess());
-    console.log('signout success');
-    clearTokens();
+
   }
 }
 
@@ -244,6 +243,7 @@ export default function signin(
         service: state.service,
         error: getAuthErrMsg(action.payload),
       };
+    case SIGNOUT:
     case SIGNOUT_SUCCESS:
       return {
         ...initialState,

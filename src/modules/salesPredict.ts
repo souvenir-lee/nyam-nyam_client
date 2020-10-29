@@ -154,14 +154,11 @@ function* getPredictDataSaga(
     const { weather, predictData } = yield select(
       (state) => state.salesPredict
     );
-    console.log('date', typeof date);
     const currentWeather = date
       ? weather.data[store].daily[date].weather.main
       : weather.data[store].current.weather.main;
 
-    console.log('currentWeather', currentWeather);
     const currentPredictData = predictData.data[store];
-    console.log('currentPredictData', currentPredictData);
 
     if (currentPredictData && currentPredictData[date]) {
       yield put({

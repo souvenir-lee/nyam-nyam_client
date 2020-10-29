@@ -13,9 +13,12 @@ import { initialize } from '@base/modules/salesPredict';
 import { RootState } from '@base/modules';
 
 function convertStoreObjToArray(store) {
+  if (!store) {
+    return [];
+  }
   const storeIds = Object.getOwnPropertyNames(store);
   const storeLists = [];
-  storeIds.forEach((storeId) => {
+  storeIds.forEach((storeId, index) => {
     storeLists.push(store[storeId]);
   });
   return storeLists;
@@ -46,7 +49,6 @@ export default function SalesPredictContainer({
     data: predict,
   } = predictData;
 
-  console.log('store', store);
   const currentWeatherData =
     storeId !== null && !weatherLoading && weatherData[storeId]
       ? date
@@ -94,7 +96,7 @@ export default function SalesPredictContainer({
     return null;
   }
 
-  return weatherLoading ? (
+  return weatherLoading || !storeArray.length ? (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" color="#000000" />
     </View>
@@ -103,11 +105,11 @@ export default function SalesPredictContainer({
       navigation={navigation}
       weatherData={currentWeatherData}
       predictData={currentData}
+      storeId={storeId}
       storeArray={storeArray}
       onDateChange={onDateChange}
       onStoreChange={onStoreChange}
       date={date}
     />
   );
-  return null;
 }

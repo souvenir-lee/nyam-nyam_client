@@ -41,13 +41,13 @@ export default function ItemDetailContainer({
 
   const handleModifyPress = () => {
     navigation.navigate('ItemModify', {
-      productionId: data.id,
+      productionId,
     });
   };
 
   return loading ? null : (
     <ItemDetailScreen
-      data={data}
+      data={data.productionData}
       isMine={isMine}
       handleModifyPress={handleModifyPress}
     />
