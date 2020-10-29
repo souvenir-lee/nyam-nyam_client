@@ -9,5 +9,5 @@ export type MyPageState = {
     production: number;
     uploadSales: number;
     loading: boolean;
-    error: string | number | null
+    error: any
 };

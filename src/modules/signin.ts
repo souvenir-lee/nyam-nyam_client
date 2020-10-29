@@ -16,7 +16,7 @@ import {
   getAuthErrMsg,
   clearTokens,
 } from '@base/lib/auth';
-import { modifyMyInfo, MODIFY_MY_INFO } from './mypage'
+import { modifyMyInfo, MODIFY_MY_INFO, removeSignin, REMOVE_SIGNIN } from './mypage'
 
 //액션 타입
 const INITIALIZE_SIGNIN = 'signnin/INITIALIZE_SIGNIN' as const;
@@ -32,7 +32,7 @@ const SIGNOUT_SUCCESS = 'signin/SIGNOUT_SUCCESS' as const;
 
 //액션 생성자
 
-export const initializeSignin = (service: 'customer' | 'store') => {
+export const initializeSignin = (service?: 'customer' | 'store') => {
   return {
     type: INITIALIZE_SIGNIN,
     payload: service,
@@ -99,7 +99,8 @@ const actions = {
   invalidToken,
   signout,
   signoutSuccess,
-  modifyMyInfo
+  modifyMyInfo,
+  removeSignin
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -204,7 +205,7 @@ export default function signin(
     case INITIALIZE_SIGNIN:
       return {
         ...state,
-        service: action.payload,
+        service: action.payload? action.payload : null,
         user: null,
         loading: false,
         error: null,
@@ -261,6 +262,10 @@ export default function signin(
             username: action.payload.username
           }
         }
+      };
+    case REMOVE_SIGNIN:
+      return {
+        ...initialState
       }
     default:
       return state;

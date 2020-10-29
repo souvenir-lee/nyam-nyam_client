@@ -16,7 +16,11 @@ export default function ModifyMyInfoContainer({
   const [ _username, setUsername ] = useState(username)
   const dispatch = useDispatch();
 
-  const handleUsernameChange = (text: string) => setUsername(text);
+  const handleUsernameChange = (text: string) => {
+    console.log('username:', _username, username);
+
+    setUsername(text);
+  };
   const handleUnregisterRequestPress = () => {
     dispatch(requestUnregister());
   };
@@ -34,7 +38,10 @@ export default function ModifyMyInfoContainer({
     )
   };
   const handleMyInfoSavePress = () => {
-    dispatch(saveMyInfo({ username }))
+    setUsername((state:any) => {
+      dispatch(saveMyInfo(state));
+      return state;
+    });
   };
 
   React.useLayoutEffect(() => {

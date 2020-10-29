@@ -32,7 +32,6 @@ const sagasWithAuth = [
   mypageSaga, 
   salesPredictWithAuthSaga, 
   itemDetailSaga,
-
 ];
 
 const resourceAPIAuthCheckSaga = createAuthCheckSaga();

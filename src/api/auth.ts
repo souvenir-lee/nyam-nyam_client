@@ -36,18 +36,13 @@ export const requestSignup = async (signupInfo: SignupInfo) => {
 export const refresh = async (
   accessToken: string,
   refreshToken: string,
-  isUserdataRequired = false
 ) => {
   console.log('before refresh');
   const res = await client.post('/token', null, {
     headers: {
       ...makeAuthHeaders(accessToken, refreshToken),
     },
-    data: {
-      isUserdataRequired,
-    },
   });
-  console.log('refresh res: ', res);
   return res;
 };
 
