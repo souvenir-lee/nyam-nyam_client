@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const domain = 'http://10.0.2.2:4000';
-//const domain = 'http://127.0.0.1:4000';
+export const domain = 'http://10.0.2.2:4000';
+// export const domain = 'http://3.35.243.42:4000';
 
 export const makeClient = (path?: string) => {
   return axios.create({

@@ -106,7 +106,6 @@ function* getWeatherSaga(action: ActionType<typeof getWeather>) {
   const { weather, currentStoreId, currentDate } = yield select(
     (state) => state.salesPredict
   );
-  console.log('store', currentStoreId);
   const { store } = yield select((state) => state.signin);
   try {
     const currentStoreWeather = weather[currentStoreId]; // {current: {}, daily: []} | undefined
@@ -217,6 +216,7 @@ export function* salesPredictSaga() {
 }
 
 const actions = {
+  initialize,
   getWeather,
   getWeatherSuccess,
   getWeatherFailure,

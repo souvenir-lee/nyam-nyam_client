@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+import { Picker } from '@react-native-community/picker';
 import { DailyWeatherObject, CurrentWeatherObject } from '@base/types/weather';
 import { PredictDataAPIResults } from '@base/types/predict';
 import { weatherToKorean } from '@base/api/weather';
 import styled from 'styled-components/native';
 
-import RNPickerSelect from 'react-native-picker-select';
 import WeatherIcon from '@base/components/WeatherIcon';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 import SalesPredictItem from './SalesPredictItem';
@@ -31,9 +31,10 @@ function SalesPredictScreen({
   date,
 }: SalesPredictScreenProps) {
   const weatherName = weatherToKorean[weatherData.weather.main];
-  const storeItems = storeArray.map((store) => {
-    return { label: store.storeName, value: store.id };
-  });
+  const storeItems = storeArray.map((store) => ({
+    label: store.storeName,
+    value: store.id,
+  }));
   return (
     <SalesPredictContainer>
       <WeatherContainer>
@@ -42,30 +43,16 @@ function SalesPredictScreen({
         <WeatherContent>{`${weatherData.temp}°C  ${weatherName}`}</WeatherContent>
       </WeatherContainer>
       <DropDownPickerWrapper>
-        <RNPickerSelect
-          items={storeItems}
-          useNativeAndroidPickerStyle={false}
-          placeholder={{}}
-          InputAccessoryView={() => null}
-          value={storeId}
-          style={{
-            inputIOS: {
-              fontSize: 20,
-              color: 'black',
-              fontWeight: 'bold',
-              paddingHorizontal: 40, // to ensure the text is never behind the icon
-            },
-            inputAndroid: {
-              fontSize: 20,
-              color: 'black',
-              fontWeight: 'bold',
-              paddingHorizontal: 40, // to ensure the text is never behind the icon
-            },
-          }}
+        <Picker
+          style={{ height: 50, width: 200 }}
+          selectedValue={storeId}
           onValueChange={(value) => {
             onStoreChange(Number(value));
-          }}
-        />
+          }}>
+          {storeItems.map((item) => (
+            <Picker.Item label={item.label} value={item.value} />
+          ))}
+        </Picker>
       </DropDownPickerWrapper>
       <DateSelector>
         <DateItem onPress={() => onDateChange(0)}>
@@ -128,7 +115,6 @@ const DropDownPickerWrapper = styled.View`
   align-items: center;
   background-color: #c7ecee;
   padding-bottom: 10px;
-  z-index: 10;
 `;
 
 const DateSelector = styled.View`

@@ -9,16 +9,16 @@ import {
 } from '@base/lib/asyncUtils';
 import { getItemModifyInfo, postItemModifyInfo } from '@base/api/item';
 
-const GET_ITEM_MODIFY = 'itemDetail/GET_ITEM_MODIFY' as const;
-const GET_ITEM_MODIFY_SUCCESS = 'itemDetail/GET_ITEM_MODIFY_SUCCESS' as const;
-const GET_ITEM_MODIFY_ERROR = 'itemDetail/GET_ITEM_MODIFY_ERROR' as const;
-const POST_ITEM_MODIFY = 'itemDetail/POST_ITEM_MODIFY' as const;
-const POST_ITEM_MODIFY_SUCCESS = 'itemDetail/POST_ITEM_MODIFY_SUCCESS' as const;
-const POST_ITEM_MODIFY_ERROR = 'itemDetail/POST_ITEM_MODIFY_ERROR' as const;
+const GET_ITEM_MODIFY = 'itemModify/GET_ITEM_MODIFY' as const;
+const GET_ITEM_MODIFY_SUCCESS = 'itemModify/GET_ITEM_MODIFY_SUCCESS' as const;
+const GET_ITEM_MODIFY_ERROR = 'itemModify/GET_ITEM_MODIFY_ERROR' as const;
+const POST_ITEM_MODIFY = 'itemModify/POST_ITEM_MODIFY' as const;
+const POST_ITEM_MODIFY_SUCCESS = 'itemModify/POST_ITEM_MODIFY_SUCCESS' as const;
+const POST_ITEM_MODIFY_ERROR = 'itemModify/POST_ITEM_MODIFY_ERROR' as const;
 
-export const getItemModify = (productionId: null) => ({
+export const getItemModify = (data) => ({
   type: GET_ITEM_MODIFY,
-  payload: productionId,
+  payload: data,
 });
 
 export const getItemModifySuccess = (data: ItemDetailObject) => ({
@@ -31,7 +31,7 @@ export const getItemModifyFailure = (error: AxiosError) => ({
   payload: error,
 });
 
-export const postItemModify = (data) => ({
+export const postItemModify = (data: FormData) => ({
   type: POST_ITEM_MODIFY,
   payload: data,
 });
@@ -54,26 +54,57 @@ const actions = {
   postItemModifyFailure,
 };
 
-export const ActionsWithAuth = {
-  getItemModify,
-  postItemModify,
-};
+export const ActionsWithAuth = [GET_ITEM_MODIFY, POST_ITEM_MODIFY];
 type ItemModifyAction = ActionType<typeof actions>;
 
-export const getItemModifySaga = createPromiseSaga(
-  GET_ITEM_MODIFY,
-  getItemModifyInfo
-);
-export const postItemModifySaga = createPromiseSaga(
-  POST_ITEM_MODIFY,
-  postItemModify
-);
+function* getItemModifySaga(
+  action: ActionType<typeof getPredictData>,
+  accessToken: string
+) {
+  const { productionId, storeId } = action.payload;
+  try {
+    const result = yield call(
+      getItemModifyInfo,
+      productionId,
+      storeId,
+      accessToken
+    );
+    yield put({ type: GET_ITEM_MODIFY_SUCCESS, payload: result });
+  } catch (error) {
+    yield put({ type: GET_ITEM_MODIFY_ERROR, payload: error });
+  }
+}
+
+function* postItemModifySaga(
+  action: ActionType<typeof getPredictData>,
+  accessToken: string
+) {
+  const data = action.payload;
+  try {
+    yield call(postItemModifyInfo, data, accessToken);
+    yield put({ type: POST_ITEM_MODIFY_SUCCESS });
+  } catch (error) {
+    yield put({ type: POST_ITEM_MODIFY_ERROR, payload: error });
+  }
+}
+
+export function* itemModifyWithAuthSaga(
+  action: ActionsWithAuth,
+  accessToken: string
+) {
+  switch (action.type) {
+    case GET_ITEM_MODIFY:
+      return yield fork(getItemModifySaga, action, accessToken);
+    case POST_ITEM_MODIFY:
+      return yield fork(postItemModifySaga, action, accessToken);
+  }
+}
 
 const initialState = {
   itemInfo: reducerUtils.initial(null),
 };
 
-export default function itemDetail(state = initialState, action) {
+export default function itemModify(state = initialState, action) {
   switch (action.type) {
     case GET_ITEM_MODIFY:
     case GET_ITEM_MODIFY_SUCCESS:

@@ -30,7 +30,7 @@ export default function ItemDetailContainer({
         Alert.alert('디저트 정보를 가져올 수 없습니다.');
         navigation.goBack();
       } else if (data) {
-        if (data.userId === user) {
+        if (data.userId === user.id) {
           setIsMine(true);
         } else {
           setIsMine(false);
@@ -40,15 +40,23 @@ export default function ItemDetailContainer({
   }, [data, loading, error]);
 
   const handleModifyPress = () => {
+    console.log('modify pressed');
     navigation.navigate('ItemModify', {
       productionId,
+      storeId: data.storeId,
     });
   };
 
-  return loading ? null : (
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
+  return loading || !data ? null : (
     <ItemDetailScreen
       data={data.productionData}
+      storeName={data.storeName}
       isMine={isMine}
+      handleGoBack={handleGoBack}
       handleModifyPress={handleModifyPress}
     />
   );

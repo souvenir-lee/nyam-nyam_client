@@ -1,40 +1,43 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 import styled from 'styled-components/native';
-
+import { HeaderBackButton } from '@react-navigation/stack';
 import { ItemDetailProps } from '@base/types/Navigation/ItemDetail';
-import { ingredients, idToDessertType } from '@base/api/item';
+import { idToDessertType } from '@base/api/item';
+import { MINT, MINT_STRONG, MINT_RGBA_LINE } from '@base/baseColors';
 
 type MyMenuListInfoScreen = {
   navigation: ItemDetailProps['navigation'];
 };
 
-export default function MyMenuListInfoScreen({
+export default function ItemDetailScreen({
   data,
+  storeName,
   isMine,
+  handleGoBack,
   handleModifyPress,
 }: MyMenuListInfoScreen) {
-  console.log(data);
   return (
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
         alignItems: 'center',
         backgroundColor: 'white',
-        paddingHorizontal: 30,
         paddingVertical: 20,
+        paddingHorizontal: 30,
       }}>
-      {isMine ? (
-        <ItemDetailModifyMenu>
-          <ItemDetailModifyNav>
+      <ItemDetailModifyMenu>
+        <HeaderBackButton
+          onPress={handleGoBack}
+          tintColor={MINT}
+          pressColorAndroid={MINT}
+          style={{ position: 'absolute', left: -20 }}
+        />
+        {isMine ? (
+          <ItemDetailModifyNav onPress={handleModifyPress}>
             <ItemDetailModifyText>수정하기</ItemDetailModifyText>
           </ItemDetailModifyNav>
-        </ItemDetailModifyMenu>
-      ) : null}
-      <ItemDetailModifyMenu>
-        <ItemDetailModifyNav onPress={handleModifyPress}>
-          <ItemDetailModifyText>수정하기</ItemDetailModifyText>
-        </ItemDetailModifyNav>
+        ) : null}
       </ItemDetailModifyMenu>
       <ItemDetailHeader>
         <ItemDetailImg
@@ -46,7 +49,7 @@ export default function MyMenuListInfoScreen({
         />
         <ItemDetailTitleContainer>
           <ItemDetailStore>
-            {data.storeName ? data.storeName : '가게명 없음'}
+            {storeName ? storeName : '가게명 없음'}
           </ItemDetailStore>
           <ItemDetailTitle>{data.productionName}</ItemDetailTitle>
         </ItemDetailTitleContainer>
@@ -62,9 +65,13 @@ export default function MyMenuListInfoScreen({
           <DetailTitle>디저트 종류</DetailTitle>
           <DetailContent>{idToDessertType[data.dessertType]}</DetailContent>
         </DetailRow>
-        <DetailRow>
+        <DetailRow last={true}>
           <DetailTitle>주재료</DetailTitle>
-          <DetailContent>{'초콜렛'}</DetailContent>
+          <IngredientWrapper>
+            {data.ingredients.map((ingredient, index) => (
+              <Ingredient key={index}>{ingredient.name}</Ingredient>
+            ))}
+          </IngredientWrapper>
         </DetailRow>
       </DetailContainer>
       <DetailDescContainer>
@@ -79,30 +86,31 @@ export default function MyMenuListInfoScreen({
 
 const ItemDetailModifyMenu = styled.View`
   width: 100%;
+  flex-direction: row;
+  justify-content: flex-end;
 `;
 
 const ItemDetailModifyNav = styled.TouchableOpacity`
   align-self: flex-end;
-  margin-right: 20px;
 `;
 
 const ItemDetailHeader = styled.View`
   width: 100%;
   align-items: center;
-  padding: 10px 0px;
+  padding: 20px 0px;
   border-bottom-width: 2px;
-  border-bottom-color: rgba(0, 0, 0, 0.3);
+  border-bottom-color: ${MINT_RGBA_LINE};
 `;
 
 const ItemDetailModifyText = styled.Text`
   font-size: 15px;
-  opacity: 0.5;
   font-family: 'BMHANNA';
+  color: ${MINT};
 `;
 
 const ItemDetailImg = styled.Image`
-  width: 150px;
-  height: 150px;
+  width: 130px;
+  height: 130px;
   margin-bottom: 15px;
 `;
 
@@ -112,27 +120,30 @@ const ItemDetailTitleContainer = styled.View`
 
 const ItemDetailStore = styled.Text`
   text-align: center;
-  opacity: 0.6;
+  color: ${MINT};
+  font-size: 15px;
+  margin-bottom: 5px;
 `;
 
 const ItemDetailTitle = styled.Text`
   text-align: center;
   font-size: 25px;
-  font-family: 'BMHANNA';
+  font-weight: bold;
+  color: ${MINT_STRONG};
 `;
 
 const DetailContainer = styled.View`
   width: 100%;
   align-items: flex-start;
-  padding: 20px 0px;
+  padding: 30px 0px;
   border-bottom-width: 2px;
-  border-bottom-color: rgba(0, 0, 0, 0.3);
+  border-bottom-color: ${MINT_RGBA_LINE};
 `;
 
 const DetailRow = styled.View`
   flex-direction: row;
   align-items: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: ${(props) => (props.last ? '0px' : '15px')};
 `;
 
 const DetailTitle = styled.Text`
@@ -140,11 +151,27 @@ const DetailTitle = styled.Text`
   font-size: 20px;
   font-weight: bold;
   margin-right: 30px;
+  color: ${MINT_STRONG};
 `;
 
 const DetailContent = styled.Text`
   font-size: 17px;
   align-self: center;
+  color: ${MINT_STRONG};
+`;
+
+const IngredientWrapper = styled.View`
+  align-items: center;
+`;
+
+const Ingredient = styled.Text`
+  font-size: 15px;
+  background-color: ${MINT};
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+  margin-right: 10px;
 `;
 
 const DetailDescContainer = styled.View`
@@ -156,7 +183,11 @@ const DetailDescContainer = styled.View`
 const DetailDescTitle = styled.Text`
   font-size: 20px;
   font-weight: bold;
+  color: ${MINT_STRONG};
   margin-bottom: 20px;
 `;
 
-const DetailDescContent = styled.Text``;
+const DetailDescContent = styled.Text`
+  font-size: 17px;
+  color: ${MINT_STRONG};
+`;

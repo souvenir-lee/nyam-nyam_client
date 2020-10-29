@@ -61,13 +61,7 @@ export default function SalesPredictContainer({
       ? predict[storeId][date]
       : null;
 
-  const storeArray = () => {
-    console.log('isSignin in salesPredict:', isSignin);
-  
-    convertStoreObjToArray(store);
-  
-  }
-  storeArray();
+  const storeArray = convertStoreObjToArray(store);
 
   useEffect(() => {
     dispatch(initialize());
@@ -92,10 +86,12 @@ export default function SalesPredictContainer({
     console.log('onStoreChange', storeId);
     dispatch(changeStore(storeId));
   };
-  if(!isSignin){
+  if (!isSignin) {
     return null;
   }
 
+  console.log('weatherLoading', weatherLoading);
+  console.log('storeArray', storeArray);
   return weatherLoading || !storeArray.length ? (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" color="#000000" />
@@ -112,4 +108,5 @@ export default function SalesPredictContainer({
       date={date}
     />
   );
+  return null;
 }
