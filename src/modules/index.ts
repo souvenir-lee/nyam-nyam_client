@@ -12,7 +12,10 @@ import salesPredict, {
 
 import myInfo, { myInfoSaga, actionsWithAuth as myInfoActions } from './mypage';
 import itemDetail, { itemDetailSaga } from './itemDetail';
-import { getItemModifySaga, postItemModifySaga } from './itemModify';
+import itemModify, {
+  itemModifyWithAuthSaga,
+  ActionsWithAuth as itemModifyActions,
+} from './itemModify';
 
 const rootReducer = combineReducers({
   signin,
@@ -20,13 +23,22 @@ const rootReducer = combineReducers({
   salesPredict,
   myInfo,
   itemDetail,
+  itemModify,
 });
 
 //actions에는 각 modules에 있는 인증이 필요한 action들을 배열로 담아서 import한 다음에 추가해준다
-const actionsWithAuth = [...myInfoActions, ...predictActions];
+const actionsWithAuth = [
+  ...myInfoActions,
+  ...predictActions,
+  ...itemModifyActions,
+];
 
 //sagas에는 각 모듈에 있는 인증이 필요한 saga를 import해서 배열에 추가해준다.
-const sagasWithAuth = [myInfoSaga, salesPredictWithAuthSaga];
+const sagasWithAuth = [
+  myInfoSaga,
+  salesPredictWithAuthSaga,
+  itemModifyWithAuthSaga,
+];
 
 const signinAuthCheckSaga = createAuthCheckSaga(true);
 const resourceAPIAuthCheckSaga = createAuthCheckSaga();

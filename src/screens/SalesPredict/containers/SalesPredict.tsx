@@ -102,4 +102,5 @@ export default function SalesPredictContainer({
       date={date}
     />
   );
+  return null;
 }

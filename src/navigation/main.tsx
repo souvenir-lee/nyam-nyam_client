@@ -15,6 +15,18 @@ type tabBarIconProps = {
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const TabNavigation = () => {
+  const getTabBarVisibility = (route) => {
+    const routeName = route.state
+      ? route.state.routes[route.state.index].name
+      : '';
+
+    console.log(routeName);
+    if (routeName === 'ItemDetailNav') {
+      return false;
+    }
+
+    return true;
+  };
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -27,12 +39,13 @@ const TabNavigation = () => {
       <Tab.Screen
         name="SalesPredictNav"
         component={salesPredict}
-        options={{
+        options={({ route }) => ({
           title: '매출 예측',
           tabBarIcon: ({ focused }: tabBarIconProps) => (
             <TabBarIcon focused={focused} name={'chart-bar'} isCommunity />
           ),
-        }}
+          tabBarVisible: getTabBarVisibility(route),
+        })}
       />
       <Tab.Screen
         name="TrendNav"
