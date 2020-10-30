@@ -10,20 +10,29 @@ type ModifyMyInfoScreenProps = {
   navigation: ModifyMyInfoProps['navigation'];
   username: string;
   email: string;
+  avatar: string | null;
+  onPhotoModifyPress: () => void;
   onUsernameChange: (text: string) => void;
-  onUnregisterSubmit: () => void
+  onUnregisterSubmit: () => void;
 };
 
 export default function ModifyMyInfoScreen({
-  navigation, username, email, onUsernameChange, onUnregisterSubmit
+  navigation, username, email, avatar, onUsernameChange, onUnregisterSubmit, onPhotoModifyPress
 }: ModifyMyInfoScreenProps) {
-
+  const avatarImg = { uri: avatar } || require('@base/../assets/images/default_user_avatar.jpg')
   return (
     <Container>
       <MyPageUserInfo>
-        <UserAvatar
-          source={require('@base/../assets/images/default_user_avatar.jpg')}
-        />
+         <UserAvatar
+            source={avatarImg}
+          />
+          <UserAvatarModifyButton>
+            <ButtonText
+              onPress={onPhotoModifyPress}
+            >
+              사진 수정
+            </ButtonText>
+          </UserAvatarModifyButton>
         <UserTextWrapper>
           <UserNameText>{username}</UserNameText>
           <UserInfoText>사장님</UserInfoText>
@@ -74,6 +83,9 @@ const MyPageUserInfo = styled.View`
   justify-content: center;
 `;
 
+const UserAvatarWrapper = styled.View`
+`;
+
 const UserAvatar = styled.Image`
   width: 100px;
   height: 100px;
@@ -81,6 +93,14 @@ const UserAvatar = styled.Image`
 `;
 
 const UserTextWrapper = styled.View``;
+
+const UserAvatarModifyButton = styled.TouchableOpacity`
+  margin-bottom:20px;
+`;
+
+const ButtonText = styled.Text`
+  color: blue;
+`;
 
 const UserNameText = styled.Text`
   font-weight: bold;

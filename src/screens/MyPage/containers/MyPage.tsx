@@ -9,14 +9,15 @@ import { getMyInfo } from '@base/modules/mypage';
 import { signout } from '@base/modules/signin';
 
 export default function MyPageContainer({ navigation }: MyPageProps) {
-  const myInfo = useSelector((state: RootState) => state.myInfo);
-  const { user } = useSelector((state: RootState) => state.signin);
+  const { store, production, upload } = useSelector((state: RootState) => state.mypage);
+  const { username, email } = useSelector((state: RootState) => (
+    state.signin.user ? state.signin.user : { username: '', email: ''}));
   let myPageInfo = {
-    username: user ? user.username: '',
-    email: user ? user.email : '',
-    store: 0,
-    production: 0,
-    uploadSales: 0
+    username: username ||'',
+    email:  email || '',
+    store: store || 0,
+    production: production || 0,
+    upload: upload || 0
   };
   const dispatch = useDispatch();
 
@@ -30,7 +31,7 @@ export default function MyPageContainer({ navigation }: MyPageProps) {
     }
 
     fetchMyInfoData();
-  }, [user]);
+  }, []);
 
 
   return <MyPageScreen 

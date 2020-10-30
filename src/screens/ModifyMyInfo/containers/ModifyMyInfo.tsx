@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, Text, Alert } from 'react-native';
+import { TouchableOpacity, Text, Alert, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
 
 import { MINT } from '@base/baseColors';
 import ModifyMyInfoScreen from '../components/ModifyMyInfoScreen';
 import { RootState } from '@base/modules';
-import { requestUnregister, saveMyInfo } from '@base/modules/mypage';
+import { requestUnregister, saveMyInfo, uploadMyPhoto } from '@base/modules/mypage';
 import { ModifyMyInfoProps } from '@base/types/Navigation/MyPageNavigation';
 
 export default function ModifyMyInfoContainer({
@@ -14,6 +16,7 @@ export default function ModifyMyInfoContainer({
   const { user } = useSelector((state: RootState) => state.signin);
   const { username, email } = user ? user : { username: '', email: '' };
   const [ _username, setUsername ] = useState(username)
+   const [photo, setPhoto] = useState<string | null>(null);
   const dispatch = useDispatch();
 
   const handleUsernameChange = (text: string) => {
@@ -44,6 +47,30 @@ export default function ModifyMyInfoContainer({
     });
   };
 
+  const handlePhotoModifyPress = async () => {
+    if(Platform.OS !== 'web'){
+      const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+      if(status === 'granted'){
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowEditing: true,
+          aspect: [4, 3],
+          quality: 1
+        });
+
+        console.log('picked photo:', result);
+
+        if(!result.cancelled){
+          const { type, uri } = result;
+          setPhoto(uri);
+          dispatch(uploadMyPhoto(type as 'image', uri))
+        }
+      } else {
+        Alert.alert('사진 라이브러리에 접근이 거부되었습니다.');
+      }
+    }
+  }
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -60,8 +87,10 @@ export default function ModifyMyInfoContainer({
 
   return <ModifyMyInfoScreen 
     navigation={navigation}
+    avatar={photo}
     username={_username}
     email={email}
+    onPhotoModifyPress={handlePhotoModifyPress}
     onUsernameChange={handleUsernameChange}
     onUnregisterSubmit={handleUnregisterSubmit}
   />;
