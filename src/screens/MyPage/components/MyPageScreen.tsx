@@ -16,7 +16,7 @@ type MyPageScreenProps = {
 export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButtonPress }
   : MyPageScreenProps) {
 
-  const { username, email, store, production, uploadSales } = myPageInfo; 
+  const { username, email, store, production, upload } = myPageInfo; 
   return (
     <MyPageContainer>
 
@@ -44,7 +44,7 @@ export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButt
         </BriefInfoRow>
         <BriefInfoRow>
 
-          <BriefInfoContent>{uploadSales}</BriefInfoContent>
+          <BriefInfoContent>{upload}</BriefInfoContent>
           <BriefInfoTitle>내역 업로드 수</BriefInfoTitle>
         </BriefInfoRow>
       </MyPageBriefInfo>

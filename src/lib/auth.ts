@@ -65,8 +65,9 @@ export async function clearTokens() {
   try {
     await SecureStore.deleteItemAsync('access_token');
     await SecureStore.deleteItemAsync('refresh_token');
-    const t = await SecureStore.getItemAsync('access_token');
-    console.log('clear token:', t);
+    const access = await SecureStore.getItemAsync('access_token');
+    const refresh =  await SecureStore.getItemAsync('refresh_token');
+    console.log('clear tokens:', access, '|||', refresh);
   } catch (e) {
     console.error(e);
   }

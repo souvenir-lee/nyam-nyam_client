@@ -6,7 +6,7 @@ import { makeClient, makeAuthHeaders } from './utils';
 const client = makeClient();
 
 export const getMyInfo = async (accessToken: string) => {
-  const res = await client.get('/info/info', {
+  const res = await client.get('/info/info/1', {
     headers: {...makeAuthHeaders(accessToken)},
   });
 
@@ -36,12 +36,28 @@ export const changePassword = async (accessToken: string, currentPassword: strin
   password: string) => {
   console.log('data in changePassword api:', currentPassword, password);
   
-  const res = await client.post('editinfo/password', JSON.stringify({ 
+  const res = await client.post('/editinfo/password', JSON.stringify({ 
     currentPassword,
     password
   }), {
     headers: {...makeAuthHeaders(accessToken)}
   });
   console.log('after password change api call')
+  return res;
+};
+
+export const getMyStoreList = async (accessToken: string) => {
+  const res = await client.get('/managestore/mystore', {
+    headers: {...makeAuthHeaders(accessToken)}
+  });
+
+  return res;
+};
+
+export const deleteMyStoreItem = async (accessToken: string, storeId: string | number) => {
+  const res = await client.post('/managestore/deletestore', JSON.stringify({ storeId }),{
+    headers: {...makeAuthHeaders(accessToken)}
+  });
+
   return res;
 }

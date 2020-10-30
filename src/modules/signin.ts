@@ -15,7 +15,17 @@ import {
   getAuthErrMsg,
   clearTokens,
 } from '@base/lib/auth';
-import { modifyMyInfo, MODIFY_MY_INFO, removeSignin, REMOVE_SIGNIN } from './mypage'
+import { 
+  modifyMyInfo, 
+  MODIFY_MY_INFO, 
+  removeSignin, 
+  REMOVE_SIGNIN, 
+  SAVE_MY_STORE_LIST_TO_REDUX, 
+  saveMyStoreListToRedux,
+  DELETE_MY_STORE_ITEM_IN_REDUX,
+  deleteMyStoreItemInRedux 
+} from './mypage'
+import salesPredictNavigation from '@base/navigation/salesPredict';
 
 //액션 타입
 const INITIALIZE_SIGNIN = 'signnin/INITIALIZE_SIGNIN' as const;
@@ -99,7 +109,9 @@ const actions = {
   signout,
   signoutSuccess,
   modifyMyInfo,
-  removeSignin
+  removeSignin,
+  saveMyStoreListToRedux,
+  deleteMyStoreItemInRedux
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -109,6 +121,10 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
   const signinInfo = action.payload;
   let res;
   console.log('before signin');
+  //토큰 존재 여부 테스트
+  const test_access = yield SecureStore.getItemAsync('access_token');
+  const test_refresh = yield SecureStore.getItemAsync('refresh_token');
+  console.log('test tokens: ', test_access, test_refresh);
 
   try {
     res = yield call(authAPI.signin, signinInfo);
@@ -266,8 +282,26 @@ export default function signin(
     case REMOVE_SIGNIN:
       return {
         ...initialState
+      };
+    case SAVE_MY_STORE_LIST_TO_REDUX:
+      return {
+        ...state,
+        store: action.paylaod
+      };
+    case DELETE_MY_STORE_ITEM_IN_REDUX:
+      const storeId = action.payload;
+
+      if(storeId in state.store){
+        delete state.store[storeId];
       }
+
+      return {
+        ...state,
+        store: {
+          ...state.store
+        }
+      };
     default:
       return state;
-  }
+  }salesPredictNavigation
 }
