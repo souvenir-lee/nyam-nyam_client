@@ -1,40 +1,32 @@
 import React from 'react';
-import styled from 'styled-components/native'
+import styled from 'styled-components/native';
 
 export type MyMenuItemType = {
-    id: number | string;
-    storeId: number | string;
-    productionId: number | string;
-    productionName: string;
-    productionImg: string;
-    quantity: number | string
+  id: number | string;
+  storeId: number | string;
+  productionId: number | string;
+  productionName: string;
+  productionImg: string;
+  quantity: number | string;
 };
 
 type MyMenuItemProps = {
-    menu: MyMenuItemType;
-    onDeletionPress: () => void;
+  menu: MyMenuItemType;
+  onDeletionPress: () => void;
 };
 
-export default function({ menu, onDeletionPress }: MyMenuItemProps){
-    return (
-        <MyMenuItem>
-            <MyMenuImg 
-            
-            />
-            <MyMenuRight>
-                <MyMenuName>
-                    {menu.productionName}
-                </MyMenuName>
-                <DeletionButton>
-                    <ButtonText
-                        onPress={onDeletionPress}
-                    >
-                        X
-                    </ButtonText>
-                </DeletionButton>
-            </MyMenuRight>
-        </MyMenuItem>
-    )
+export default function ({ menu, onDeletionPress }: MyMenuItemProps) {
+  return (
+    <MyMenuItem>
+      <MyMenuImg />
+      <MyMenuRight>
+        <MyMenuName>{menu.productionName}</MyMenuName>
+        <DeletionButton>
+          <ButtonText onPress={onDeletionPress}>X</ButtonText>
+        </DeletionButton>
+      </MyMenuRight>
+    </MyMenuItem>
+  );
 }
 
 const MyMenuItem = styled.View``;
