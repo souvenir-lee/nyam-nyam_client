@@ -6,7 +6,11 @@ import {
   handleAsyncActions,
   reducerUtils,
 } from '@base/lib/asyncUtils';
-import { getUpdateSalesData, postSalesUploadData } from '@base/api/salesUpload';
+import {
+  dateToFormatStr,
+  getUpdateSalesData,
+  postSalesUploadData,
+} from '@base/api/salesUpload';
 
 const GET_SALES_UPLOAD = 'salesUpload/GET_SALES_UPLOAD' as const;
 const GET_SALES_UPLOAD_SUCCESS = 'salesUpload/GET_SALES_UPLOAD_SUCCESS' as const;
@@ -146,17 +150,17 @@ function* postSalesUploadSaga(
     currentStore,
     currentWeather,
     currentDateIdx,
+    currentDate,
     currentData,
     salesData,
   } = yield select((state) => state.salesUpload);
-  console.log('data before', salesData);
+  const date = dateToFormatStr(currentDate);
   const data = salesData.data;
-  console.log('currentDateIdx', currentDateIdx);
   data[currentDateIdx] = {
     weatherId: currentWeather,
+    date,
     production: currentData,
   };
-  console.log('sales data', data);
   try {
     yield call(postSalesUploadData, currentStore, data, accessToken);
     yield put(clearData());
@@ -228,6 +232,7 @@ const initialState = {
      },
      {
         weather: "흐림",
+        date: "2020-10-11 00:00:00",
         production: [
            [상품 id, 상품 판매수량],
            [상품 id, 상품 판매수량],
@@ -262,6 +267,7 @@ export default function salesUpload(state = initialState, action) {
     case CHANGE_DATE_NEXT:
       const nextDate = new Date();
       nextDate.setDate(state.currentDate.getDate() + 1);
+      const currentDate = state.currentDate;
       const currentDateIdx = state.currentDateIdx;
       const nextDateInfo = state.salesData[currentDateIdx + 1];
       const nextData = nextDateInfo
@@ -272,6 +278,7 @@ export default function salesUpload(state = initialState, action) {
       console.log('current weather', state.currentWeather);
       const resultObj = {
         weatherId: state.currentWeather,
+        date: dateToFormatStr(currentDate),
         production: updatedData,
       };
       const nextSalesData = state.salesData.data.slice(0);
