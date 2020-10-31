@@ -11,11 +11,12 @@ type MyMenuListInfoProps = {
   currentStore: SigninStoreData | null;
   menus: MyMenuItemType[] | []; 
   onStoreSelect: (id: string | number) => void;
-  onDeletionPress: () => void;
+  onMenuItemDetailPress: () => void; 
+  onDeletionPress: (storeId: string | number, productionId: string | number) => void;
 };
 
 export default function MyMenuListInfoScreen({
-  menus, stores, currentStore, onStoreSelect, onDeletionPress
+  menus, stores, currentStore, onStoreSelect, onMenuItemDetailPress, onDeletionPress
 }: MyMenuListInfoProps) {
   const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
 
@@ -32,7 +33,7 @@ export default function MyMenuListInfoScreen({
         <Dropdown 
           data={stores}
           isShow={isDropdownShow}
-          Item={MyMenuItem}
+          Item={StoreDropdownItem}
           onItemPress={onStoreSelect}
           extra={{
             onDeletionPress
@@ -44,11 +45,13 @@ export default function MyMenuListInfoScreen({
         {
           menus.length > 0 
           ? menus.map((menu: MyMenuItemType) => {
-            return (
-              <MyMenuItem 
-
-              />
-            )
+              return (
+                <MyMenuItem 
+                  menu={menu}
+                  onMenuItemDetailPress={onMenuItemDetailPress}
+                  onDeletionPress={onDeletionPress}
+                />
+              )
           }) 
           : null
         }
@@ -57,11 +60,34 @@ export default function MyMenuListInfoScreen({
   )
 }
 
+type StoreDropdownItemProps = {
+  data: SigninStoreData;
+  onItemPress: () => void;
+}
+
+function StoreDropdownItem({ data, onItemPress }: StoreDropdownItemProps){
+  if(!data) return null;
+
+  return (
+    <StoreItem
+      onPress={onItemPress}
+    >
+      <StoreName>
+        ({data.storeAddress}) &nbsp;{ data.storeName }
+      </StoreName>
+    </StoreItem>
+  )
+}
+
 const Container = styled.View``;
 
 const Title = styled.Text``;
 
 const DropdownToggle = styled.TouchableOpacity``
+
+const StoreItem = styled.View``
+
+const StoreName = styled.Text``;
 
 const ToggleText = styled.Text``;
 

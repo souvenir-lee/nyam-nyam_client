@@ -4,27 +4,30 @@ import styled from 'styled-components/native'
 import { MyMenuItemType} from '@base/types/mypage';
 
 type MyMenuItemProps = {
-    data: MyMenuItemType;
-    onPress: (id: string | number) => void;
-    onDeletionPress: () => void;
+    menu: MyMenuItemType;
+    onMenuItemDetailPress: (id: string | number) => void;
+    onDeletionPress: (storeId: string | number, productionId: string | number) => void;
 };
 
-export default function({ data, onPress, onDeletionPress }: MyMenuItemProps){
+export default function({ menu, onMenuItemDetailPress, onDeletionPress }: MyMenuItemProps){
+    const { storeId, productionId } = menu;
+
     return (
+
         <MyMenuItem>
             <MyMenuBody
-                onPress={(id: string | number) => onPress(id)}
+                onPress={onMenuItemDetailPress}
             >
                 <MyMenuImg 
-
+                    
                 />
                 <MyMenuName>
-                    {}
+                    {menu.production.productionName}
                 </MyMenuName>
             </MyMenuBody>
             <DeletionButton>
                 <ButtonText
-                    onPress={onDeletionPress}
+                    onPress={() => onDeletionPress(storeId, productionId)}
                 >
                     X
                 </ButtonText>

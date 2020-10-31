@@ -1,10 +1,10 @@
 import React, { FunctionComponent, ReactChild, ReactComponentElement, ReactDOM, ReactElement, ReactHTMLElement, useState } from 'react';
 import styled from 'styled-components/native';
 
-type DropdownProps = {
+export type DropdownProps = {
     data: any[];
     isShow: boolean;
-    Item: FunctionComponent<any>
+    Item: FunctionComponent<any>;
     onItemPress: (args?: any) => void;
     extra?: any
 };

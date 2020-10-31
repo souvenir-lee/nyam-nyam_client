@@ -6,60 +6,84 @@ import { RootState } from '@base/modules';
 import { MyMenuListInfoProps } from '@base/types/Navigation/MyPageNavigation';
 import { MyMenuItemType } from '@base/types/mypage';
 import { SigninStoreData } from '@base/types/auth';
-
+import { getMyMenuList, deleteMyMenuItem } from '@base/modules/mypage';
 type MapMyStoreToArray = (menus: any) => MyMenuItemType[] | null;
 
 export default function({
   navigation,
 }: MyMenuListInfoProps) {
-  let menus = useSelector((state: RootState) => state.mypage.menus);
-  let stores = useSelector((state: RootState) => state.signin.store);
-  const getCurrentStore = (stores: SigninStoreData[] | []) => {
-    return stores.length > 0 && stores[0] ? stores[0] : null;
-  };
-  const [currentStore, setCurrentStore] = useState<SigninStoreData | null>(getCurrentStore(stores))
-  
   const mapMyStoresToArray = (menus: any) => {
     if(!menus) return null;
-
+  
     let arr = [];
     for(let store in menus){
       arr.push(store);
     }
-
+  
     return arr;
   };
-
   const filterCurrentMenus = (menus: MyMenuItemType[] | [], storeId: string | number | null) => {
-    if(storeId && menus && menus.length === 0) return [];
+    if(!storeId || !menus || menus.length === 0) return [];
 
     return menus.filter((menu: MyMenuItemType) => menu.storeId == storeId);
+  };
+  const getCurrentStore = (stores: SigninStoreData[] | []) => {
+    if(stores){
+      for(let storeId in stores) return stores[storeId];
+    } else {
+      return null;
+    }
+  };
+
+  let menus = useSelector((state: RootState) => state.mypage.menus);
+  let stores = useSelector((state: RootState) => state.signin.store);
+  const [currentStore, setCurrentStore] = useState<any>(getCurrentStore(stores))
+  const dispatch = useDispatch();
+
+  let filteredMenus = filterCurrentMenus(menus, currentStore ? currentStore.id : null);
+  let storesArr = mapMyStoresToArray(stores);
+
+  console.log('current store1: ', currentStore);
+
+  const handleMenuItemDetailPress = () => {
+    navigation.navigate('ItemModify');
+  };
+
+  const handleDeletionPress = (storeId: number | string, productionId: number | string) => {
+    console.log('dispatch delete my menu item');
+    dispatch(deleteMyMenuItem(storeId, productionId));
+  };
+
+  const fetchMyMenusByStoreId = (storeId: string | number) => {
+    const finded = menus.find((menu: MyMenuItemType) => {
+      return menu.storeId == storeId;
+    });
+    console.log('fetch my menu');
+    if(!finded){
+      dispatch(getMyMenuList(storeId));
+    }
   };
 
   const handleStoreSelect = (id: string | number) => {
     if(stores.length === 0) return;
-
+    console.log('selected store');
     setCurrentStore(stores[id]);
-
+    fetchMyMenusByStoreId(id);
   };  
 
-  const handleDeletionPress = () => {
-
-  };
-
   useEffect(() => {
-    const fetchMyMenuList = () => {
-      
-    };
-
-    fetchMyMenuList();
+    console.log('stores:', stores, 'current store:', currentStore);
+    if(currentStore){
+      fetchMyMenusByStoreId(currentStore.id);
+    }
   }, []);
 
   return (
     <MyMenuListInfoScreen
-      stores={mapMyStoresToArray(stores) as SigninStoreData[] | []}
+      stores={storesArr}
       currentStore={currentStore}
-      menus={filterCurrentMenus(menus, currentStore ? currentStore.id : null)}
+      menus={filteredMenus}
+      onMenuItemDetailPress={handleMenuItemDetailPress}
       onDeletionPress={handleDeletionPress}
       onStoreSelect={handleStoreSelect}
     />
