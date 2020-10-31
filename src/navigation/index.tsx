@@ -25,7 +25,6 @@ export default function Navigation() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-
     console.log('navigation check token');
     if (callCount === 0) {
       dispatch(checkToken());

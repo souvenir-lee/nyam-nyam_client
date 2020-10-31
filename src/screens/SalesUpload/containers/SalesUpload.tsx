@@ -56,8 +56,10 @@ export default function SalesUploadContainer({
   }, []);
 
   useEffect(() => {
-    if (!uploadLoading && uploadData.data.length !== 0) {
+    if (!uploadLoading && (!uploadData || uploadData.length !== 0)) {
       Alert.alert('업로드에 성공했습니다.');
+      dispatch(clearData());
+      navigation.goBack();
     } else if (uploadError) {
       Alert.alert('업로드에 실패했습니다.');
     }

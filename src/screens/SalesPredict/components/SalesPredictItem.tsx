@@ -20,8 +20,8 @@ function SalesPredictItem({
   data,
   rank,
   isLast,
+  storeId,
 }: AddressItemProps) {
-  console.log(data);
   const [visible, setVisible] = useState(false);
 
   const handleItemPress = () => {
@@ -38,7 +38,7 @@ function SalesPredictItem({
     setVisible(false);
     navigation.navigate('ItemDetailNav', {
       screen: 'ItemModify',
-      params: { productionId: data.id },
+      params: { storeId, productionId: data.id },
     });
   };
 
@@ -56,7 +56,7 @@ function SalesPredictItem({
         <ItemImage
           source={
             data.productionImg
-              ? data.productionImg
+              ? { uri: data.productionImg }
               : require('@base/../assets/images/default_dessert_image.png')
           }
         />

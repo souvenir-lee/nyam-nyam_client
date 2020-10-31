@@ -76,6 +76,7 @@ function SalesPredictScreen({
                     key={index}
                     rank={index + 1}
                     navigation={navigation}
+                    storeId={storeId}
                     data={data}
                     isLast={isLast}
                   />

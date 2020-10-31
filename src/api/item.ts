@@ -78,19 +78,16 @@ export const idToDessertType = [
 ];
 
 export const getItemDetailInfo = async (productionId: string) => {
-  const getItemDetail = await axios.get(
-    `${domain}/detail/${productionId}`,
-    {
-      withCredentials: true,
-      responseType: 'json',
-    }
-  );
+  const getItemDetail = await axios.get(`${domain}/detail/${productionId}`, {
+    withCredentials: true,
+    responseType: 'json',
+  });
 
   return getItemDetail.data;
 };
 
 export const getItemModifyInfo = async (productionId, storeId, accessToken) => {
-  const getItemDetail = await axios.get(
+  const getItemModify = await axios.get(
     `${domain}/managemenu/editmenu?productionId=${productionId}&storeId=${storeId}`,
     {
       withCredentials: true,
@@ -101,8 +98,8 @@ export const getItemModifyInfo = async (productionId, storeId, accessToken) => {
     }
   );
 
-  console.log('item detail', getItemDetail.data);
-  return getItemDetail.data;
+  console.log('getItemModify', getItemModify.data);
+  return getItemModify.data;
 };
 
 export const postItemModifyInfo = async (
@@ -117,6 +114,7 @@ export const postItemModifyInfo = async (
       responseType: 'json',
       headers: {
         ...makeAuthHeaders(accessToken),
+        'Content-Type': 'multipart/form-data',
       },
     }
   );
