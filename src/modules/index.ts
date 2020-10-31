@@ -20,6 +20,11 @@ import salesUpload, {
   salesUploadWithAuthSaga,
   ActionsWithAuth as salesUploadActions,
 } from './salesUpload';
+import addStore, {
+  addStoreSaga,
+  addStoreWithAuthSaga,
+  ActionsWithAuth as addStoreActions,
+} from './addStore';
 
 const rootReducer = combineReducers({
   signin,
@@ -29,6 +34,7 @@ const rootReducer = combineReducers({
   itemDetail,
   itemModify,
   salesUpload,
+  addStore,
 });
 
 //actions에는 각 modules에 있는 인증이 필요한 action들을 배열로 담아서 import한 다음에 추가해준다
@@ -37,6 +43,7 @@ const actionsWithAuth = [
   ...predictActions,
   ...itemModifyActions,
   ...salesUploadActions,
+  ...addStoreActions,
 ];
 
 //sagas에는 각 모듈에 있는 인증이 필요한 saga를 import해서 배열에 추가해준다.
@@ -45,6 +52,7 @@ const sagasWithAuth = [
   salesPredictWithAuthSaga,
   itemModifyWithAuthSaga,
   salesUploadWithAuthSaga,
+  addStoreWithAuthSaga,
 ];
 
 const resourceAPIAuthCheckSaga = createAuthCheckSaga();
@@ -57,6 +65,7 @@ export function* rootSaga() {
     signupSaga(),
     salesPredictSaga(),
     itemDetailSaga(),
+    addStoreSaga(),
     resourceAPIAuthCheckSaga(actionsWithAuth, sagasWithAuth),
   ]); // all은 배열 안의 여러 사가를 동시에 실행시켜준다.
 }

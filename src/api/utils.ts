@@ -40,16 +40,15 @@ export const convertStoreObjToArray = (store) => {
 };
 
 export const makeFormData = (type: 'image', uri: string) => {
- const formData = new FormData();
- const uriParts = uri.split('.');
- const ext = uriParts[uriParts.length - 1];
+  const formData = new FormData();
+  const uriParts = uri.split('.');
+  const ext = uriParts[uriParts.length - 1];
 
- formData.append('img', {
-   uri,
-   name: `${uuidv4()}.${ext}`,
-   type: `${type}/${ext}`
- });
+  formData.append('img', {
+    uri,
+    name: `${uuidv4()}.${ext}`,
+    type: `${type}/${ext}`,
+  });
 
- return formData;
-} ;
-
+  return formData;
+};
