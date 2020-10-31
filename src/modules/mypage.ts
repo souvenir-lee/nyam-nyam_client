@@ -53,7 +53,7 @@ export const actionsWithAuth = [
 ];
 
 export const initializeError = () => ({
-  type: INITIALIZE_ERROR
+  type: INITIALIZE_ERROR,
 });
 
 export const getMyInfo = (userId?: string | null) => ({
@@ -72,38 +72,38 @@ export const getMyInfoFail = (error: number | string) => ({
 });
 
 export const requestUnregister = () => ({
-  type: REQUEST_UNREGISTER
+  type: REQUEST_UNREGISTER,
 });
 
 export const unregisterSuccess = () => ({
-  type: UNREGISTER_SUCCESS
+  type: UNREGISTER_SUCCESS,
 });
 
 export const removeSignin = () => ({
-  type: REMOVE_SIGNIN
+  type: REMOVE_SIGNIN,
 });
 
 export const unregisterFail = (error: string | number) => ({
   type: UNREGISTER_FAIL,
-  payload: error
+  payload: error,
 });
 
 export const getMyStoreList = () => ({
-  type: GET_MY_STORE_LIST
+  type: GET_MY_STORE_LIST,
 });
 
 export const getMyStoreListSuccess = () => ({
-  type: GET_MY_STORE_LIST_SUCCESS
+  type: GET_MY_STORE_LIST_SUCCESS,
 });
 
 export const saveMyStoreListToRedux = (store: any) => ({
   type: SAVE_MY_STORE_LIST_TO_REDUX,
-  paylaod: store
+  paylaod: store,
 });
 
 export const getMyStoreListFail = (error: string) => ({
   type: GET_MY_STORE_LIST_FAIL,
-  error
+  error,
 });
 
 export const saveMyInfo = (username: string) => ({
@@ -114,11 +114,10 @@ export const saveMyInfo = (username: string) => ({
 export const saveMyInfoToRedux = (username : string) => ({
   type: SAVE_MY_INFO_TO_REDUX,
   payload: username
-});
 
 export const uploadMyPhoto = (type: string, uri: string) => ({
   type: UPLOAD_MY_PHOTO,
-  payload: { type, uri }
+  payload: { type, uri },
 });
 
 export const uploadMyPhotoSuccess = () => ({
@@ -132,36 +131,38 @@ export const saveMyPhotoToRedux = (uri: string) => ({
 
 export const uploadMyPhotoFail = (error: string) => ({
   type: UPLOAD_MY_PHOTO_FAIL,
-  payload: error
+  payload: error,
 });
 
 export const myInfoSaveSucceess = () => ({
-  type: MY_INFO_SAVE_SUCCESS
+  type: MY_INFO_SAVE_SUCCESS,
 });
 
 export const myInfoSaveFail = (error: string) => ({
   type: MY_INFO_SAVE_FAIL,
-  payload: error
+  payload: error,
 });
 
-
-export const requestPasswordChange = (currentPassword:string, password:string) => ({
+export const requestPasswordChange = (
+  currentPassword: string,
+  password: string
+) => ({
   type: REQUEST_PASSWORD_CHANGE,
-  payload: { currentPassword, password }
+  payload: { currentPassword, password },
 });
 
 export const passwordChangeSuccess = () => ({
-  type: PASSWORD_CHANGE_SUCCESS
+  type: PASSWORD_CHANGE_SUCCESS,
 });
 
 export const passwordChangeFail = (error: string) => ({
   type: PASSWORD_CHANGE_FAIL,
-  payload: { passwordChange: error }
+  payload: { passwordChange: error },
 });
 
 export const deleteMyStoreItem = (id: number | string) => ({
   type: DELETE_MY_STORE_ITEM,
-  payload: id
+  payload: id,
 });
 
 export const deleteMyStoreItemSuccess = () => ({
@@ -170,14 +171,13 @@ export const deleteMyStoreItemSuccess = () => ({
 
 export const deleteMyStoreItemInRedux = (id: number | string) => ({
   type: DELETE_MY_STORE_ITEM_IN_REDUX,
-  payload: id
+  payload: id,
 });
 
 export const deleteMyStoreItemFail = (error: string) => ({
   type: DELETE_MY_STORE_ITEM_FAIL,
-  payload: error
+  payload: error,
 });
-
 
 const actions = {
   initializeError,
@@ -201,17 +201,14 @@ const actions = {
   deleteMyStoreItemFail,
   uploadMyPhoto,
   uploadMyPhotoSuccess,
-  uploadMyPhotoFail
+  uploadMyPhotoFail,
 };
 
 type MyPageAction = ActionType<typeof actions>;
 
 type ActionsWithAuth = ReturnType<typeof getMyInfo>;
 
-export function* getMyInfoSaga(
-  action: any,
-  accessToken: string
-) {
+export function* getMyInfoSaga(action: any, accessToken: string) {
   //const userId = action.payload;
   let res;
   console.log('before get myinfo');
@@ -226,28 +223,27 @@ export function* getMyInfoSaga(
     res = e.response;
 
     if (res && !(yield call(handleIfAuthError, res.status))) {
-      if (res && res.status == 404) {
+      if (res && res.status === 404) {
         const msg = '내 정보가 존재하지 않습니다';
         yield put(getMyInfoFail(msg));
         Alert.alert(msg);
       } else {
-        const msg = '알 수 없는 에러가 발생했습니다.'
+        const msg = '알 수 없는 에러가 발생했습니다.';
         yield put(getMyInfoFail('알 수 없는 에러가 발생했습니다:'));
         Alert.alert(msg);
       }
     } else {
-        yield put(getMyInfoFail('서버에서 응답이 없습니다.'));
-        Alert.alert('서버에서 응답이 없습니다.');
+      yield put(getMyInfoFail('서버에서 응답이 없습니다.'));
+      Alert.alert('서버에서 응답이 없습니다.');
     }
   }
 }
-
 
 export function* requestUnregisterSaga(accessToken: string) {
   let res;
   console.log('before request unregister');
 
-  try{
+  try {
     res = yield call(mypageAPI.unregister, accessToken);
     console.log('unregister res success: ', res);
 
@@ -256,13 +252,16 @@ export function* requestUnregisterSaga(accessToken: string) {
     yield put(unregisterSuccess());
     yield put(removeSignin());
 
-    console.log('unregister result action:', yield select(state => state.signin));
-  } catch(e){
+    console.log(
+      'unregister result action:',
+      yield select((state) => state.signin)
+    );
+  } catch (e) {
     res = e.response;
     console.error('unregister fail: ', res);
 
-    let msg = '알 수 없는 에러가 발생했습니다.';
-    if(res && !(yield call(handleIfAuthError, res.status))){
+    const msg = '알 수 없는 에러가 발생했습니다.';
+    if (res && !(yield call(handleIfAuthError, res.status))) {
       yield put(unregisterFail(msg));
     } else {
       yield put(unregisterFail('서버에서 응답이 없습니다.'));
@@ -270,14 +269,11 @@ export function* requestUnregisterSaga(accessToken: string) {
   }
 }
 
-export function* saveMyInfoSaga(
-  action: any,
-  accessToken: string
-) {
+export function* saveMyInfoSaga(action: any, accessToken: string) {
   let res;
   console.log('before save my info');
 
-  try{
+  try {
     console.log('before request myinfo save action:', action);
     res = yield call(mypageAPI.saveMyInfo, accessToken, action.payload);
     console.log('save my info res success: ', res);
@@ -290,7 +286,7 @@ export function* saveMyInfoSaga(
     console.log('my info save failed: ', res);
     Alert.alert('닉네임을 변경할 수 없습니다:', res ? res.data : '');
 
-    if(res && !(yield call(handleIfAuthError, res.status))){
+    if (res && !(yield call(handleIfAuthError, res.status))) {
       yield put(myInfoSaveFail(res.statusText));
     } else {
       yield put(myInfoSaveFail('서버에서 응답이 없습니다.'));
@@ -298,7 +294,7 @@ export function* saveMyInfoSaga(
   }
 }
 
-export function* uploadMyPhotoSaga(action: any, accessToken: string){
+export function* uploadMyPhotoSaga(action: any, accessToken: string) {
   let res;
   console.log('before upload my photo');
 
@@ -315,7 +311,7 @@ export function* uploadMyPhotoSaga(action: any, accessToken: string){
 
     const isAuthError = yield call(handleIfAuthError, res.status);
 
-    if(res && !isAuthError){
+    if (res && !isAuthError) {
       yield put(uploadMyPhotoFail('알려지지 않은 에러입니다.'));
     } else {
       yield put(uploadMyPhotoFail('서버에서 응답이 없습니다..'));
@@ -323,28 +319,30 @@ export function* uploadMyPhotoSaga(action: any, accessToken: string){
   }
 }
 
-export function* requestPasswordChangeSaga(
-   action: any,
-   accessToken: string
-){
+export function* requestPasswordChangeSaga(action: any, accessToken: string) {
   let res;
   const { currentPassword, password } = action.payload;
   console.log('before request password change');
 
-  try{
-    res = yield call(mypageAPI.changePassword, accessToken, currentPassword, password);
+  try {
+    res = yield call(
+      mypageAPI.changePassword,
+      accessToken,
+      currentPassword,
+      password
+    );
 
     console.log('password change success:', res);
     Alert.alert('비밀번호가 변경되었습니다');
 
     yield put(passwordChangeSuccess());
-  } catch(e){
+  } catch (e) {
     res = e.response;
     console.log('password change fail:', res);
 
-    if(res && !(yield call(handleIfAuthError, res.status))){
+    if (res && !(yield call(handleIfAuthError, res.status))) {
       console.log('not auth error');
-      if(res && res.status == 404){
+      if (res && res.status === 404) {
         console.log('password change 404 error');
         const msg = '기존의 비밀번호가 틀렸습니다.';
 
@@ -358,24 +356,23 @@ export function* requestPasswordChangeSaga(
   }
 }
 
-export function* deleteMyStoreItemSaga(action: any, accessToken: string){
+export function* deleteMyStoreItemSaga(action: any, accessToken: string) {
   let res;
   const storeId = action.payload;
   console.log('before delete mystore item');
 
-  try{
+  try {
     res = yield call(mypageAPI.deleteMyStoreItem, accessToken, storeId);
     console.log('delete mystore item success: ', res);
 
     yield put(deleteMyStoreItemSuccess());
     yield put(deleteMyStoreItemInRedux(storeId));
-  } catch(e){
+  } catch (e) {
     res = e.response;
     console.log('delete mystore fail:', res);
 
-    if(res && !(yield call(handleIfAuthError, res.status))){
-      yield put(deleteMyStoreItemFail('가게를 삭제할 수 없습니다'))
-
+    if (res && !(yield call(handleIfAuthError, res.status))) {
+      yield put(deleteMyStoreItemFail('가게를 삭제할 수 없습니다'));
     } else {
       yield put(deleteMyStoreItemFail('서버에서 응답이 없습니다.'));
     }
@@ -416,7 +413,7 @@ export default function mypage(
     case INITIALIZE_ERROR:
       return {
         ...state,
-        error: null
+        error: null,
       };
 
     case GET_MY_INFO:
@@ -453,66 +450,66 @@ export default function mypage(
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
       };
 
     case SAVE_MY_INFO:
       return {
         ...state,
-        loading:true
-      }
+        loading: true,
+      };
     case MY_INFO_SAVE_SUCCESS:
       return {
         ...state,
         loading: false,
-        error: null
+        error: null,
       };
     case MY_INFO_SAVE_FAIL:
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
       };
 
     case UPLOAD_MY_PHOTO:
       return {
         ...state,
-        loading:false,
+        loading: false,
       };
     case UPLOAD_MY_PHOTO_SUCCESS:
       return {
         ...state,
-        loading:false,
+        loading: false,
       };
     case UPLOAD_MY_PHOTO_FAIL:
       return {
         ...state,
         loading: false,
-        error: action.payload
-      }
+        error: action.payload,
+      };
 
     case REQUEST_PASSWORD_CHANGE:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
     case PASSWORD_CHANGE_SUCCESS:
       return {
         ...state,
-        loading:false,
-        error: null
+        loading: false,
+        error: null,
       };
     case PASSWORD_CHANGE_FAIL:
       return {
         ...state,
         loading: false,
-        error: action.payload
+        error: action.payload,
       };
 
     case GET_MY_STORE_LIST:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
     case GET_MY_STORE_LIST_SUCCESS:
       return {
@@ -522,19 +519,19 @@ export default function mypage(
     case DELETE_MY_STORE_ITEM:
       return {
         ...state,
-        loading:true,
+        loading: true,
       };
     case DELETE_MY_STORE_ITEM_SUCCESS:
       return {
         ...state,
-        loading: false
+        loading: false,
       };
     case DELETE_MY_STORE_ITEM_FAIL:
       return {
         ...state,
-        loading:false,
-        error: action.payload
-      }
+        loading: false,
+        error: action.payload,
+      };
 
     default:
       return state;

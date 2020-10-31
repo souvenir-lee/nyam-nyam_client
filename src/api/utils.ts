@@ -52,3 +52,4 @@ export const makeFormData = (type: 'image', uri: string) => {
 
  return formData;
 } ;
+
