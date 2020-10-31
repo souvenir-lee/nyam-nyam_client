@@ -401,6 +401,7 @@ const initialState: MyPageState = {
   store: 0,
   production: 0,
   upload: 0,
+  menus: [],
   loading: false,
   error: null,
 };

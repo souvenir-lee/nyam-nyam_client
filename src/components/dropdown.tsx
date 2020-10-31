@@ -5,15 +5,18 @@ type DropdownProps = {
     data: any[];
     isShow: boolean;
     Item: FunctionComponent<any>
-    onPress: () => void;
-}
+    onItemPress: (args?: any) => void;
+    extra?: any
+};
 
-export default function({ data, isShow, Item, onPress }: DropdownProps){
-    const renderItem = () => (
-        <DropdownItem
-            onPress={onPress}
-        >
-            <Item />
+export default function({ data, isShow, Item, onItemPress, extra }: DropdownProps){
+    const renderItem = ({ item }: any) => (
+        <DropdownItem>
+            <Item 
+                data={item}
+                onItemPress={onItemPress}
+                {...extra}
+            />
         </DropdownItem>
     )
 
@@ -22,7 +25,7 @@ export default function({ data, isShow, Item, onPress }: DropdownProps){
             {isShow ? 
                 <DropdownList 
                     data={data}
-                    renderItem={DropdownItem}
+                    renderItem={renderItem}
                     keyExtractor={(data: any) => data.id}        
                 />
              : null}
