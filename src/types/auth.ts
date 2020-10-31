@@ -25,6 +25,7 @@ export type SigninStoreData = {
   longitude: number;
 } | null;
 
+
 export type SigninSuccess = {
   message: string;
   user: SigninUserData;
@@ -36,7 +37,7 @@ export type SigninState = {
   isSignin: boolean;
   service: 'customer' | 'store' | null;
   user: SigninUserData;
-  store: SigninStoreData;
+  store: any;
   loading: boolean;
   error: string | null;
   accessToken: string | null;
