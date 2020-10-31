@@ -5,6 +5,7 @@ import { makeClient, makeAuthHeaders } from './utils';
 const client = makeClient();
 
 export const confirmEmail = async (email: string) => {
+  console.log('confirm email');
   const res = await client.post(
     'users/emailconfirm',
     JSON.stringify({ email })

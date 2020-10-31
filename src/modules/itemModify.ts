@@ -107,6 +107,8 @@ export function* itemModifyWithAuthSaga(
 }
 
 const initialState = {
+  loading: false,
+  error: null,
   itemInfo: reducerUtils.initial(null),
 };
 
@@ -121,13 +123,23 @@ export default function itemModify(state = initialState, action) {
         null
       )(state, action);
     case POST_ITEM_MODIFY:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
     case POST_ITEM_MODIFY_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+      };
     case POST_ITEM_MODIFY_ERROR:
-      return handleAsyncActions(
-        POST_ITEM_MODIFY,
-        'itemInfo',
-        null
-      )(state, action);
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     case CLEAR_DATA:
       return initialState;
     default:

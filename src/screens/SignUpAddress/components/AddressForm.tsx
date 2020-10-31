@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
+import { View } from 'react-native';
 
 import AddressItem from './AddressItem';
 import { AddressObject } from '@base/types/weather';
 import { getAddress } from '@base/modules/signup';
 import { RootState } from '@base/modules';
-import { View } from 'react-native';
+import { MINT, MINT_STRONG, MINT_RGBA_LINE } from '@base/baseColors';
 
 type AddressItemProps = {
   item: AddressObject;
@@ -26,6 +27,7 @@ function AddressForm() {
     <AddressWrapper>
       <AddressSearch
         placeholder="가게명을 입력해주세요"
+        placeholderTextColor={MINT_STRONG}
         value={searchInput}
         onChangeText={(text: string) => setSearchInput(text)}
         onSubmitEditing={handleSearch}
@@ -38,7 +40,7 @@ function AddressForm() {
             style={{
               height: 1,
               width: '100%',
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              backgroundColor: MINT_RGBA_LINE,
             }}
           />
         )}
@@ -60,7 +62,8 @@ const AddressWrapper = styled.View`
 const AddressSearch = styled.TextInput`
   padding: 3%;
   background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 2px solid ${MINT};
+  color: ${MINT_STRONG};
   border-radius: 10px;
   font-size: 15px;
 `;
@@ -68,13 +71,15 @@ const AddressSearch = styled.TextInput`
 const AddressResult = styled.Text`
   font-size: 15px;
   margin: 10px 0px;
+  font-weight: bold;
+  color: ${MINT_STRONG};
 `;
 
 const AddressList = styled.FlatList`
   height: 100%;
   padding: 0px 3%;
   background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid ${MINT};
 `;
 
 export default React.memo(AddressForm);
