@@ -1,90 +1,97 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { InputField } from '@base/types/auth';
+import { InputField, FormKey } from '@base/types/auth';
+import { MINT, MINT_STRONG } from '@base/baseColors';
 
 type SignupScreenProps = {
-  emailField: InputField;
-  passwordField: InputField;
-  passwordCheckField: InputField;
-  usernameField: InputField;
-  handleEmailFieldChange: (text: string) => void;
-  handlePasswordFieldChange: (text: string) => void;
-  handlePasswordCheckFieldChange: (text: string) => void;
-  handleUsernameFieldChange: (text: string) => void;
-  handleNextButtonPress: (text: string) => void;
+  fields: {
+    email: InputField;
+    password: InputField;
+    passwordCheck: InputField;
+    username: InputField;
+  };
+  handleFieldChange: (key: FormKey, input: string) => void;
+  handleNextButtonPress: () => void;
 };
 
 export default function SigninScreen({
-  emailField,
-  passwordField,
-  passwordCheckField,
-  usernameField,
-  handleEmailFieldChange,
-  handlePasswordFieldChange,
-  handlePasswordCheckFieldChange,
-  handleUsernameFieldChange,
+  fields,
+  handleFieldChange,
   handleNextButtonPress,
 }: SignupScreenProps) {
+  const { email, password, passwordCheck, username } = fields;
   return (
-    <SignupContainer>
-      <Title>사장님 회원가입</Title>
-
+    <SignupContainer behavior="padding">
+      <Title>회원가입</Title>
       <SignupForm>
         <SignupField>
           <SignupInput
             placeholder={'이메일'}
-            onChangeText={handleEmailFieldChange}
-            value={emailField.input}
+            placeholderTextColor={MINT_STRONG}
+            onChangeText={(text: string) => handleFieldChange('email', text)}
+            value={email.input}
           />
-          {emailField.errMsg ? <ErrMsg>{emailField.errMsg}</ErrMsg> : null}
+          {email.errMsg ? <ErrMsg>{email.errMsg}</ErrMsg> : null}
         </SignupField>
 
         <SignupField>
           <SignupInput
             secureTextEntry={true}
             placeholder={'비밀번호'}
-            onChangeText={handlePasswordFieldChange}
-            value={passwordField.input}
+            placeholderTextColor={MINT_STRONG}
+            onChangeText={(text: string) => handleFieldChange('password', text)}
+            value={password.input}
           />
-          {passwordField.errMsg ? <ErrMsg>{passwordField.errMsg}</ErrMsg> : null}
+          {password.errMsg ? <ErrMsg>{password.errMsg}</ErrMsg> : null}
         </SignupField>
 
         <SignupField>
           <SignupInput
             secureTextEntry={true}
             placeholder={'비밀번호 확인'}
-            onChangeText={handlePasswordCheckFieldChange}
-            value={passwordCheckField.input}
+            placeholderTextColor={MINT_STRONG}
+            onChangeText={(text: string) =>
+              handleFieldChange('passwordCheck', text)
+            }
+            value={passwordCheck.input}
           />
-          {passwordCheckField.errMsg ? <ErrMsg>{passwordCheckField.errMsg}</ErrMsg> : null}
+          {passwordCheck.errMsg ? (
+            <ErrMsg>{passwordCheck.errMsg}</ErrMsg>
+          ) : null}
         </SignupField>
 
         <SignupField>
           <SignupInput
             placeholder={'이름'}
-            onChangeText={handleUsernameFieldChange}
-            value={usernameField.input}
+            placeholderTextColor={MINT_STRONG}
+            onChangeText={(text: string) => handleFieldChange('username', text)}
+            value={username.input}
           />
-          {usernameField.errMsg ? <ErrMsg>{usernameField.errMsg}</ErrMsg> : null}
+          {username.errMsg ? <ErrMsg>{username.errMsg}</ErrMsg> : null}
         </SignupField>
       </SignupForm>
 
-      <NextButton title="다음" onPress={handleNextButtonPress} />
+      <NextButton onPress={handleNextButtonPress}>
+        <NextText>다음</NextText>
+      </NextButton>
     </SignupContainer>
   );
 }
 
-const SignupContainer = styled.View`
+const SignupContainer = styled.KeyboardAvoidingView`
+  flex: 1;
+  width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0 15%;
+  /* padding: 0 15%; */
 `;
 
 const Title = styled.Text`
   text-align: center;
-  font-size: 20px;
-  margin: 10% 0;
+  font-size: 25px;
+  font-family: 'BMHANNA';
   font-weight: bold;
+  color: ${MINT_STRONG};
 `;
 
 const SignupForm = styled.View`
@@ -92,19 +99,38 @@ const SignupForm = styled.View`
 `;
 
 const SignupField = styled.View`
-  padding: 8px 5px;
+  padding: 0 15%;
 `;
 
 const SignupInput = styled.TextInput`
+  position: relative;
   padding: 3%;
   background: white;
-  margin-bottom: 3%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 10%;
+  border: 2px solid ${MINT};
   border-radius: 10px;
+  color: ${MINT_STRONG};
 `;
 
 const ErrMsg = styled.Text`
-  color:red;
-`
+  color: red;
+  position: absolute;
+  bottom: 6%;
+  left: 22%;
+`;
 
-const NextButton = styled.Button``;
+const NextButton = styled.TouchableOpacity`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  justify-content: center;
+  background-color: ${MINT_STRONG};
+`;
+
+const NextText = styled.Text`
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+`;

@@ -1,10 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { View } from 'react-native';
 import styled from 'styled-components/native';
 
 import PickedAddressItem from './PickedAddressItem';
 import { RootState } from '@base/modules';
-import { View } from 'react-native';
+import { MINT, MINT_STRONG, MINT_RGBA_LINE } from '@base/baseColors';
 
 type PickedAddressItemProps = {
   item: string;
@@ -25,7 +26,7 @@ function PickedAddressList() {
             style={{
               height: 1,
               width: '100%',
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              backgroundColor: MINT_RGBA_LINE,
             }}
           />
         )}
@@ -47,13 +48,15 @@ const PickedWrapper = styled.View`
 const PickedListTitle = styled.Text`
   font-size: 15px;
   margin-bottom: 5px;
+  font-weight: bold;
+  color: ${MINT_STRONG};
 `;
 
 const PickedList = styled.FlatList`
   height: 100%;
   background: white;
   padding: 0 3%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid ${MINT};
 `;
 
 export default React.memo(PickedAddressList);

@@ -4,21 +4,26 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import MyPageScreen from '../components/MyPageScreen';
 import { MyPageProps } from '@base/types/Navigation/MyPageNavigation';
-import { RootState } from '@base/modules'
+import { RootState } from '@base/modules';
 import { getMyInfo } from '@base/modules/mypage';
 import { signout } from '@base/modules/signin';
 
 export default function MyPageContainer({ navigation }: MyPageProps) {
-  const { store, production, upload } = useSelector((state: RootState) => state.mypage);
-  const { username, email, userImg } = useSelector((state: RootState) => (
-    state.signin.user ? state.signin.user : { username: '', email: '', userImg: null}));
-  let myPageInfo = {
-    username: username ||'',
-    email:  email || '',
+  const { store, production, upload } = useSelector(
+    (state: RootState) => state.mypage
+  );
+  const { username, email, userImg } = useSelector((state: RootState) =>
+    state.signin.user
+      ? state.signin.user
+      : { username: '', email: '', userImg: null }
+  );
+  const myPageInfo = {
+    username: username || '',
+    email: email || '',
     store: store || 0,
     production: production || 0,
     upload: upload || 0,
-    userImg: userImg || null
+    userImg: userImg || null,
   };
 
   const dispatch = useDispatch();
@@ -30,15 +35,16 @@ export default function MyPageContainer({ navigation }: MyPageProps) {
   useEffect(() => {
     const fetchMyInfoData = () => {
       dispatch(getMyInfo());
-    }
+    };
 
     fetchMyInfoData();
   }, []);
 
-
-  return <MyPageScreen 
-    navigation={navigation} 
-    myPageInfo={myPageInfo}
-    handleSignoutButtonPress={handleSignoutButtonPress}
-  />;
+  return (
+    <MyPageScreen
+      navigation={navigation}
+      myPageInfo={myPageInfo}
+      handleSignoutButtonPress={handleSignoutButtonPress}
+    />
+  );
 }

@@ -52,7 +52,6 @@ export default function Signin({ route, navigation }: SigninProps) {
     }
   }, []);
 
-
   useEffect(() => {
     const initializeWhenFirstSignin = () => {
       if (initial) {
@@ -65,28 +64,23 @@ export default function Signin({ route, navigation }: SigninProps) {
 
   return (
     <>
-      {loading ? (
-        <Loading />
-      ) : (
-        <>
-          {error ? (
-            <ErrorMsg>
-              <ErrorText>{error}</ErrorText>
-            </ErrorMsg>
-          ) : null}
+      {error ? (
+        <ErrorMsg>
+          <ErrorText>{error}</ErrorText>
+        </ErrorMsg>
+      ) : null}
 
-          <SigninScreen
-            title={title}
-            email={email}
-            password={password}
-            handleEmailChange={handleEmailChange}
-            handlePasswordChange={handlePasswordChange}
-            handleSignupPress={handleSignupPress}
-            handleSigninPress={handleSigninPress}
-            handleSocialSigninPress={handleSocialSigninPress}
-          />
-        </>
-      )}
+      <SigninScreen
+        title={title}
+        email={email}
+        password={password}
+        loading={loading}
+        handleEmailChange={handleEmailChange}
+        handlePasswordChange={handlePasswordChange}
+        handleSignupPress={handleSignupPress}
+        handleSigninPress={handleSigninPress}
+        handleSocialSigninPress={handleSocialSigninPress}
+      />
     </>
   );
 }

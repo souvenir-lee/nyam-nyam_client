@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
+import { Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import SignUpAddressScreen from '../components/SignUpAddressScreen';
 import useLocation from '@base/hooks/useLocation';
+import { clearAddressdata } from '@base/modules/signup';
 import { SignUpAddressProps } from '@base/types/Navigation/SignUpNavigation';
 import { requestSignup, updateLocation } from '@base/modules/signup';
 import { RootState } from '@base/modules';
 import { SignupInfo } from '@base/types/auth';
 import { ErrorMsg, ErrorText } from '@base/styles';
 import Loading from '@base/components/loading';
-import { ActivityIndicator } from 'react-native';
 
 export default function SignUpAddressContainer({
   navigation,
@@ -18,10 +19,15 @@ export default function SignUpAddressContainer({
   const { email, password, username } = useSelector(
     (state: RootState) => state.signup.userFields
   );
+  const { picked_address } = useSelector((state: RootState) => state.signup);
   const { errMsg, loading } = useSelector((state: RootState) => state.signup);
   const location = useLocation({ navigation });
 
   const handleRegisterButtonPress = () => {
+    if (Object.keys(picked_address.data).length === 0) {
+      Alert.alert('가게를 하나 이상 등록해야 합니다.');
+      return;
+    }
     const signupInfo: SignupInfo = {
       email,
       password,
@@ -40,7 +46,13 @@ export default function SignUpAddressContainer({
       }
     }
   }, [location, dispatch]);
-  console.log('loading: ', loading, 'err Msg:', errMsg);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearAddressdata());
+    };
+  }, [dispatch]);
+
   return (
     <>
       {loading ? (

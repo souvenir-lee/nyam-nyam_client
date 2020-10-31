@@ -24,12 +24,15 @@ export default function MyPageNavigation() {
       screenOptions={{
         headerStyle: {
           shadowColor: 'transparent',
-          borderBottomWidth: 2,
-          borderBottomColor: MINT_RGBA_LINE,
+          elevation: 0,
+          borderBottomWidth: 0,
           height: 70,
         },
         headerStatusBarHeight: 0,
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyle: {
+          backgroundColor: 'white',
+        },
       }}>
       <MyPageStack.Screen
         name="MyPage"
@@ -62,7 +65,22 @@ export default function MyPageNavigation() {
       <MyPageStack.Screen name="AddStore" component={AddStore} />
       <MyPageStack.Screen name="AddMenu" component={AddMenu} />
       <MyPageStack.Screen name="ItemModify" component={ItemModify} />
-      <MyPageStack.Screen name="ChangePassword" component={ChangePassword} />
+      <MyPageStack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+          headerTitleAlign: 'center',
+          headerBackTitleVisible: false,
+        }}
+      />
     </MyPageStack.Navigator>
   );
 }

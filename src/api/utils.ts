@@ -2,7 +2,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 export const domain = 'http://10.0.2.2:4000';
-//export const domain = 'http://3.35.243.42:4000';
+// export const domain = 'http://3.35.243.42:4000';
 
 export const makeClient = (path?: string) => {
   return axios.create({

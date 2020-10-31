@@ -3,7 +3,7 @@ import { makeFormData } from './utils';
 const client = makeClient();
 
 export const getMyInfo = async (accessToken: string) => {
-  const res = await client.get('/info/info/1', {
+  const res = await client.get('/info/info', {
     headers: { ...makeAuthHeaders(accessToken) },
   });
 

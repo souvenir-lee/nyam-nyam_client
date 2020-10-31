@@ -62,8 +62,9 @@ export default function ItemModifyContainer({ navigation, route }) {
   console.log(route);
   const { productionId, storeId } = route.params;
   const {
-    itemInfo: { loading, data, error },
+    itemInfo: { itemLoading, data, itemError },
   } = useSelector((state) => state.itemModify);
+  const { loading, error } = useSelector((state) => state.itemModify);
   const dispatch = useDispatch();
   const [form, onChange, onDelete, initialize] = useForm(null);
   const [image, setImage] = useState(null);
@@ -129,9 +130,10 @@ export default function ItemModifyContainer({ navigation, route }) {
     navigation.goBack();
   };
 
-  return loading || !form ? null : (
+  return itemLoading || !form ? null : (
     <ItemModifyScreen
       data={form}
+      loading={loading}
       image={image}
       onChange={onChange}
       onDelete={onDelete}

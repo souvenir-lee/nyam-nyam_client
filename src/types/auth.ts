@@ -25,7 +25,6 @@ export type SigninStoreData = {
   longitude: number;
 } | null;
 
-
 export type SigninSuccess = {
   message: string;
   user: SigninUserData;
@@ -46,6 +45,7 @@ export type SigninState = {
 export type InputField = {
   input: string | '';
   errMsg: string | null;
+  changed: boolean;
 };
 
 export type UserFields = {
@@ -79,3 +79,5 @@ export type SignupState = {
   coords: Coords | null;
   signupInfo: SignupInfo | null;
 };
+
+export type FormKey = 'email' | 'password' | 'passwordCheck' | 'username';

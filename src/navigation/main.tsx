@@ -47,7 +47,7 @@ const TabNavigation = () => {
           tabBarVisible: getTabBarVisibility(route),
         })}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="TrendNav"
         component={trend}
         options={{
@@ -56,7 +56,7 @@ const TabNavigation = () => {
             <TabBarIcon focused={focused} name={'trending-up'} isCommunity />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="SalesUploadNav"
         component={salesUpload}

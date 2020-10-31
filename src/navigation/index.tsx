@@ -4,7 +4,10 @@ import {
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from '@react-navigation/stack';
 
 import { RootStackParamList } from '../types/index';
 import Initial from '../screens/Initial';
@@ -13,8 +16,6 @@ import SignupStackNavigation from './signup';
 import { RootState } from '@base/modules';
 import { checkToken } from '@base/modules/signin';
 import MainTabNavigation from './main';
-
-import styled from 'styled-components/native';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -36,7 +37,15 @@ export default function Navigation() {
   console.log('isSignin in navigation: ', isSignin);
   return (
     <NavigationContainer ref={navigationRef}>
-      <RootStack.Navigator headerMode={isSignin ? 'none' : 'screen'}>
+      <RootStack.Navigator
+        headerMode={isSignin ? 'none' : 'screen'}
+        screenOptions={{
+          cardStyle: {
+            backgroundColor: 'white',
+          },
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}>
         {isSignin ? (
           <RootStack.Screen name="Main" component={MainTabNavigation} />
         ) : (
