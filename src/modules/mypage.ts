@@ -7,37 +7,46 @@ import * as mypageAPI from '@base/api/mypage';
 import { handleIfAuthError, clearTokens } from '@base/lib/auth';
 
 const INITIALIZE_ERROR = 'mypage/INITIALIZE_ERROR' as const;
+
 const GET_MY_INFO = 'mypage/GET_MY_INFO' as const;
 const GET_MY_INFO_SUCCESS = 'mypage/GET_MY_INFO_SUCCESS' as const;
 const GET_MY_INFO_FAIL = 'mypage/GET_MY_INFO_FAIL' as const;
+
 const REQUEST_UNREGISTER = 'mypage/REQUEST_UNREGISTER' as const;
 const UNREGISTER_SUCCESS = 'mypage/UNREGISTER_SUCCESS' as const;
 const UNREGISTER_FAIL = 'mypage/UNREGISTER_FAIL' as const;
+
 const SAVE_MY_INFO = 'mypage/SAVE_MY_INFO' as const;
 const MY_INFO_SAVE_SUCCESS = 'mypage/MY_INFO_SAVE_SUCCESS' as const;
 const MY_INFO_SAVE_FAIL = 'mypage/MY_INFO_SAVE_FAIL' as const;
+
 const UPLOAD_MY_PHOTO = 'mypage/UPLOAD_MY_PHOTO' as const;
 const UPLOAD_MY_PHOTO_SUCCESS = 'mypage/UPLOAD_MY_PHOTO_SUCCESS' as const;
 const UPLOAD_MY_PHOTO_FAIL = 'mypage/UPLOAD_MY_PHOTO_FAIL' as const;
+
 const REQUEST_PASSWORD_CHANGE = 'mypage/REQUEST_PASSWORD_CHANGE' as const;
 const PASSWORD_CHANGE_SUCCESS = 'mypage/PASSWORD_CHANGE_SUCCESS' as const;
 const PASSWORD_CHANGE_FAIL = 'mypage/PASSWORD_CHANGE_FAIL' as const;
+
 const GET_MY_STORE_LIST = 'mypage/GET_MY_STORE_LIST' as const;
 const GET_MY_STORE_LIST_SUCCESS = 'mypage/GET_MY_STORE_LIST_SUCCESS' as const;
 const GET_MY_STORE_LIST_FAIL = 'mypage/GET_MY_STORE_LIST_FAIL' as const;
+
 const DELETE_MY_STORE_ITEM = 'mypage/DELETE_MY_STORE_ITEM' as const;
 const DELETE_MY_STORE_ITEM_SUCCESS = 'mypage/DELETE_MY_STORE_ITEM_SUCCESS' as const;
 const DELETE_MY_STORE_ITEM_FAIL = 'mypage/DELETE_MY_STORE_ITEM_FAIL' as const;
 
-export const MODIFY_MY_INFO = 'mypage/MODIFY_MY_INFO' as const;
+export const SAVE_MY_INFO_TO_REDUX = 'mypage/SAVE_MY_INFO' as const;
 export const REMOVE_SIGNIN = 'mypage/REMOVE_SIGNIN' as const;
 export const SAVE_MY_STORE_LIST_TO_REDUX = 'mypage/SAVE_MY_STORE_LIST_TO_REDUX' as const;
+export const SAVE_MY_PHOTO_TO_REDUX = 'mypage/SAVE_MY_PHOTO_TO_REDUX' as const;
 export const DELETE_MY_STORE_ITEM_IN_REDUX = 'mypage/DELETE_MY_STORE_ITEM_IN_REDUX' as const;
 
 export const actionsWithAuth = [
   GET_MY_INFO,
   REQUEST_UNREGISTER,
   SAVE_MY_INFO,
+  UPLOAD_MY_PHOTO,
   REQUEST_PASSWORD_CHANGE,
   GET_MY_STORE_LIST,
   DELETE_MY_STORE_ITEM,
@@ -97,14 +106,14 @@ export const getMyStoreListFail = (error: string) => ({
   error,
 });
 
-type ModifyMyInfo = {
-  username: string;
-};
-
-export const saveMyInfo = (myInfo: ModifyMyInfo) => ({
+export const saveMyInfo = (username: string) => ({
   type: SAVE_MY_INFO,
-  payload: myInfo,
+  payload: username
 });
+
+export const saveMyInfoToRedux = (username : string) => ({
+  type: SAVE_MY_INFO_TO_REDUX,
+  payload: username
 
 export const uploadMyPhoto = (type: string, uri: string) => ({
   type: UPLOAD_MY_PHOTO,
@@ -113,6 +122,11 @@ export const uploadMyPhoto = (type: string, uri: string) => ({
 
 export const uploadMyPhotoSuccess = () => ({
   type: UPLOAD_MY_PHOTO_SUCCESS,
+});
+
+export const saveMyPhotoToRedux = (uri: string) => ({
+  type: SAVE_MY_PHOTO_TO_REDUX,
+  payload: uri
 });
 
 export const uploadMyPhotoFail = (error: string) => ({
@@ -127,11 +141,6 @@ export const myInfoSaveSucceess = () => ({
 export const myInfoSaveFail = (error: string) => ({
   type: MY_INFO_SAVE_FAIL,
   payload: error,
-});
-
-export const modifyMyInfo = (myInfo: ModifyMyInfo) => ({
-  type: MODIFY_MY_INFO,
-  payload: myInfo,
 });
 
 export const requestPasswordChange = (
@@ -271,8 +280,8 @@ export function* saveMyInfoSaga(action: any, accessToken: string) {
     Alert.alert('닉네임이 변경되었습니다.');
 
     put(myInfoSaveSucceess());
-    put(removeSignin());
-  } catch (e) {
+    put(saveMyInfoToRedux(action.payload))
+  } catch(e){
     res = e.response;
     console.log('my info save failed: ', res);
     Alert.alert('닉네임을 변경할 수 없습니다:', res ? res.data : '');
@@ -289,9 +298,17 @@ export function* uploadMyPhotoSaga(action: any, accessToken: string) {
   let res;
   console.log('before upload my photo');
 
-  try {
-  } catch (e) {
+  try{  
+    const { type, uri } = action.payload;
+    res = yield call(mypageAPI.uploadPhoto, accessToken, type, uri);
+
+    yield put(uploadMyPhotoSuccess());
+    
+    console.log('upload my photo success:', res);
+  } catch(e){
     res = e.response;
+    console.error('upload my photo fail:', res);
+
     const isAuthError = yield call(handleIfAuthError, res.status);
 
     if (res && !isAuthError) {
@@ -362,21 +379,23 @@ export function* deleteMyStoreItemSaga(action: any, accessToken: string) {
   }
 }
 
-export function* mypageSaga(action: ActionsWithAuth, accessToken: string) {
-  console.log('saga pattern:', action);
-  switch (action.type as any) {
-    case GET_MY_INFO:
-      return yield fork(getMyInfoSaga, action, accessToken);
-    case REQUEST_UNREGISTER:
-      return yield fork(requestUnregisterSaga, accessToken);
-    case SAVE_MY_INFO:
-      return yield fork(saveMyInfoSaga, action, accessToken);
-    case REQUEST_PASSWORD_CHANGE:
-      return yield fork(requestPasswordChangeSaga, action, accessToken);
-    case DELETE_MY_STORE_ITEM:
-      return yield fork(deleteMyStoreItemSaga, action, accessToken);
-  }
-}
+export function* mypageSaga(action: ActionsWithAuth, accessToken: string){
+    console.log('saga pattern:', action);
+    switch(action.type as any){
+      case GET_MY_INFO:
+        return yield fork(getMyInfoSaga, action, accessToken);
+      case REQUEST_UNREGISTER:
+        return yield fork(requestUnregisterSaga, accessToken);
+      case SAVE_MY_INFO:
+        return yield fork(saveMyInfoSaga, action, accessToken);
+      case UPLOAD_MY_PHOTO:
+        return yield fork(uploadMyPhotoSaga, action, accessToken);
+      case REQUEST_PASSWORD_CHANGE:
+        return yield fork(requestPasswordChangeSaga, action, accessToken);
+      case DELETE_MY_STORE_ITEM:
+        return yield fork(deleteMyStoreItemSaga, action, accessToken);
+    }
+};
 
 const initialState: MyPageState = {
   store: 0,

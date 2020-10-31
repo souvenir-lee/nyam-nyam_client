@@ -16,7 +16,9 @@ type MyPageScreenProps = {
 export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButtonPress }
   : MyPageScreenProps) {
 
-  const { username, email, store, production, upload } = myPageInfo; 
+  const { username, email, store, production, upload, userImg } = myPageInfo; 
+  const avatar = { uri: userImg} || require('@base/../assets/images/default_user_avatar.jpg');
+
   return (
     <MyPageContainer>
 
@@ -24,7 +26,7 @@ export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButt
 
       <MyPageUserInfo>
         <UserAvatar
-          source={require('@base/../assets/images/default_user_avatar.jpg')}
+          source={avatar}
         />
         <UserTextWrapper>
           <UserNameText>{username}</UserNameText>
