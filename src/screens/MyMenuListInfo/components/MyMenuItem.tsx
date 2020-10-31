@@ -1,30 +1,24 @@
 import React from 'react';
 import styled from 'styled-components/native';
 
-export type MyMenuItemType = {
-  id: number | string;
-  storeId: number | string;
-  productionId: number | string;
-  productionName: string;
-  productionImg: string;
-  quantity: number | string;
-};
+import { MyMenuItemType } from '@base/types/mypage';
 
 type MyMenuItemProps = {
-  menu: MyMenuItemType;
+  data: MyMenuItemType;
+  onPress: (id: string | number) => void;
   onDeletionPress: () => void;
 };
 
-export default function ({ menu, onDeletionPress }: MyMenuItemProps) {
+export default function ({ data, onPress, onDeletionPress }: MyMenuItemProps) {
   return (
     <MyMenuItem>
-      <MyMenuImg />
-      <MyMenuRight>
-        <MyMenuName>{menu.productionName}</MyMenuName>
-        <DeletionButton>
-          <ButtonText onPress={onDeletionPress}>X</ButtonText>
-        </DeletionButton>
-      </MyMenuRight>
+      <MyMenuBody onPress={(id: string | number) => onPress(id)}>
+        <MyMenuImg />
+        <MyMenuName>{}</MyMenuName>
+      </MyMenuBody>
+      <DeletionButton>
+        <ButtonText onPress={onDeletionPress}>X</ButtonText>
+      </DeletionButton>
     </MyMenuItem>
   );
 }
@@ -33,7 +27,7 @@ const MyMenuItem = styled.View``;
 
 const MyMenuImg = styled.Image``;
 
-const MyMenuRight = styled.View``;
+const MyMenuBody = styled.View``;
 
 const MyMenuName = styled.Text``;
 

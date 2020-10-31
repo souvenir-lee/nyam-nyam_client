@@ -69,5 +69,15 @@ export const uploadPhoto = async (accessToken: string, type: 'image', uri: strin
   });
 
   return res;
+};
+
+export const getMyMenuList = async (accessToken: string, storeId: string | number) => {
+  const res =  await client.get(`managemenu/menu/${storeId}`, {
+    headers: {
+      ...makeAuthHeaders(accessToken),
+    }
+  });
+
+  return res;
 }
 
