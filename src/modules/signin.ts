@@ -16,14 +16,16 @@ import {
   clearTokens,
 } from '@base/lib/auth';
 import { 
-  modifyMyInfo, 
-  MODIFY_MY_INFO, 
+  SAVE_MY_INFO_TO_REDUX,
+  saveMyInfoToRedux, 
   removeSignin, 
   REMOVE_SIGNIN, 
   SAVE_MY_STORE_LIST_TO_REDUX, 
   saveMyStoreListToRedux,
   DELETE_MY_STORE_ITEM_IN_REDUX,
-  deleteMyStoreItemInRedux 
+  deleteMyStoreItemInRedux,
+  SAVE_MY_PHOTO_TO_REDUX,
+  saveMyPhotoToRedux
 } from './mypage'
 import salesPredictNavigation from '@base/navigation/salesPredict';
 
@@ -108,10 +110,11 @@ const actions = {
   invalidToken,
   signout,
   signoutSuccess,
-  modifyMyInfo,
+  saveMyInfoToRedux,
   removeSignin,
   saveMyStoreListToRedux,
-  deleteMyStoreItemInRedux
+  deleteMyStoreItemInRedux,
+  saveMyPhotoToRedux
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -226,6 +229,7 @@ export default function signin(
         error: null,
         accessToken: null,
       };
+
     case REQUEST_SIGNIN:
       return {
         ...state,
@@ -248,6 +252,7 @@ export default function signin(
         loading: false,
         error: action.payload,
       };
+
     case VALID_TOKEN:
       return {
         ...state,
@@ -259,35 +264,33 @@ export default function signin(
         service: state.service,
         error: getAuthErrMsg(action.payload),
       };
+
     case SIGNOUT:
     case SIGNOUT_SUCCESS:
       return {
         ...initialState,
       };
-    case MODIFY_MY_INFO:
-      if(state.user === null){
+
+    case SAVE_MY_INFO_TO_REDUX:
         return {
           ...state,
-          user: null
-        }
-      } else {
-        return {
-          ...state,
-          user: {
+          user: state.user ? {
             ...state.user,
-            username: action.payload.username
-          }
-        }
-      };
+            username: action.payload
+          } : null
+        };
+
     case REMOVE_SIGNIN:
       return {
         ...initialState
       };
+
     case SAVE_MY_STORE_LIST_TO_REDUX:
       return {
         ...state,
         store: action.paylaod
       };
+
     case DELETE_MY_STORE_ITEM_IN_REDUX:
       const storeId = action.payload;
 
@@ -300,6 +303,15 @@ export default function signin(
         store: {
           ...state.store
         }
+      };
+
+    case SAVE_MY_PHOTO_TO_REDUX:
+      return {
+        ...state,
+        user: state.user ? {
+          ...state.user,
+          userImg: action.payload,
+        } : null
       };
     default:
       return state;

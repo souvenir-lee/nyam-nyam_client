@@ -10,15 +10,17 @@ import { signout } from '@base/modules/signin';
 
 export default function MyPageContainer({ navigation }: MyPageProps) {
   const { store, production, upload } = useSelector((state: RootState) => state.mypage);
-  const { username, email } = useSelector((state: RootState) => (
-    state.signin.user ? state.signin.user : { username: '', email: ''}));
+  const { username, email, userImg } = useSelector((state: RootState) => (
+    state.signin.user ? state.signin.user : { username: '', email: '', userImg: null}));
   let myPageInfo = {
     username: username ||'',
     email:  email || '',
     store: store || 0,
     production: production || 0,
-    upload: upload || 0
+    upload: upload || 0,
+    userImg: userImg || null
   };
+
   const dispatch = useDispatch();
 
   const handleSignoutButtonPress = () => {

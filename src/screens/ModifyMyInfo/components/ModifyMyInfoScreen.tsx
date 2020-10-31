@@ -10,21 +10,21 @@ type ModifyMyInfoScreenProps = {
   navigation: ModifyMyInfoProps['navigation'];
   username: string;
   email: string;
-  avatar: string | null;
+  userImg: string | null;
   onPhotoModifyPress: () => void;
   onUsernameChange: (text: string) => void;
   onUnregisterSubmit: () => void;
 };
 
 export default function ModifyMyInfoScreen({
-  navigation, username, email, avatar, onUsernameChange, onUnregisterSubmit, onPhotoModifyPress
+  navigation, username, email, userImg, onUsernameChange, onUnregisterSubmit, onPhotoModifyPress
 }: ModifyMyInfoScreenProps) {
-  const avatarImg = { uri: avatar } || require('@base/../assets/images/default_user_avatar.jpg')
+  const avatar = userImg ? { uri: userImg } :require('@base/../assets/images/default_user_avatar.jpg');
   return (
     <Container>
       <MyPageUserInfo>
          <UserAvatar
-            source={avatarImg}
+            source={avatar}
           />
           <UserAvatarModifyButton>
             <ButtonText

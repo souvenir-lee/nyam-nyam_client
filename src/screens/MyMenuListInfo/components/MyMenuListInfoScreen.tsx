@@ -1,14 +1,48 @@
 import React from 'react';
 import styled from 'styled-components/native';
 
-import { MyMenuListInfoProps } from '@base/types/Navigation/MyPageNavigation';
+import Dropdown from '@base/components/dropdown';
+import MyMenuItem, { MyMenuItemType} from './MyMenuItem';
 
-type MyMenuListInfoScreen = {
-  navigation: MyMenuListInfoProps['navigation'];
+type MyMenuListInfoProps = {
+  menus: MyMenuItemType[] | null; 
 };
 
 export default function MyMenuListInfoScreen({
-  navigation,
-}: MyMenuListInfoScreen) {
-  return null;
+  menus
+}: MyMenuListInfoProps) {
+
+  return (
+    <Container>
+      <Title>메뉴 목록</Title>
+
+      <DropdownToggle>
+        <ToggleText></ToggleText>
+        <Dropdown 
+
+        />
+      </DropdownToggle>
+
+      <MyMenuList>
+        {menus?.map(menu => {
+          <MyMenuItem 
+            key={menu.id}
+            menu={menu}
+          />
+        })}
+      </MyMenuList>
+    </Container>
+  )
 }
+
+const Container = styled.View``;
+
+const Title = styled.Text``;
+
+const DropdownToggle = styled.TouchableOpacity``
+
+const ToggleText = styled.Text``;
+
+const MyMenuList = styled.ScrollView``;
+
+

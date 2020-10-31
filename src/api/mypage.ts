@@ -1,8 +1,5 @@
-import Axios from 'axios';
-import axios from 'axios';
-
 import { makeClient, makeAuthHeaders } from './utils';
-
+import { makeFormData } from './utils';
 const client = makeClient();
 
 export const getMyInfo = async (accessToken: string) => {
@@ -61,3 +58,16 @@ export const deleteMyStoreItem = async (accessToken: string, storeId: string | n
 
   return res;
 }
+
+export const uploadPhoto = async (accessToken: string, type: 'image', uri: string) => {
+  const formData = makeFormData(type, uri);
+  const res =  await client.post('editinfo/image', formData, {
+    headers: {
+      ...makeAuthHeaders(accessToken),
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+
+  return res;
+}
+

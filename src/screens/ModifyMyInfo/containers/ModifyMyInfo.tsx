@@ -14,9 +14,10 @@ export default function ModifyMyInfoContainer({
   navigation,
 }: ModifyMyInfoProps) {
   const { user } = useSelector((state: RootState) => state.signin);
-  const { username, email } = user ? user : { username: '', email: '' };
+  const username = useSelector((state: RootState) => state.signin.user 
+    ? state.signin.user.username : '');
+  const { email, userImg } = user ? user : { email: '', userImg: null };
   const [ _username, setUsername ] = useState(username)
-   const [photo, setPhoto] = useState<string | null>(null);
   const dispatch = useDispatch();
 
   const handleUsernameChange = (text: string) => {
@@ -62,7 +63,6 @@ export default function ModifyMyInfoContainer({
 
         if(!result.cancelled){
           const { type, uri } = result;
-          setPhoto(uri);
           dispatch(uploadMyPhoto(type as 'image', uri))
         }
       } else {
@@ -87,7 +87,7 @@ export default function ModifyMyInfoContainer({
 
   return <ModifyMyInfoScreen 
     navigation={navigation}
-    avatar={photo}
+    userImg={userImg}
     username={_username}
     email={email}
     onPhotoModifyPress={handlePhotoModifyPress}

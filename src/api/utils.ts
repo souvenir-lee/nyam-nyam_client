@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 export const domain = 'http://10.0.2.2:4000';
 //export const domain = 'http://3.35.243.42:4000';
@@ -37,3 +38,17 @@ export const convertStoreObjToArray = (store) => {
   });
   return storeLists;
 };
+
+export const makeFormData = (type: 'image', uri: string) => {
+ const formData = new FormData();
+ const uriParts = uri.split('.');
+ const ext = uriParts[uriParts.length - 1];
+
+ formData.append('img', {
+   uri,
+   name: `${uuidv4()}.${ext}`,
+   type: `${type}/${ext}`
+ });
+
+ return formData;
+} ;
