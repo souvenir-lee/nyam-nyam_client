@@ -12,7 +12,7 @@ import { initializeError, deleteMyStoreItem } from '@base/modules/mypage';
 type isRenderingFirstState = {
   isRenderingFirst: boolean;
   setIsRenderingFirst: (val: boolean) => void;
-}
+};
 
 export default function MyStoreListInfoContainer({
   navigation,
@@ -22,7 +22,7 @@ export default function MyStoreListInfoContainer({
   const [isRenderingFirst, setIsRenderingFirst] = useState<boolean>(true);
   const dispatch = useDispatch();
 
-  const handlStoreItemDeletionPress = (id: number|string) => {
+  const handlStoreItemDeletionPress = (id: number | string) => {
     dispatch(deleteMyStoreItem(id));
   };
 
@@ -34,10 +34,10 @@ export default function MyStoreListInfoContainer({
     const getMyStoreList = () => {
       dispatch(getMyStoreList());
     };
-    if(!store){
+    if (!store) {
       getMyStoreList();
     }
-  }, [store])
+  }, [store]);
 
   useEffect(() => {
     const removePreviousError = () => {
@@ -50,7 +50,7 @@ export default function MyStoreListInfoContainer({
 
   useEffect(() => {
     const displayError = () => {
-      if(!isRenderingFirst && error){
+      if (!isRenderingFirst && error) {
         Alert.alert(error);
       }
     };
@@ -58,11 +58,12 @@ export default function MyStoreListInfoContainer({
     displayError();
   }, [error]);
 
-
-  return <MyStoreListInfoScreen 
-    navigation={navigation} 
-    store={store}
-    onStoreItemDeletionPress={handlStoreItemDeletionPress}
-    onAddStoreNavigatePress={handlAddStoreNavigatePress}
-  />;
+  return (
+    <MyStoreListInfoScreen
+      navigation={navigation}
+      store={store}
+      onStoreItemDeletionPress={handlStoreItemDeletionPress}
+      onAddStoreNavigatePress={handlAddStoreNavigatePress}
+    />
+  );
 }

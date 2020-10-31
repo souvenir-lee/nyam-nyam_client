@@ -36,6 +36,7 @@ export const getOpenWeather = async ({
   x,
   y,
 }: Coords): Promise<WeatherAPIResults> => {
+  console.log('x', x, 'y', y);
   const weatherResult = await axios.get(
     `https://api.openweathermap.org/data/2.5/onecall?lat=${x}&lon=${y}&exclude=minutely,hourly,alerts&appid=${WEATHER_API_KEY}&units=metric`
   );

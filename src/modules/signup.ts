@@ -278,9 +278,7 @@ export default function signup(
         signupInfo: action.payload,
       };
     case SIGNUP_SUCCESS:
-      return {
-        ...initialState,
-      };
+      return initialState;
     case SIGNUP_ERROR:
       return {
         ...state,

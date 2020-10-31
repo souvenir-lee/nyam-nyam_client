@@ -79,9 +79,7 @@ export default function SalesPredictContainer({
     return null;
   }
 
-  console.log('weatherLoading', weatherLoading);
-  console.log('storeArray', storeArray);
-  return weatherLoading || !storeArray.length ? (
+  return !currentWeatherData || weatherLoading || !storeArray.length ? (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" color="#000000" />
     </View>
