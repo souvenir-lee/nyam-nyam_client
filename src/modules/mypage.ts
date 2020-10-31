@@ -325,7 +325,7 @@ export function* requestPasswordChangeSaga(action: any, accessToken: string) {
 
     if (res && !(yield call(handleIfAuthError, res.status))) {
       console.log('not auth error');
-      if (res && res.status == 404) {
+      if (res && res.status === 404) {
         console.log('password change 404 error');
         const msg = '기존의 비밀번호가 틀렸습니다.';
 
