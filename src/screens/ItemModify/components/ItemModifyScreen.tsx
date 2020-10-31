@@ -87,7 +87,7 @@ export default function ItemModifyScreen({
               placeholder={'가격(원)'}
               keyboardType="numeric"
               maxLength={7}
-              onChangeText={(text) => onChange('productionName', text)}
+              onChangeText={(text) => onChange('price', text)}
               value={price.toString()}
             />
           </DetailRow>
@@ -122,7 +122,7 @@ export default function ItemModifyScreen({
                 }
               }}>
               {idToIngredients.map((type, index) => (
-                <Picker.Item label={type} value={index + 1} />
+                <Picker.Item key={index} label={type} value={index + 1} />
               ))}
             </Picker>
           </DetailRow>

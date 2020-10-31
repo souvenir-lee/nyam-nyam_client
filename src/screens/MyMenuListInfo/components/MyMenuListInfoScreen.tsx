@@ -9,13 +9,17 @@ import { SigninStoreData } from '@base/types/auth';
 type MyMenuListInfoProps = {
   stores: SigninStoreData[] | [];
   currentStore: SigninStoreData | null;
-  menus: MyMenuItemType[] | []; 
+  menus: MyMenuItemType[] | [];
   onStoreSelect: (id: string | number) => void;
   onDeletionPress: () => void;
 };
 
 export default function MyMenuListInfoScreen({
-  menus, stores, currentStore, onStoreSelect, onDeletionPress
+  menus,
+  stores,
+  currentStore,
+  onStoreSelect,
+  onDeletionPress,
 }: MyMenuListInfoProps) {
   const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
 
@@ -24,47 +28,38 @@ export default function MyMenuListInfoScreen({
       <Title>메뉴 목록</Title>
 
       <DropdownToggle>
-        <ToggleText
-          onPress={() => setIsDropdownShow(!isDropdownShow) }
-        >
-          {isDropdownShow ? '▲': '▼'} &nbsp; {currentStore ? currentStore.storeName: ''}
+        <ToggleText onPress={() => setIsDropdownShow(!isDropdownShow)}>
+          {isDropdownShow ? '▲' : '▼'} &nbsp;{' '}
+          {currentStore ? currentStore.storeName : ''}
         </ToggleText>
-        <Dropdown 
+        <Dropdown
           data={stores}
           isShow={isDropdownShow}
           Item={MyMenuItem}
           onItemPress={onStoreSelect}
           extra={{
-            onDeletionPress
+            onDeletionPress,
           }}
         />
       </DropdownToggle>
 
       <MyMenuList>
-        {
-          menus.length > 0 
+        {menus.length > 0
           ? menus.map((menu: MyMenuItemType) => {
-            return (
-              <MyMenuItem 
-
-              />
-            )
-          }) 
-          : null
-        }
+              return <MyMenuItem />;
+            })
+          : null}
       </MyMenuList>
     </Container>
-  )
+  );
 }
 
 const Container = styled.View``;
 
 const Title = styled.Text``;
 
-const DropdownToggle = styled.TouchableOpacity``
+const DropdownToggle = styled.TouchableOpacity``;
 
 const ToggleText = styled.Text``;
 
 const MyMenuList = styled.ScrollView``;
-
-

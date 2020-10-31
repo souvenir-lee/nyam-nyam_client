@@ -108,12 +108,13 @@ export const getMyStoreListFail = (error: string) => ({
 
 export const saveMyInfo = (username: string) => ({
   type: SAVE_MY_INFO,
-  payload: username
+  payload: username,
 });
 
-export const saveMyInfoToRedux = (username : string) => ({
+export const saveMyInfoToRedux = (username: string) => ({
   type: SAVE_MY_INFO_TO_REDUX,
-  payload: username
+  payload: username,
+});
 
 export const uploadMyPhoto = (type: string, uri: string) => ({
   type: UPLOAD_MY_PHOTO,
@@ -126,7 +127,7 @@ export const uploadMyPhotoSuccess = () => ({
 
 export const saveMyPhotoToRedux = (uri: string) => ({
   type: SAVE_MY_PHOTO_TO_REDUX,
-  payload: uri
+  payload: uri,
 });
 
 export const uploadMyPhotoFail = (error: string) => ({
@@ -280,8 +281,8 @@ export function* saveMyInfoSaga(action: any, accessToken: string) {
     Alert.alert('닉네임이 변경되었습니다.');
 
     put(myInfoSaveSucceess());
-    put(saveMyInfoToRedux(action.payload))
-  } catch(e){
+    put(saveMyInfoToRedux(action.payload));
+  } catch (e) {
     res = e.response;
     console.log('my info save failed: ', res);
     Alert.alert('닉네임을 변경할 수 없습니다:', res ? res.data : '');
@@ -298,14 +299,14 @@ export function* uploadMyPhotoSaga(action: any, accessToken: string) {
   let res;
   console.log('before upload my photo');
 
-  try{  
+  try {
     const { type, uri } = action.payload;
     res = yield call(mypageAPI.uploadPhoto, accessToken, type, uri);
 
     yield put(uploadMyPhotoSuccess());
-    
+
     console.log('upload my photo success:', res);
-  } catch(e){
+  } catch (e) {
     res = e.response;
     console.error('upload my photo fail:', res);
 
@@ -379,23 +380,23 @@ export function* deleteMyStoreItemSaga(action: any, accessToken: string) {
   }
 }
 
-export function* mypageSaga(action: ActionsWithAuth, accessToken: string){
-    console.log('saga pattern:', action);
-    switch(action.type as any){
-      case GET_MY_INFO:
-        return yield fork(getMyInfoSaga, action, accessToken);
-      case REQUEST_UNREGISTER:
-        return yield fork(requestUnregisterSaga, accessToken);
-      case SAVE_MY_INFO:
-        return yield fork(saveMyInfoSaga, action, accessToken);
-      case UPLOAD_MY_PHOTO:
-        return yield fork(uploadMyPhotoSaga, action, accessToken);
-      case REQUEST_PASSWORD_CHANGE:
-        return yield fork(requestPasswordChangeSaga, action, accessToken);
-      case DELETE_MY_STORE_ITEM:
-        return yield fork(deleteMyStoreItemSaga, action, accessToken);
-    }
-};
+export function* mypageSaga(action: ActionsWithAuth, accessToken: string) {
+  console.log('saga pattern:', action);
+  switch (action.type as any) {
+    case GET_MY_INFO:
+      return yield fork(getMyInfoSaga, action, accessToken);
+    case REQUEST_UNREGISTER:
+      return yield fork(requestUnregisterSaga, accessToken);
+    case SAVE_MY_INFO:
+      return yield fork(saveMyInfoSaga, action, accessToken);
+    case UPLOAD_MY_PHOTO:
+      return yield fork(uploadMyPhotoSaga, action, accessToken);
+    case REQUEST_PASSWORD_CHANGE:
+      return yield fork(requestPasswordChangeSaga, action, accessToken);
+    case DELETE_MY_STORE_ITEM:
+      return yield fork(deleteMyStoreItemSaga, action, accessToken);
+  }
+}
 
 const initialState: MyPageState = {
   store: 0,

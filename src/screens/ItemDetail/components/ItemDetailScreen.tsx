@@ -43,7 +43,7 @@ export default function ItemDetailScreen({
         <ItemDetailImg
           source={
             data.productionImg
-              ? data.productionImg
+              ? { uri: data.productionImg }
               : require('@base/../assets/images/default_dessert_image.png')
           }
         />
