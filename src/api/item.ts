@@ -79,7 +79,7 @@ export const idToDessertType = [
 
 export const getItemDetailInfo = async (productionId: string) => {
   const getItemDetail = await axios.get(
-    `${domain}/managemenu/detail/${productionId}`,
+    `${domain}/detail/${productionId}`,
     {
       withCredentials: true,
       responseType: 'json',

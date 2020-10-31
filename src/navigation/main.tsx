@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import salesPredict from './salesPredict';
 import trend from './trend';
-import salesUpload from '@base/screens/SalesUpload';
+import salesUpload from './salesUpload';
 import myPage from './myPage';
 import TabBarIcon from '@base/components/TabBarIcon';
 import { MainTabParamList } from '@base/types/Navigation/MainNavigation';
@@ -58,7 +58,7 @@ const TabNavigation = () => {
         }}
       />
       <Tab.Screen
-        name="SalesUpload"
+        name="SalesUploadNav"
         component={salesUpload}
         options={{
           title: '내역 업로드',

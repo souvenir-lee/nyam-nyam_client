@@ -25,3 +25,15 @@ export const makeAuthHeaders = (
 
   return headers;
 };
+
+export const convertStoreObjToArray = (store) => {
+  if (!store) {
+    return [];
+  }
+  const storeIds = Object.getOwnPropertyNames(store);
+  const storeLists = [];
+  storeIds.forEach((storeId, index) => {
+    storeLists.push(store[storeId]);
+  });
+  return storeLists;
+};

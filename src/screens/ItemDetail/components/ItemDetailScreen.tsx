@@ -162,6 +162,7 @@ const DetailContent = styled.Text`
 
 const IngredientWrapper = styled.View`
   align-items: center;
+  flex-direction: row;
 `;
 
 const Ingredient = styled.Text`

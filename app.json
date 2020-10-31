@@ -19,13 +19,14 @@
       "**/*"
     ],
     "android": {
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.piecemakerz.nyamnyamclient"
     },
     "ios": {
       "supportsTablet": true
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    },
+    }
   }
 }

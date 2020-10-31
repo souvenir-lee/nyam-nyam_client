@@ -20,6 +20,18 @@ export const weatherToKorean = {
   Dust: '황사',
 };
 
+export const weatherList = [
+  '번개',
+  '소나기',
+  '비',
+  '눈',
+  '황사',
+  '안개',
+  '태풍',
+  '맑음',
+  '구름',
+];
+
 export const getOpenWeather = async ({
   x,
   y,

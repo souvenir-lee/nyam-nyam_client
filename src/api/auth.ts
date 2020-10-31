@@ -27,16 +27,13 @@ export const signin = async (signinInfo: SigninInfo) => {
 };
 
 export const requestSignup = async (signupInfo: SignupInfo) => {
-  console.log('before reqest signup');
+  console.log('before reqest signup', signupInfo);
   const res = await client.post('users/signup', JSON.stringify(signupInfo));
   console.log('request signup api: ', res);
   return res;
 };
 
-export const refresh = async (
-  accessToken: string,
-  refreshToken: string,
-) => {
+export const refresh = async (accessToken: string, refreshToken: string) => {
   console.log('before refresh');
   const res = await client.post('/token', null, {
     headers: {
@@ -72,4 +69,3 @@ export const signout = async (accessToken: string) => {
   console.log('after signout api call');
   return res;
 };
-

@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { select, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { Alert } from 'react-native';
 import { ActionType } from 'typesafe-actions';
 import { AxiosError } from 'axios';
@@ -129,6 +129,15 @@ const getAddressSaga = createPromiseSaga(GET_ADDRESS, getStoreByKeyword);
 function* requestSignupSaga(action: ReturnType<typeof requestSignup>) {
   const signupInfo = action.payload;
   let res;
+  const { data: stores } = yield select((state) => state.signup.picked_address);
+  const storesArr = [];
+  console.log('stores', stores);
+  for (const key in stores) {
+    const store = stores[key];
+    storesArr.push(store);
+  }
+  signupInfo.stores = storesArr;
+
   try {
     res = yield call(authAPI.requestSignup, signupInfo);
     console.log('signup saga:', signupInfo);
