@@ -265,8 +265,10 @@ export default function salesUpload(state = initialState, action) {
         currentStore: action.payload,
       };
     case CHANGE_DATE_NEXT:
-      const nextDate = new Date();
+      const nextDate = new Date(state.currentDate);
+      console.log(state.currentDate.getDate());
       nextDate.setDate(state.currentDate.getDate() + 1);
+      console.log(nextDate);
       const currentDate = state.currentDate;
       const currentDateIdx = state.currentDateIdx;
       const nextDateInfo = state.salesData[currentDateIdx + 1];
@@ -296,7 +298,7 @@ export default function salesUpload(state = initialState, action) {
         currentData: nextData,
       };
     case CHANGE_DATE_PREV:
-      const prevDate = new Date();
+      const prevDate = new Date(state.currentDate);
       prevDate.setDate(state.currentDate.getDate() - 1);
       const prevDateIdx = state.currentDateIdx - 1;
       const prevDateInfo = state.salesData[prevDateIdx];
