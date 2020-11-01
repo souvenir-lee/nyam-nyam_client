@@ -7,8 +7,13 @@ export type MyInfo = {
 export type MyMenuItemType = {
     storeId: number | string;
     productionId: number | string;
-    productionName: string;
-    productionImg: string;
+    production: {
+        id: number;
+        productionName: string;
+        productionImg: string;
+        price: number;
+        info: string;
+    }
 };
 
 export type MyPageState = {
