@@ -46,16 +46,16 @@ export default function({
 
   console.log('current store1: ', currentStore);
 
-  const handleMenuItemDetailPress = () => {
-    console.log('navigate to ItemModify');
-    navigation.navigate('ItemModify');
-  };
-
-  const handleAddMenuPress = () => {
-    console.log('navigate to AddMenu');
-    navigation.navigate('AddMenu');
-
-  }
+  //const handleMenuItemDetailPress = () => {
+  //  console.log('navigate to ItemModify');
+  //  navigation.navigate('ItemModify');
+  //};
+//
+  //const handleAddMenuPress = () => {
+  //  console.log('navigate to AddMenu');
+  //  navigation.navigate('AddMenu');
+//
+  //}
 
   const handleDeletionPress = (storeId: number | string, productionId: number | string) => {
     Alert.alert(

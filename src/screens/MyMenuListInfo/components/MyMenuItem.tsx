@@ -26,7 +26,9 @@ export default function({ navigation, menu, onMenuItemDetailPress, onDeletionPre
                 <MyMenuName
                         onPress={() => {
                         console.log('navigate to ItemModify');
-                        navigation.navigate('ItemModify');
+                        navigation.navigate('ItemModify', {
+                            productionId
+                        });
                     }}
                 >
                     {menu.production.productionName}
