@@ -1,6 +1,9 @@
 import { ActionType } from 'typesafe-actions';
 import axios, { AxiosError } from 'axios';
 import { takeLatest, fork, call, put } from 'redux-saga/effects';
+
+import { getItemDetail } from './itemDetail';
+import { initialize } from './salesPredict';
 import { ItemDetailObject } from '@base/types/item';
 import {
   createPromiseSaga,
@@ -32,9 +35,10 @@ export const getItemModifyFailure = (error: AxiosError) => ({
   payload: error,
 });
 
-export const postItemModify = (data: FormData) => ({
+export const postItemModify = (data: FormData, productionId) => ({
   type: POST_ITEM_MODIFY,
   payload: data,
+  productionId,
 });
 
 export const postItemModifySuccess = () => ({
@@ -88,6 +92,8 @@ function* postItemModifySaga(
   const data = action.payload;
   try {
     yield call(postItemModifyInfo, data, accessToken);
+    yield put(getItemDetail(action.productionId));
+    yield put(initialize());
     yield put({ type: POST_ITEM_MODIFY_SUCCESS });
   } catch (error) {
     yield put({ type: POST_ITEM_MODIFY_ERROR, payload: error });
@@ -129,11 +135,7 @@ export default function itemModify(state = initialState, action) {
         error: null,
       };
     case POST_ITEM_MODIFY_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        error: null,
-      };
+      return initialState;
     case POST_ITEM_MODIFY_ERROR:
       return {
         ...state,

@@ -124,9 +124,21 @@ export default function ItemModifyContainer({ navigation, route }) {
   };
 
   const handleSubmit = () => {
+    const { productionName, price, info, dessertType } = form;
+    if (
+      !productionName ||
+      !price ||
+      !info ||
+      !dessertType ||
+      !('ingredient1' in form)
+    ) {
+      Alert.alert('모든 정보를 입력해주세요.');
+      return;
+    }
+
     const formdata = createFormData(form, image);
     console.log('submit formdata', formdata);
-    dispatch(postItemModify(formdata));
+    dispatch(postItemModify(formdata, form.productionId));
     navigation.goBack();
   };
 

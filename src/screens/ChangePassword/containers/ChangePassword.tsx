@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import ChangePasswordScreen from '../components/ChangePasswordScreen';
@@ -19,7 +20,7 @@ export default function ChangePasswordContainer({
     initialInputField
   );
   const dispatch = useDispatch();
-  const error = useSelector((state: RootState) => state.mypage.error);
+  const { loading, error } = useSelector((state: RootState) => state.mypage);
 
   const handleCurrentPasswordChange = (input: string) => {
     const field: InputField = {
@@ -59,17 +60,27 @@ export default function ChangePasswordContainer({
       passwordField.errorMsg ||
       passwordConfirmField.errorMsg
     ) {
+      Alert.alert('올바른 정보를 입력해주세요.');
+      return;
+    } else if (
+      !currentPasswordField.input ||
+      !passwordField.input ||
+      !passwordConfirmField.input
+    ) {
+      Alert.alert('모든 정보를 입력해주세요.');
       return;
     }
 
     dispatch(
       requestPasswordChange(currentPasswordField.input, passwordField.input)
     );
+    navigation.goBack();
   };
 
   return (
     <ChangePasswordScreen
       navigation={navigation}
+      loading={loading}
       currentPasswordField={currentPasswordField}
       passwordField={passwordField}
       passwordConfirmField={passwordConfirmField}

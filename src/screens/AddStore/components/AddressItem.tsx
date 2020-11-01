@@ -5,6 +5,7 @@ import styled from 'styled-components/native';
 import { AddressObject } from '@base/types/weather';
 import { PickedAddressObject } from '@base/types/SignUpAddress';
 import { pickAddress } from '@base/modules/addStore';
+import { MINT_STRONG } from '@base/baseColors';
 
 type AddressItemProps = {
   data: AddressObject;
@@ -38,7 +39,10 @@ const AddressItemOpacity = styled.TouchableOpacity`
 const AddressItemName = styled.Text`
   font-size: 15px;
   font-weight: bold;
+  color: ${MINT_STRONG};
 `;
-const AddressItemLocation = styled.Text``;
+const AddressItemLocation = styled.Text`
+  color: ${MINT_STRONG};
+`;
 
 export default React.memo(AddressItem);

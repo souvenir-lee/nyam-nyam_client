@@ -7,6 +7,7 @@ import { AddressObject } from '@base/types/weather';
 import { getAddress, clearData } from '@base/modules/addStore';
 import { RootState } from '@base/modules';
 import { View, Alert } from 'react-native';
+import { MINT, MINT_STRONG, MINT_RGBA_LINE } from '@base/baseColors';
 
 type AddressItemProps = {
   item: AddressObject;
@@ -23,7 +24,7 @@ function AddressForm({ navigation }) {
   useEffect(() => {
     if (storeAdded && !loading) {
       dispatch(clearData());
-      Alert.alert("가게 추가에 성공했습니다.");
+      Alert.alert('가게 추가에 성공했습니다.');
       navigation.goBack();
     } else if (error) {
       Alert.alert('가게를 추가할 수 없습니다.');
@@ -39,6 +40,7 @@ function AddressForm({ navigation }) {
     <AddressWrapper>
       <AddressSearch
         placeholder="가게명을 입력해주세요"
+        placeholderTextColor={MINT_STRONG}
         value={searchInput}
         onChangeText={(text: string) => setSearchInput(text)}
         onSubmitEditing={handleSearch}
@@ -51,7 +53,7 @@ function AddressForm({ navigation }) {
             style={{
               height: 1,
               width: '100%',
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              backgroundColor: MINT_RGBA_LINE,
             }}
           />
         )}
@@ -65,29 +67,32 @@ function AddressForm({ navigation }) {
 
 const AddressWrapper = styled.View`
   width: 90%;
-  height: 300px;
+  height: 80%;
   align-self: center;
-  margin-bottom: 10px;
+  margin-bottom: 100px;
 `;
 
 const AddressSearch = styled.TextInput`
   padding: 3%;
   background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 2px solid ${MINT};
   border-radius: 10px;
   font-size: 15px;
+  color: ${MINT_STRONG};
 `;
 
 const AddressResult = styled.Text`
   font-size: 15px;
+  font-weight: bold;
   margin: 10px 0px;
+  color: ${MINT_STRONG};
 `;
 
 const AddressList = styled.FlatList`
   height: 100%;
   padding: 0px 3%;
   background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid ${MINT};
 `;
 
 export default React.memo(AddressForm);

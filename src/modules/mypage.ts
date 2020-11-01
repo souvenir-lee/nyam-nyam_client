@@ -280,8 +280,8 @@ export function* saveMyInfoSaga(action: any, accessToken: string) {
     console.log('save my info res success: ', res);
     Alert.alert('닉네임이 변경되었습니다.');
 
-    put(myInfoSaveSucceess());
-    put(saveMyInfoToRedux(action.payload));
+    yield put(myInfoSaveSucceess());
+    yield put(saveMyInfoToRedux(action.payload));
   } catch (e) {
     res = e.response;
     console.log('my info save failed: ', res);
@@ -302,7 +302,7 @@ export function* uploadMyPhotoSaga(action: any, accessToken: string) {
   try {
     const { type, uri } = action.payload;
     res = yield call(mypageAPI.uploadPhoto, accessToken, type, uri);
-
+    yield put(saveMyPhotoToRedux(res.data.userImg));
     yield put(uploadMyPhotoSuccess());
 
     console.log('upload my photo success:', res);
@@ -415,6 +415,7 @@ export default function mypage(
     case INITIALIZE_ERROR:
       return {
         ...state,
+        loading: false,
         error: null,
       };
 

@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 
 import AddressForm from './AddressForm';
 import { AddStoreProps } from '@base/types/Navigation/MyPageNavigation';
+import { MINT_STRONG } from '@base/baseColors';
 
 type AddStoreScreenProps = {
   navigation: AddStoreProps['navigation'];
@@ -34,20 +35,6 @@ const HeaderText = styled.Text`
   text-align: center;
   line-height: 30px;
   font-size: 15px;
-`;
-
-const RegisterButton = styled.TouchableOpacity`
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 40px;
-  justify-content: center;
-  background-color: 'rgba(52, 152, 219,1.0)';
-`;
-
-const RegisterText = styled.Text`
-  text-align: center;
-  color: white;
+  color: ${MINT_STRONG};
   font-weight: bold;
-  font-size: 15px;
 `;

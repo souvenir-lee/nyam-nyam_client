@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@base/modules';
 import { getItemDetail } from '@base/modules/itemDetail';
 import { ItemDetailProps } from '@base/types/Navigation/ItemDetail';
+import Loading from '@base/components/loading';
 import ItemDetailScreen from '../components/ItemDetailScreen';
 
 // 매출 예측 페이지, 시그니처 페이지, 검색 페이지
@@ -51,7 +52,9 @@ export default function ItemDetailContainer({
     navigation.goBack();
   };
 
-  return loading || !data ? null : (
+  return loading || !data ? (
+    <Loading />
+  ) : (
     <ItemDetailScreen
       data={data.productionData}
       storeName={data.storeName}
