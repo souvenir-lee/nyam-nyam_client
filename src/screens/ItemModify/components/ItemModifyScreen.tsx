@@ -187,6 +187,8 @@ export default function ItemModifyScreen({
   );
 }
 
+const Wrapper = styled.KeyboardAvoidingView``;
+
 const ItemModifyModifyMenu = styled.View`
   width: 100%;
 `;

@@ -298,7 +298,7 @@ export default function salesUpload(state = initialState, action) {
         currentData: nextData,
       };
     case CHANGE_DATE_PREV:
-      const prevDate = new Date();
+      const prevDate = new Date(state.currentDate);
       prevDate.setDate(state.currentDate.getDate() - 1);
       const prevDateIdx = state.currentDateIdx - 1;
       const prevDateInfo = state.salesData[prevDateIdx];
