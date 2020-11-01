@@ -41,6 +41,7 @@ const VALID_TOKEN = 'signin/VALID_TOKEN' as const;
 const SIGNOUT = 'signin/SIGNOUT' as const;
 const SIGNOUT_SUCCESS = 'signin/SIGNOUT_SUCCESS' as const;
 const UPDATE_STORE = 'signin/UPDATE_STORE' as const;
+const UPDATE_USERNAME = 'signin/UPDATE_USERNAME' as const;
 //액션 생성자
 
 export const initializeSignin = (service?: 'customer' | 'store') => {
@@ -103,6 +104,11 @@ export const signoutSuccess = () => ({
 export const updateStore = (store) => ({
   type: UPDATE_STORE,
   payload: store,
+});
+
+export const updateUsername = (username) => ({
+  type: UPDATE_USERNAME,
+  payload: username,
 });
 
 const actions = {
@@ -325,6 +331,14 @@ export default function signin(
       return {
         ...state,
         store: action.payload,
+      };
+    case UPDATE_USERNAME:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          username: action.payload,
+        },
       };
     default:
       return state;

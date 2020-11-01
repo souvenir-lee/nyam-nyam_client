@@ -1,10 +1,11 @@
 import { ActionType } from 'typesafe-actions';
 import { fork, call, put, select } from 'redux-saga/effects';
-import { Alert } from 'react-native';
+import { ActivityIndicatorComponent, Alert } from 'react-native';
 
 import { MyInfo, MyPageState } from '@base/types/mypage';
 import * as mypageAPI from '@base/api/mypage';
 import { handleIfAuthError, clearTokens } from '@base/lib/auth';
+import { updateUsername } from './signin';
 
 const INITIALIZE_ERROR = 'mypage/INITIALIZE_ERROR' as const;
 
@@ -35,6 +36,8 @@ const GET_MY_STORE_LIST_FAIL = 'mypage/GET_MY_STORE_LIST_FAIL' as const;
 const DELETE_MY_STORE_ITEM = 'mypage/DELETE_MY_STORE_ITEM' as const;
 const DELETE_MY_STORE_ITEM_SUCCESS = 'mypage/DELETE_MY_STORE_ITEM_SUCCESS' as const;
 const DELETE_MY_STORE_ITEM_FAIL = 'mypage/DELETE_MY_STORE_ITEM_FAIL' as const;
+
+const CHANGE_USERNAME = 'mypage/CHANGE_USERNAME' as const;
 
 export const SAVE_MY_INFO_TO_REDUX = 'mypage/SAVE_MY_INFO' as const;
 export const REMOVE_SIGNIN = 'mypage/REMOVE_SIGNIN' as const;
@@ -106,9 +109,8 @@ export const getMyStoreListFail = (error: string) => ({
   error,
 });
 
-export const saveMyInfo = (username: string) => ({
+export const saveMyInfo = () => ({
   type: SAVE_MY_INFO,
-  payload: username,
 });
 
 export const saveMyInfoToRedux = (username: string) => ({
@@ -178,6 +180,11 @@ export const deleteMyStoreItemInRedux = (id: number | string) => ({
 export const deleteMyStoreItemFail = (error: string) => ({
   type: DELETE_MY_STORE_ITEM_FAIL,
   payload: error,
+});
+
+export const changeUsername = (data: string) => ({
+  type: CHANGE_USERNAME,
+  payload: data,
 });
 
 const actions = {
@@ -272,16 +279,13 @@ export function* requestUnregisterSaga(accessToken: string) {
 
 export function* saveMyInfoSaga(action: any, accessToken: string) {
   let res;
-  console.log('before save my info');
-
+  const { user } = yield select((state) => state.signin);
+  const { username } = yield select((state) => state.mypage);
   try {
-    console.log('before request myinfo save action:', action);
-    res = yield call(mypageAPI.saveMyInfo, accessToken, action.payload);
-    console.log('save my info res success: ', res);
-    Alert.alert('닉네임이 변경되었습니다.');
-
+    res = yield call(mypageAPI.saveMyInfo, accessToken, username);
+    yield put(getMyInfo(user.id));
+    yield put(updateUsername(username));
     yield put(myInfoSaveSucceess());
-    yield put(saveMyInfoToRedux(action.payload));
   } catch (e) {
     res = e.response;
     console.log('my info save failed: ', res);
@@ -361,7 +365,6 @@ export function* deleteMyStoreItemSaga(action: any, accessToken: string) {
   let res;
   const storeId = action.payload;
   console.log('before delete mystore item');
-
   try {
     res = yield call(mypageAPI.deleteMyStoreItem, accessToken, storeId);
     console.log('delete mystore item success: ', res);
@@ -405,6 +408,7 @@ const initialState: MyPageState = {
   menus: [],
   loading: false,
   error: null,
+  username: '',
 };
 
 export default function mypage(
@@ -431,6 +435,7 @@ export default function mypage(
         store: action.payload.store,
         production: action.payload.production,
         upload: action.payload.upload,
+        username: action.payload.username,
         loading: false,
       };
     case GET_MY_INFO_FAIL:
@@ -535,7 +540,11 @@ export default function mypage(
         loading: false,
         error: action.payload,
       };
-
+    case CHANGE_USERNAME:
+      return {
+        ...state,
+        username: action.payload,
+      };
     default:
       return state;
   }
