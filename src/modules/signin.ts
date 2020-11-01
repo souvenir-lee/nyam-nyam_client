@@ -15,18 +15,18 @@ import {
   getAuthErrMsg,
   clearTokens,
 } from '@base/lib/auth';
-import { 
+import {
   SAVE_MY_INFO_TO_REDUX,
-  saveMyInfoToRedux, 
-  removeSignin, 
-  REMOVE_SIGNIN, 
-  SAVE_MY_STORE_LIST_TO_REDUX, 
+  saveMyInfoToRedux,
+  removeSignin,
+  REMOVE_SIGNIN,
+  SAVE_MY_STORE_LIST_TO_REDUX,
   saveMyStoreListToRedux,
   DELETE_MY_STORE_ITEM_IN_REDUX,
   deleteMyStoreItemInRedux,
   SAVE_MY_PHOTO_TO_REDUX,
-  saveMyPhotoToRedux
-} from './mypage'
+  saveMyPhotoToRedux,
+} from './mypage';
 import salesPredictNavigation from '@base/navigation/salesPredict';
 
 //액션 타입
@@ -40,7 +40,7 @@ const INVALID_TOKEN = 'signin/INVALID_TOKEN' as const;
 const VALID_TOKEN = 'signin/VALID_TOKEN' as const;
 const SIGNOUT = 'signin/SIGNOUT' as const;
 const SIGNOUT_SUCCESS = 'signin/SIGNOUT_SUCCESS' as const;
-
+const UPDATE_STORE = 'signin/UPDATE_STORE' as const;
 //액션 생성자
 
 export const initializeSignin = (service?: 'customer' | 'store') => {
@@ -100,6 +100,11 @@ export const signoutSuccess = () => ({
   type: SIGNOUT_SUCCESS,
 });
 
+export const updateStore = (store) => ({
+  type: UPDATE_STORE,
+  payload: store,
+});
+
 const actions = {
   initializeSignin,
   signinSuccess,
@@ -114,7 +119,8 @@ const actions = {
   removeSignin,
   saveMyStoreListToRedux,
   deleteMyStoreItemInRedux,
-  saveMyPhotoToRedux
+  saveMyPhotoToRedux,
+  updateStore,
 };
 
 type SigninAction = ActionType<typeof actions>;
@@ -170,10 +176,8 @@ function* signoutSaga() {
   } catch (e) {
     console.error('서버에서 로그아웃 요청 처리 실패:', e);
   } finally {
-
     yield call(clearTokens);
     yield put(signoutSuccess());
-
   }
 }
 
@@ -223,7 +227,7 @@ export default function signin(
     case INITIALIZE_SIGNIN:
       return {
         ...state,
-        service: action.payload? action.payload : null,
+        service: action.payload ? action.payload : null,
         user: null,
         loading: false,
         error: null,
@@ -272,48 +276,58 @@ export default function signin(
       };
 
     case SAVE_MY_INFO_TO_REDUX:
-        return {
-          ...state,
-          user: state.user ? {
-            ...state.user,
-            username: action.payload
-          } : null
-        };
+      return {
+        ...state,
+        user: state.user
+          ? {
+              ...state.user,
+              username: action.payload,
+            }
+          : null,
+      };
 
     case REMOVE_SIGNIN:
       return {
-        ...initialState
+        ...initialState,
       };
 
     case SAVE_MY_STORE_LIST_TO_REDUX:
       return {
         ...state,
-        store: action.paylaod
+        store: action.paylaod,
       };
 
     case DELETE_MY_STORE_ITEM_IN_REDUX:
       const storeId = action.payload;
 
-      if(storeId in state.store){
+      if (storeId in state.store) {
         delete state.store[storeId];
       }
 
       return {
         ...state,
         store: {
-          ...state.store
-        }
+          ...state.store,
+        },
       };
 
     case SAVE_MY_PHOTO_TO_REDUX:
       return {
         ...state,
-        user: state.user ? {
-          ...state.user,
-          userImg: action.payload,
-        } : null
+        user: state.user
+          ? {
+              ...state.user,
+              userImg: action.payload,
+            }
+          : null,
+      };
+    case UPDATE_STORE:
+      return {
+        ...state,
+        store: action.payload,
       };
     default:
       return state;
-  }salesPredictNavigation
+  }
+  salesPredictNavigation;
 }

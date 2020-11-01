@@ -1,104 +1,85 @@
 import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { SignupProps } from '@base/types';
-import { InputField } from '@base/types/auth';
+import { InputField, FormKey } from '@base/types/auth';
 import SignupScreen from '../components/SignupScreen';
 import { RootState } from '@base/modules';
-import { initializeSignup, inputUserFields } from '@base/modules/signup';
-
+import {
+  clearUserdata,
+  initializeSignup,
+  inputUserFields,
+} from '@base/modules/signup';
+import useForm from '@base/hooks/useForm';
 import { ErrorMsg, ErrorText } from '@base/styles';
 
 export default function Signup({ route, navigation }: SignupProps) {
-  const [emailField, setEmailField] = useState<InputField>(initialInputField);
-  const [passwordField, setPasswordField] = useState<InputField>(
-    initialInputField
-  );
-  const [passwordCheckField, setPasswordCheckField] = useState<InputField>(
-    initialInputField
-  );
-  const [usernameField, setUsernameField] = useState<InputField>(
-    initialInputField
-  );
+  const [form, onChange] = useForm({
+    email: initialInputField,
+    password: initialInputField,
+    passwordCheck: initialInputField,
+    username: initialInputField,
+  });
   const { userFields, isEmailValid, errMsg } = useSelector(
     (state: RootState) => state.signup
   );
   const { email, password, username } = userFields;
   const dispatch = useDispatch();
 
-  const handleEmailFieldChange = (input: string) => {
-    const field: InputField = {
-      input,
-      errMsg: null,
-    };
-
-    if (input.length === 0) field.errMsg = '이메일을 입력해주세요.';
-
-    setEmailField(field);
-  };
-  const handlePasswordFieldChange = (input: string) => {
-    const field: InputField = {
-      input,
-      errMsg: null,
-    };
-
-    if (input.length === 0) field.errMsg = '비밀번호를 입력해주세요.';
-
-    setPasswordField(field);
-  };
-  const handlePasswordCheckFieldChange = (input: string) => {
-    const field: InputField = {
-      input,
-      errMsg: null,
-    };
-
-    if (input.length === 0 || passwordField.input !== input) {
-      field.errMsg = '비밀번호가 일치하지 않습니다.';
+  const validateForm = () => {
+    for (const key in form) {
+      if (form[key].errMsg || !form[key].input) {
+        return false;
+      }
     }
-
-    setPasswordCheckField(field);
+    return true;
   };
-  const handleUsernameFieldChange = (input: string) => {
-    const field: InputField = {
-      input,
-      errMsg: null,
-    };
 
-    if (input.length === 0) field.errMsg = '이름을 입력해주세요.';
-
-    setUsernameField(field);
+  const handleFieldChange = (key: FormKey, input: string) => {
+    const errMsg = errMsgByKey[key];
+    if (input.length === 0 && form[key].changed) {
+      onChange(key, {
+        ...form[key],
+        input,
+        errMsg,
+      });
+    } else {
+      onChange(key, {
+        ...form[key],
+        input,
+        errMsg: null,
+        changed: true,
+      });
+    }
   };
+
   const handleNextButtonPress = () => {
-    if (
-      emailField.errMsg ||
-      passwordField.errMsg ||
-      passwordCheckField.errMsg ||
-      usernameField.errMsg
-    ) {
+    if (!validateForm()) {
+      Alert.alert('모든 정보를 입력해주세요');
       return;
     }
 
     dispatch(
       inputUserFields({
-        email: emailField.input,
-        password: passwordField.input,
-        username: usernameField.input,
+        email: form.email.input,
+        password: form.password.input,
+        username: form.username.input,
       })
     );
   };
 
-  useEffect(function initializeFields() {
+  useEffect(() => {
     dispatch(initializeSignup());
-    handleEmailFieldChange(email);
-    handlePasswordFieldChange(password);
-    handlePasswordCheckFieldChange('');
-    handleUsernameFieldChange(username);
+    handleFieldChange('email', email);
+    handleFieldChange('password', password);
+    handleFieldChange('passwordCheck', '');
+    handleFieldChange('username', username);
+    return () => {
+      console.log('cancel rendering');
+      dispatch(clearUserdata());
+    };
   }, []);
 
-  useEffect(() => {
-    console.log('email is ', isEmailValid);
-  }, [isEmailValid]);
-
-  console.log('render');
   return (
     <>
       {errMsg ? (
@@ -108,14 +89,8 @@ export default function Signup({ route, navigation }: SignupProps) {
       ) : null}
 
       <SignupScreen
-        emailField={emailField}
-        passwordField={passwordField}
-        passwordCheckField={passwordCheckField}
-        usernameField={usernameField}
-        handleEmailFieldChange={handleEmailFieldChange}
-        handlePasswordFieldChange={handlePasswordFieldChange}
-        handlePasswordCheckFieldChange={handlePasswordCheckFieldChange}
-        handleUsernameFieldChange={handleUsernameFieldChange}
+        fields={form}
+        handleFieldChange={handleFieldChange}
         handleNextButtonPress={handleNextButtonPress}
       />
     </>
@@ -125,4 +100,12 @@ export default function Signup({ route, navigation }: SignupProps) {
 const initialInputField: InputField = {
   input: '',
   errMsg: null,
+  changed: false,
+};
+
+const errMsgByKey = {
+  email: '이메일을 입력해주세요',
+  password: '비밀번호를 입력해주세요',
+  passwordCheck: '비밀번호가 일치하지 않습니다',
+  username: '닉네임을 입력해주세요',
 };

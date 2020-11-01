@@ -47,8 +47,15 @@ export default function({
   console.log('current store1: ', currentStore);
 
   const handleMenuItemDetailPress = () => {
+    console.log('navigate to ItemModify');
     navigation.navigate('ItemModify');
   };
+
+  const handleAddMenuPress = () => {
+    console.log('navigate to AddMenu');
+    navigation.navigate('AddMenu');
+
+  }
 
   const handleDeletionPress = (storeId: number | string, productionId: number | string) => {
     Alert.alert(
@@ -80,8 +87,8 @@ export default function({
   };
 
   const handleStoreSelect = (id: string | number) => {
-    console.log('selected store');
     setCurrentStore(stores[id]);
+    console.log('selected id, store:', id, currentStore);
     fetchMyMenusByStoreId(id);
   };  
 
@@ -94,13 +101,14 @@ export default function({
 
   return (
     <MyMenuListInfoScreen
+      navigation={navigation}
       stores={storesArr}
       currentStore={currentStore}
       menus={filteredMenus}
-      onMenuItemDetailPress={handleMenuItemDetailPress}
+      //onMenuItemDetailPress={handleMenuItemDetailPress}
+      //onMenuAddMenuPress={handleAddMenuPress}
       onDeletionPress={handleDeletionPress}
       onStoreSelect={handleStoreSelect}
     />
-  ) 
+  );
 }
-

@@ -1,31 +1,36 @@
 import React from 'react';
-import styled from 'styled-components/native'
+import styled from 'styled-components/native';
 
 import { MyMenuItemType} from '@base/types/mypage';
 import { MINT_RGBA_LINE, MINT } from '@base/baseColors';
 
 type MyMenuItemProps = {
+    navigation: any;
     menu: MyMenuItemType;
     onMenuItemDetailPress: (id: string | number) => void;
     onDeletionPress: (storeId: string | number, productionId: string | number) => void;
 };
 
-export default function({ menu, onMenuItemDetailPress, onDeletionPress }: MyMenuItemProps){
+const defaultImg = require('@base/../assets/images/default_dessert_image.png');
+
+export default function({ navigation, menu, onMenuItemDetailPress, onDeletionPress }: MyMenuItemProps){
     const { storeId, productionId } = menu;
+    const img = menu.production.productionImg || defaultImg;
 
     return (
 
         <MyMenuItem>
-            <MyMenuBody
-                onPress={onMenuItemDetailPress}
-            >
-                <MyMenuImg 
-                    
+                <MyMenuImg
+                    source={img}
                 />
-                <MyMenuName>
+                <MyMenuName
+                        onPress={() => {
+                        console.log('navigate to ItemModify');
+                        navigation.navigate('ItemModify');
+                    }}
+                >
                     {menu.production.productionName}
                 </MyMenuName>
-            </MyMenuBody>
             <DeletionButton>
                 <ButtonText
                     onPress={() => onDeletionPress(storeId, productionId)}
@@ -48,9 +53,11 @@ const MyMenuItem = styled.View`
     width:300px;
 `;
 
-const MyMenuImg = styled.Image``;
+const MyMenuImg = styled.Image`
+    width: 30px;
+    height: 30px;
+`;
 
-const MyMenuBody = styled.View``;
 
 const MyMenuName = styled.Text``;
 

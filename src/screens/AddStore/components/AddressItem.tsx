@@ -4,8 +4,8 @@ import styled from 'styled-components/native';
 
 import { AddressObject } from '@base/types/weather';
 import { PickedAddressObject } from '@base/types/SignUpAddress';
-import { addAddress } from '@base/modules/signup';
-import { MINT, MINT_STRONG } from '@base/baseColors';
+import { pickAddress } from '@base/modules/addStore';
+import { MINT_STRONG } from '@base/baseColors';
 
 type AddressItemProps = {
   data: AddressObject;
@@ -16,15 +16,13 @@ function AddressItem({ data }: AddressItemProps) {
 
   const handlePress = () => {
     const newAddress: PickedAddressObject = {
-      id: data.id,
-      address_name: data.address_name,
-      place_name: data.place_name,
-      coord: {
-        x: parseInt(data.x, 10),
-        y: parseInt(data.y, 10),
-      },
+      storeAddress: data.address_name,
+      storeName: data.place_name,
+      latitude: parseInt(data.y, 10),
+      longitude: parseInt(data.x, 10),
     };
-    dispatch(addAddress(newAddress));
+    console.log('new address', newAddress);
+    dispatch(pickAddress(newAddress));
   };
 
   return (

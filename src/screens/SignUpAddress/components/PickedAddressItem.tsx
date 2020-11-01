@@ -5,6 +5,7 @@ import styled from 'styled-components/native';
 
 import { PickedAddressObject } from '@base/types/SignUpAddress';
 import { removeAddress } from '@base/modules/signup';
+import { MINT, MINT_STRONG } from '@base/baseColors';
 
 type PickedAddressListProps = {
   data: PickedAddressObject;
@@ -43,8 +44,11 @@ const PickedColumn = styled.View`
 const PickedItemName = styled.Text`
   font-size: 15px;
   font-weight: bold;
+  color: ${MINT_STRONG};
 `;
-const PickedItemLocation = styled.Text``;
+const PickedItemLocation = styled.Text`
+  color: ${MINT_STRONG};
+`;
 const PickedItemRemove = styled.TouchableOpacity`
   margin-right: 10px;
 `;

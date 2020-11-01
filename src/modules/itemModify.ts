@@ -1,6 +1,9 @@
 import { ActionType } from 'typesafe-actions';
 import axios, { AxiosError } from 'axios';
 import { takeLatest, fork, call, put } from 'redux-saga/effects';
+
+import { getItemDetail } from './itemDetail';
+import { initialize } from './salesPredict';
 import { ItemDetailObject } from '@base/types/item';
 import {
   createPromiseSaga,
@@ -15,6 +18,7 @@ const GET_ITEM_MODIFY_ERROR = 'itemModify/GET_ITEM_MODIFY_ERROR' as const;
 const POST_ITEM_MODIFY = 'itemModify/POST_ITEM_MODIFY' as const;
 const POST_ITEM_MODIFY_SUCCESS = 'itemModify/POST_ITEM_MODIFY_SUCCESS' as const;
 const POST_ITEM_MODIFY_ERROR = 'itemModify/POST_ITEM_MODIFY_ERROR' as const;
+const CLEAR_DATA = 'itemModify/CLEAR_DATA' as const;
 
 export const getItemModify = (data) => ({
   type: GET_ITEM_MODIFY,
@@ -31,9 +35,10 @@ export const getItemModifyFailure = (error: AxiosError) => ({
   payload: error,
 });
 
-export const postItemModify = (data: FormData) => ({
+export const postItemModify = (data: FormData, productionId) => ({
   type: POST_ITEM_MODIFY,
   payload: data,
+  productionId,
 });
 
 export const postItemModifySuccess = () => ({
@@ -45,6 +50,10 @@ export const postItemModifyFailure = (error: AxiosError) => ({
   payload: error,
 });
 
+export const clearData = () => ({
+  type: CLEAR_DATA,
+});
+
 const actions = {
   getItemModify,
   getItemModifySuccess,
@@ -52,6 +61,7 @@ const actions = {
   postItemModify,
   postItemModifySuccess,
   postItemModifyFailure,
+  clearData,
 };
 
 export const ActionsWithAuth = [GET_ITEM_MODIFY, POST_ITEM_MODIFY];
@@ -82,6 +92,8 @@ function* postItemModifySaga(
   const data = action.payload;
   try {
     yield call(postItemModifyInfo, data, accessToken);
+    yield put(getItemDetail(action.productionId));
+    yield put(initialize());
     yield put({ type: POST_ITEM_MODIFY_SUCCESS });
   } catch (error) {
     yield put({ type: POST_ITEM_MODIFY_ERROR, payload: error });
@@ -101,6 +113,8 @@ export function* itemModifyWithAuthSaga(
 }
 
 const initialState = {
+  loading: false,
+  error: null,
   itemInfo: reducerUtils.initial(null),
 };
 
@@ -115,13 +129,21 @@ export default function itemModify(state = initialState, action) {
         null
       )(state, action);
     case POST_ITEM_MODIFY:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
     case POST_ITEM_MODIFY_SUCCESS:
+      return initialState;
     case POST_ITEM_MODIFY_ERROR:
-      return handleAsyncActions(
-        POST_ITEM_MODIFY,
-        'itemInfo',
-        null
-      )(state, action);
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case CLEAR_DATA:
+      return initialState;
     default:
       return state;
   }

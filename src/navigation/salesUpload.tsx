@@ -8,7 +8,7 @@ import SalesUpload from '@base/screens/SalesUpload';
 
 const SalesUploadStack = createStackNavigator();
 
-export default function SalesUploadStackNavigation() {
+export default function SalesUploadStackNavigation({ navigation }) {
   return (
     <SalesUploadStack.Navigator
       screenOptions={{
@@ -30,6 +30,7 @@ export default function SalesUploadStackNavigation() {
           headerLeft: (props) => (
             <HeaderBackButton
               {...props}
+              onPress={() => navigation.goBack()}
               tintColor={MINT}
               pressColorAndroid={MINT}
             />

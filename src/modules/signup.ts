@@ -30,6 +30,9 @@ const UPDATE_LOCATION = 'signup/UPDATE_LOCATION' as const;
 const REQUEST_SIGNUP = 'signup/REQUEST_SIGNUP' as const;
 const SIGNUP_SUCCESS = 'signup/SIGNUP_SUCCESS' as const;
 const SIGNUP_ERROR = 'signup/SIGNUP_ERROR' as const;
+const CLEAR_USERDATA = 'signup/CLEAR_USERDATA' as const;
+const CLEAR_ADDRESSDATA = 'signup/CLEAR_ADDRESSDATA' as const;
+const CLEAR_DATA = 'signup/CLEAR_DATA' as const;
 
 //액션 생성자
 export const initializeSignup = () => ({
@@ -96,6 +99,18 @@ export const signupError = (errMsg: string) => ({
   payload: errMsg,
 });
 
+export const clearUserdata = () => ({
+  type: CLEAR_USERDATA,
+});
+
+export const clearAddressdata = () => ({
+  type: CLEAR_ADDRESSDATA,
+});
+
+export const clearData = () => ({
+  type: CLEAR_DATA,
+});
+
 //리덕스 사가
 function* confirmEmailSaga(action: ReturnType<typeof inputUserFields>) {
   const email = action.payload.email;
@@ -140,8 +155,7 @@ function* requestSignupSaga(action: ReturnType<typeof requestSignup>) {
 
   try {
     res = yield call(authAPI.requestSignup, signupInfo);
-    console.log('signup saga:', signupInfo);
-    console.log('res in try: ', res);
+    yield put(clearData());
     Alert.alert('회원가입에 성공하셨습니다.');
     RootNavigation.navigate('Signin', {
       title: '사장님 로그인',
@@ -184,6 +198,7 @@ const actions = {
   requestSignup,
   signupSuccess,
   signupError,
+  clearUserdata,
 };
 
 type SignupAction = ActionType<typeof actions>;
@@ -278,15 +293,35 @@ export default function signup(
         signupInfo: action.payload,
       };
     case SIGNUP_SUCCESS:
-      return {
-        ...initialState,
-      };
+      return initialState;
     case SIGNUP_ERROR:
       return {
         ...state,
         loading: false,
         errMsg: action.payload,
       };
+    case CLEAR_USERDATA:
+      return {
+        ...state,
+        userFields: {
+          email: '',
+          password: '',
+          username: '',
+        },
+        isEmailValid: false,
+        errMsg: null,
+      };
+    case CLEAR_ADDRESSDATA:
+      return {
+        ...state,
+        errMsg: null,
+        address: reducerUtils.initial([]),
+        picked_address: reducerUtils.initial({}),
+        coords: null,
+        signupInfo: null,
+      };
+    case CLEAR_DATA:
+      return initialState;
     default:
       return state;
   }

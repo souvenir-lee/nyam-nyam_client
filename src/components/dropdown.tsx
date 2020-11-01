@@ -1,38 +1,43 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { Picker } from '@react-native-community/picker';
 import Icon from 'react-native-vector-icons/Feather';
+
+import { MINT_RGBA_LINE } from '@base/baseColors';
 
 
 type DropdownPickerProps = {
     items: any[];
-    defaultValue: string;
+    selectedValue: string;
     onChangeItem: (item: any) => void
 }
 
-export default function({ items, defaultValue, onChangeItem }: DropdownPickerProps){
+export default function({ items, selectedValue, onChangeItem }: DropdownPickerProps){
     console.log('dropdown render:', items);
     if(items && items.length === 0) return null;
-
-    items = items.map((item: any) => (
-        <Picker.Item 
-            label={`${item.storeAddress} ${item.storeName}`} 
+    
+    
+    let pickerItems = items.map((item: any) => {
+        console.log(`label:(${item.storeAddress}) ${item.storeName}, value: ${item.id}`);
+        return (<Picker.Item 
+            label={`(${item.storeAddress}) ${item.storeName}`} 
             value={item.id}
-        />
-    ));
+        />)
+    });
 
     console.log('items: ', items);
-    console.log(defaultValue);
+    console.log('selcted value in dropdown:', selectedValue);
     
     return (
     <Picker
-        selectedValue={defaultValue}
-        style={{height: 150, width: 200}}
+        selectedValue={selectedValue}
+        style={{height: 150, width: 250, borderColor: `1px sold ${MINT_RGBA_LINE}`}}
         onValueChange={(itemValue) => {
             console.log('selected val: ', itemValue)
-            onChangeItem(itemValue)
+            onChangeItem(itemValue);
         }}
+     
     >
-        {items}
+        {pickerItems}
       </Picker>
     )
 }
