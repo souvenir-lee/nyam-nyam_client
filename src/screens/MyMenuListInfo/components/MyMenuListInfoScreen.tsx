@@ -86,6 +86,7 @@ const MyMenuList = styled.ScrollView`
 const AddMenuButton = styled.TouchableOpacity`
   align-self: center;
   margin-bottom: 50px;
+  margin-top:50px;
 `;
 
 const Text = styled.Text`

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 
 import { MyMenuItemType} from '@base/types/mypage';
-import { MINT_RGBA_LINE, MINT } from '@base/baseColors';
+import { MINT_RGBA_LINE, MINT, MINT_STRONG } from '@base/baseColors';
 
 type MyMenuItemProps = {
     navigation: any;
@@ -49,7 +49,8 @@ const MyMenuItem = styled.View`
     flex-direction: row;
     justify-content: space-between;
     border: 1px solid ${MINT_RGBA_LINE};
-    background: white;
+    background-color: ${MINT_STRONG};
+    border-radius: 10px;
     padding:20px;
     margin: 15px 0;
     width:300px;
@@ -61,8 +62,20 @@ const MyMenuImg = styled.Image`
 `;
 
 
-const MyMenuName = styled.Text``;
+const MyMenuName = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  width: 45%;
+  margin-right: 5%;
+`;
 
-const DeletionButton = styled.TouchableOpacity``;
+const DeletionButton = styled.TouchableOpacity`
+  align-self: center;
+  width: 10%;
+`;
 
-const ButtonText = styled.Text``;
+const ButtonText = styled.Text`
+  font-size: 20px;
+  color: red;
+`;
