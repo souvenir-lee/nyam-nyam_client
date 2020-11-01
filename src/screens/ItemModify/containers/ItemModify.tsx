@@ -75,6 +75,13 @@ export default function ItemModifyContainer({ navigation, route }) {
   }, [dispatch, productionId, storeId]);
 
   useEffect(() => {
+    if (!itemLoading && data) {
+      const [refactored] = refactorModifyData(data);
+      initialize(refactored);
+    }
+  }, [itemLoading]);
+
+  useEffect(() => {
     if (!loading) {
       if (error) {
         Alert.alert('정보를 수정할 수 없습니다.');
