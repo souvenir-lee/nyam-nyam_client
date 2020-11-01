@@ -49,8 +49,8 @@ function SalesPredictScreen({
           onValueChange={(value) => {
             onStoreChange(Number(value));
           }}>
-          {storeItems.map((item) => (
-            <Picker.Item label={item.label} value={item.value} />
+          {storeItems.map((item, index) => (
+            <Picker.Item key={index} label={item.label} value={item.value} />
           ))}
         </Picker>
       </DropDownPickerWrapper>

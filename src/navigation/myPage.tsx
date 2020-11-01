@@ -61,9 +61,55 @@ export default function MyPageNavigation() {
         }}
       />
       <MyPageStack.Screen name="MyMenuListInfo" component={MyMenuListInfo} />
-      <MyPageStack.Screen name="MyStoreListInfo" component={MyStoreListInfo} />
-      <MyPageStack.Screen name="AddStore" component={AddStore} />
-      <MyPageStack.Screen name="AddMenu" component={AddMenu} />
+      <MyPageStack.Screen
+        name="MyStoreListInfo"
+        component={MyStoreListInfo}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+        }}
+      />
+      <MyPageStack.Screen
+        name="AddStore"
+        component={AddStore}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '내 가게 추가',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            color: MINT,
+            fontSize: 22,
+            fontFamily: 'BMHANNA',
+          },
+          headerBackTitleVisible: false,
+        }}
+      />
+      <MyPageStack.Screen
+        name="AddMenu"
+        component={AddMenu}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+        }}
+      />
       <MyPageStack.Screen name="ItemModify" component={ItemModify} />
       <MyPageStack.Screen
         name="ChangePassword"

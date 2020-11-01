@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import useLocation from '@base/hooks/useLocation';
 import AddStoreScreen from '../components/AddStoreScreen';
-import { updateLocation } from '@base/modules/addStore';
+import { updateLocation, clearData } from '@base/modules/addStore';
 import { AddStoreProps } from '@base/types/Navigation/MyPageNavigation';
 import { RootState } from '@base/modules';
 
@@ -20,6 +20,9 @@ export default function AddStoreContainer({ navigation }: AddStoreProps) {
         dispatch(updateLocation({ x: longitude, y: latitude }));
       }
     }
+    return () => {
+      dispatch(clearData());
+    };
   }, [location, dispatch]);
 
   return <AddStoreScreen navigation={navigation} />;

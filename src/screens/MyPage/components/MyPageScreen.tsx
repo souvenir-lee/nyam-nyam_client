@@ -19,9 +19,9 @@ export default function MyPageScreen({
   handleSignoutButtonPress,
 }: MyPageScreenProps) {
   const { username, email, store, production, upload, userImg } = myPageInfo;
-  const avatar =
-    { uri: userImg } ||
-    require('@base/../assets/images/default_user_avatar.jpg');
+  const avatar = userImg
+    ? { uri: userImg }
+    : require('@base/../assets/images/default_user_avatar.jpg');
 
   return (
     <MyPageContainer>
