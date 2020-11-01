@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Alert } from 'react-native'
 
 import MyMenuListInfoScreen from '../components/MyMenuListInfoScreen';
 import { RootState } from '@base/modules';
@@ -16,8 +17,8 @@ export default function({
     if(!menus) return null;
   
     let arr = [];
-    for(let store in menus){
-      arr.push(store);
+    for(let storeId in menus){
+      arr.push(menus[storeId]);
     }
   
     return arr;
@@ -50,8 +51,22 @@ export default function({
   };
 
   const handleDeletionPress = (storeId: number | string, productionId: number | string) => {
-    console.log('dispatch delete my menu item');
-    dispatch(deleteMyMenuItem(storeId, productionId));
+    Alert.alert(
+      "메뉴 삭제",
+      "해당 메뉴를 정말 삭제하시겠습니까?",
+      [
+        {
+          text: "취소",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "확인", onPress: () => {
+          console.log('dispatch delete my menu item');
+          dispatch(deleteMyMenuItem(storeId, productionId));
+        } }
+      ],
+      { cancelable: false }
+    );
   };
 
   const fetchMyMenusByStoreId = (storeId: string | number) => {
@@ -65,7 +80,6 @@ export default function({
   };
 
   const handleStoreSelect = (id: string | number) => {
-    if(stores.length === 0) return;
     console.log('selected store');
     setCurrentStore(stores[id]);
     fetchMyMenusByStoreId(id);

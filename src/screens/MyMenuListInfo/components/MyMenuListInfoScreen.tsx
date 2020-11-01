@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
+import Icon from 'react-native-vector-icons/Feather';
 
 import Dropdown from '@base/components/dropdown';
 import MyMenuItem from './MyMenuItem';
 import { MyMenuItemType } from '@base/types/mypage';
 import { SigninStoreData } from '@base/types/auth';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { MINT_RGBA_TEXT } from '@base/baseColors';
 
 type MyMenuListInfoProps = {
   stores: SigninStoreData[] | [];
@@ -19,27 +22,20 @@ export default function MyMenuListInfoScreen({
   menus, stores, currentStore, onStoreSelect, onMenuItemDetailPress, onDeletionPress
 }: MyMenuListInfoProps) {
   const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
+  console.log('stores in menu item screen: ', stores);
+
 
   return (
     <Container>
       <Title>메뉴 목록</Title>
 
-      <DropdownToggle>
-        <ToggleText
-          onPress={() => setIsDropdownShow(!isDropdownShow) }
-        >
-          {isDropdownShow ? '▲': '▼'} &nbsp; {currentStore ? currentStore.storeName: ''}
-        </ToggleText>
+      <DropdownWrapper>
         <Dropdown 
-          data={stores}
-          isShow={isDropdownShow}
-          Item={StoreDropdownItem}
-          onItemPress={onStoreSelect}
-          extra={{
-            onDeletionPress
-          }}
+          items={stores}
+          defaultValue={stores.length > 0 ? stores[0].storeName : ''}
+          onChangeItem={onStoreSelect}
         />
-      </DropdownToggle>
+      </DropdownWrapper>
 
       <MyMenuList>
         {
@@ -60,37 +56,25 @@ export default function MyMenuListInfoScreen({
   )
 }
 
-type StoreDropdownItemProps = {
-  data: SigninStoreData;
-  onItemPress: () => void;
-}
+const Container = styled.ScrollView`
+`;
 
-function StoreDropdownItem({ data, onItemPress }: StoreDropdownItemProps){
-  if(!data) return null;
+const DropdownWrapper = styled.View`
+  margin:0 auto;
+`;
 
-  return (
-    <StoreItem
-      onPress={onItemPress}
-    >
-      <StoreName>
-        ({data.storeAddress}) &nbsp;{ data.storeName }
-      </StoreName>
-    </StoreItem>
-  )
-}
+const Title = styled.Text`
+  font-size:30px;
+  text-align: center;
+  font-weight:bold;
+  margin-top: 11%;
+  color: ${MINT_RGBA_TEXT};
+`;
 
-const Container = styled.View``;
+const MyMenuList = styled.ScrollView`
+  margin: 0 auto;
+`;
 
-const Title = styled.Text``;
 
-const DropdownToggle = styled.TouchableOpacity``
-
-const StoreItem = styled.View``
-
-const StoreName = styled.Text``;
-
-const ToggleText = styled.Text``;
-
-const MyMenuList = styled.ScrollView``;
 
 

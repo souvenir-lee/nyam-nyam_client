@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native'
 
 import { MyMenuItemType} from '@base/types/mypage';
+import { MINT_RGBA_LINE, MINT } from '@base/baseColors';
 
 type MyMenuItemProps = {
     menu: MyMenuItemType;
@@ -36,7 +37,16 @@ export default function({ menu, onMenuItemDetailPress, onDeletionPress }: MyMenu
     )
 }
 
-const MyMenuItem = styled.View``;
+const MyMenuItem = styled.View`
+    flex:1;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid ${MINT_RGBA_LINE};
+    background: white;
+    padding:20px;
+    margin: 15px 0;
+    width:300px;
+`;
 
 const MyMenuImg = styled.Image``;
 
