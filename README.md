@@ -1,5 +1,7 @@
 <h1 align="center">NyamNyam에 오신걸 환영합니다</h1>
 
+![](https://user-images.githubusercontent.com/22445243/97938666-4d71d280-1dc5-11eb-8c14-b37efe3ae89c.png)
+
 ![](https://raw.githubusercontent.com/wiki/codestates/surf-server/img/surfer.jpg?token=ALXAR7FV2VLXPVP3R5XU4GK7QO5IO)
 
 <p>
