@@ -1,4 +1,4 @@
-<h1 align="center">NyamNyam에 오신걸 환영합니다 👋</h1>
+<h1 align="center">NyamNyam에 오신걸 환영합니다</h1>
 
 ![](https://raw.githubusercontent.com/wiki/codestates/surf-server/img/surfer.jpg?token=ALXAR7FV2VLXPVP3R5XU4GK7QO5IO)
 
