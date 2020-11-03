@@ -43,6 +43,7 @@ npm install
 - 스마트폰 앱 빌드 및  : React Native, Expo
 - 개발 환경 : ESLint, Prettier, Babel, Typescript
 - 상태 관리 : Redux, Redux Saga
+- 인증: JWT, 
 - API : [openWeatherMap](https://openweathermap.org/api), [KakaoMap](https://apis.map.kakao.com/)
 
 ## 🤝 Contributing
