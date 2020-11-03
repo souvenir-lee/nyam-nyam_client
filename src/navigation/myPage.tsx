@@ -60,7 +60,20 @@ export default function MyPageNavigation() {
           headerBackTitleVisible: false,
         }}
       />
-      <MyPageStack.Screen name="MyMenuListInfo" component={MyMenuListInfo} />
+      <MyPageStack.Screen
+        name="MyMenuListInfo"
+        component={MyMenuListInfo}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+        }}
+      />
       <MyPageStack.Screen
         name="MyStoreListInfo"
         component={MyStoreListInfo}
@@ -107,10 +120,21 @@ export default function MyPageNavigation() {
               pressColorAndroid={MINT}
             />
           ),
-          headerTitle: '',
+          headerTitle: '가게 추가',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            color: MINT,
+            fontSize: 22,
+            fontFamily: 'BMHANNA',
+          },
+          headerBackTitleVisible: false,
         }}
       />
-      <MyPageStack.Screen name="ItemModify" component={ItemModify} />
+      <MyPageStack.Screen
+        name="ItemModify"
+        component={ItemModify}
+        options={{ headerShown: false }}
+      />
       <MyPageStack.Screen
         name="ChangePassword"
         component={ChangePassword}

@@ -41,9 +41,8 @@ export default function SignUpAddressContainer({
       const {
         coords: { longitude, latitude },
       } = location;
-      if (location) {
-        dispatch(updateLocation({ x: longitude, y: latitude }));
-      }
+      console.log('location', longitude, latitude);
+      dispatch(updateLocation({ x: longitude, y: latitude }));
     }
   }, [location, dispatch]);
 

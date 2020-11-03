@@ -94,14 +94,24 @@ export const uploadPhoto = async (
   return res;
 };
 
-export const getMyMenuList = async (
-  accessToken: string,
-  storeId: string | number
-) => {
-  const res = await client.get(`managemenu/menu/${storeId}`, {
+export const getMyMenuList = async (accessToken: string, storeId: string | number) => {
+  console.log('storeId:', storeId);
+  const res =  await client.get(`managemenu/mymenu/${storeId}`, {
     headers: {
       ...makeAuthHeaders(accessToken),
     },
+  });
+
+  return res;
+};
+
+export const deleteMyMenuItem = async (accessToken: string, storeId: string | number, productionId: string | number) => {
+  const res =  await client.post(`/managemenu/deletemenu`, 
+  JSON.stringify({ storeId, productionId }),
+  {
+    headers: {
+      ...makeAuthHeaders(accessToken),
+    }
   });
 
   return res;
