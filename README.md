@@ -36,6 +36,13 @@ npm install
 
 **Team Growing**
 
+## Stack
+
+- 스마트폰 앱 빌드 및  : React Native, Expo
+- 개발 환경 : ESLint, Prettier, Babel, Typescript
+- 상태 관리 : Redux, Redux Saga
+- API : [openWeatherMap](https://openweathermap.org/api), [KakaoMap](https://apis.map.kakao.com/)
+
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/codestates/surf-server/issues).
