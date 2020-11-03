@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Linking, Alert } from 'react-native';
+import { Linking, Alert, BackHandler } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { SigninProps } from '@base/types';
 import SigninScreen from '../components/SigninScreen';
@@ -9,15 +10,25 @@ import {
   signinError,
 } from '@base/modules/signin';
 import { RootState } from '@base/modules';
-import { ErrorMsg, ErrorText } from '@base/styles';
-import Loading from '@base/components/loading';
+// import { ErrorMsg, ErrorText } from '@base/styles';
+// import Loading from '@base/components/loading';
 
 export default function Signin({ route, navigation }: SigninProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [backHandler, setBackHandler] = useState(null);
   const { title, service, initial } = route.params;
-  const { error, loading } = useSelector((state: RootState) => state.signin);
+  const { error, loading, store } = useSelector(
+    (state: RootState) => state.signin
+  );
+
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
+
+  const handleBackExit = () => {
+    BackHandler.exitApp();
+    return true;
+  };
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -62,13 +73,35 @@ export default function Signin({ route, navigation }: SigninProps) {
     initializeWhenFirstSignin();
   }, []);
 
+  useEffect(() => {
+    console.log('isFocused', isFocused);
+    if (isFocused) {
+      if (backHandler === null) {
+        setBackHandler(
+          BackHandler.addEventListener('hardwareBackPress', handleBackExit)
+        );
+      }
+    } else {
+      if (backHandler !== null) {
+        backHandler.remove();
+        setBackHandler(null);
+      }
+    }
+
+    return () => {
+      if (backHandler !== null) {
+        backHandler.remove();
+        setBackHandler(null);
+      }
+    };
+  }, [isFocused]);
   return (
     <>
-      {error ? (
+      {/* {error ? (
         <ErrorMsg>
           <ErrorText>{error}</ErrorText>
         </ErrorMsg>
-      ) : null}
+      ) : null} */}
 
       <SigninScreen
         title={title}

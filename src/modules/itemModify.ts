@@ -4,6 +4,7 @@ import { takeLatest, fork, call, put } from 'redux-saga/effects';
 
 import { getItemDetail } from './itemDetail';
 import { initialize } from './salesPredict';
+import { getMyMenuList } from './mypage';
 import { ItemDetailObject } from '@base/types/item';
 import {
   createPromiseSaga,
@@ -93,6 +94,7 @@ function* postItemModifySaga(
   try {
     yield call(postItemModifyInfo, data, accessToken);
     yield put(getItemDetail(action.productionId));
+    yield put(getMyMenuList(data._parts[5][1]));
     yield put(initialize());
     yield put({ type: POST_ITEM_MODIFY_SUCCESS });
   } catch (error) {

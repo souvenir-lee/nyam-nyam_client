@@ -36,7 +36,7 @@ export type SigninState = {
   isSignin: boolean;
   service: 'customer' | 'store' | null;
   user: SigninUserData;
-  store: any;
+  store: Store | null;
   loading: boolean;
   error: string | null;
   accessToken: string | null;
@@ -81,3 +81,14 @@ export type SignupState = {
 };
 
 export type FormKey = 'email' | 'password' | 'passwordCheck' | 'username';
+
+export type Store = {
+  [key: string]: {
+    id: number;
+    storeName: string;
+    storeAddress: string;
+    latitude: number;
+    longitude: number;
+  };
+};
+

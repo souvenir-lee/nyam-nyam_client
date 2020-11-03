@@ -5,6 +5,7 @@ import styled from 'styled-components/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Menu } from 'react-native-paper';
 
+import { deleteMyMenuItem } from '@base/modules/mypage';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 import { PredictDataObject } from '@base/types/predict';
 
@@ -22,6 +23,7 @@ function SalesPredictItem({
   isLast,
   storeId,
 }: AddressItemProps) {
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
 
   const handleItemPress = () => {
@@ -43,7 +45,7 @@ function SalesPredictItem({
   };
 
   const handleRemoveClick = () => {
-    Alert.alert('삭제는 미구현입니다.');
+    dispatch(deleteMyMenuItem(storeId, data.id));
   };
   return (
     <SalesPredictOpacity isLast={isLast} onPress={handleItemPress}>

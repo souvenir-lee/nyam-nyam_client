@@ -48,11 +48,7 @@ export default function ModifyMyInfoScreen({
         </MyPageUserRow>
         <MyPageUserRow isLast>
           <RowTitle>닉네임</RowTitle>
-          <RowInput
-            defaultValue={username}
-            onChangeText={onUsernameChange}
-            onSubmitEditing={() => console.log('submit')}
-          />
+          <RowInput value={username} onChangeText={onUsernameChange} />
         </MyPageUserRow>
         <Button
           title="비밀번호 변경"

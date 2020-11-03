@@ -1,10 +1,12 @@
 import { ActionType } from 'typesafe-actions';
 import { fork, call, put, select } from 'redux-saga/effects';
-import { Alert } from 'react-native';
+import { ActivityIndicatorComponent, Alert } from 'react-native';
 
+import { initialize } from './salesPredict';
 import { MyInfo, MyPageState, MyMenuItemType } from '@base/types/mypage';
 import * as mypageAPI from '@base/api/mypage';
 import { handleIfAuthError, clearTokens } from '@base/lib/auth';
+import { updateUsername } from './signin';
 
 const INITIALIZE_ERROR = 'mypage/INITIALIZE_ERROR' as const;
 
@@ -36,6 +38,7 @@ const DELETE_MY_STORE_ITEM = 'mypage/DELETE_MY_STORE_ITEM' as const;
 const DELETE_MY_STORE_ITEM_SUCCESS = 'mypage/DELETE_MY_STORE_ITEM_SUCCESS' as const;
 const DELETE_MY_STORE_ITEM_FAIL = 'mypage/DELETE_MY_STORE_ITEM_FAIL' as const;
 
+const CHANGE_USERNAME = 'mypage/CHANGE_USERNAME' as const;
 const GET_MY_MENU_LIST = 'mypage/GET_MY_MENU_LIST' as const;
 const GET_MY_MENU_LIST_SUCCESS = 'mypage/GET_MY_MENU_LIST_SUCCESS' as const;
 const GET_MY_MENU_LIST_FAIL = 'mypage/GET_MY_MENU_LIST_FAIL' as const;
@@ -43,7 +46,6 @@ const GET_MY_MENU_LIST_FAIL = 'mypage/GET_MY_MENU_LIST_FAIL' as const;
 const DELETE_MY_MENU_ITEM = 'mypage/DELETE_MY_MENU_ITEM' as const;
 const DELETE_MY_MENU_ITEM_SUCCESS = 'mypage/DELETE_MY_MENU_ITEM_SUCCESS' as const;
 const DELETE_MY_MENU_ITEM_FAIL = 'mypage/DELETE_MY_MENU_ITEM_FAIL' as const;
-
 
 export const SAVE_MY_INFO_TO_REDUX = 'mypage/SAVE_MY_INFO' as const;
 export const REMOVE_SIGNIN = 'mypage/REMOVE_SIGNIN' as const;
@@ -60,7 +62,7 @@ export const actionsWithAuth = [
   GET_MY_STORE_LIST,
   DELETE_MY_STORE_ITEM,
   GET_MY_MENU_LIST,
-  DELETE_MY_MENU_ITEM
+  DELETE_MY_MENU_ITEM,
 ];
 
 export const initializeError = () => ({
@@ -117,9 +119,8 @@ export const getMyStoreListFail = (error: string) => ({
   error,
 });
 
-export const saveMyInfo = (username: string) => ({
+export const saveMyInfo = () => ({
   type: SAVE_MY_INFO,
-  payload: username,
 });
 
 export const saveMyInfoToRedux = (username: string) => ({
@@ -191,34 +192,45 @@ export const deleteMyStoreItemFail = (error: string) => ({
   payload: error,
 });
 
+export const changeUsername = (data: string) => ({
+  type: CHANGE_USERNAME,
+  payload: data,
+});
+
 export const getMyMenuList = (storeId: string | number) => ({
   type: GET_MY_MENU_LIST,
-  payload: storeId
+  payload: storeId,
 });
 
 export const getMyMenuListSuccess = (menus: MyMenuItemType[]) => ({
   type: GET_MY_MENU_LIST_SUCCESS,
-  payload: menus
+  payload: menus,
 });
 
 export const getMyMenuListFail = (error: string) => ({
   type: GET_MY_MENU_LIST_FAIL,
-  payload: error
+  payload: error,
 });
 
-export const deleteMyMenuItem = (storeId: string | number, productionId: string | number) => ({
+export const deleteMyMenuItem = (
+  storeId: string | number,
+  productionId: string | number
+) => ({
   type: DELETE_MY_MENU_ITEM,
-  payload: { storeId, productionId }
+  payload: { storeId, productionId },
 });
 
-export const deleteMyMenuItemSuccess = (storeId: string | number, productionId: string | number) => ({
+export const deleteMyMenuItemSuccess = (
+  storeId: string | number,
+  productionId: string | number
+) => ({
   type: DELETE_MY_MENU_ITEM_SUCCESS,
-  payload: { storeId, productionId }
+  payload: { storeId, productionId },
 });
 
 export const deleteMyMenuItemFail = (error: string) => ({
   type: DELETE_MY_MENU_ITEM_FAIL,
-  payload: error
+  payload: error,
 });
 
 const actions = {
@@ -249,7 +261,7 @@ const actions = {
   getMyMenuListFail,
   deleteMyMenuItem,
   deleteMyMenuItemSuccess,
-  deleteMyMenuItemFail
+  deleteMyMenuItemFail,
 };
 
 type MyPageAction = ActionType<typeof actions>;
@@ -319,16 +331,13 @@ export function* requestUnregisterSaga(accessToken: string) {
 
 export function* saveMyInfoSaga(action: any, accessToken: string) {
   let res;
-  console.log('before save my info');
-
+  const { user } = yield select((state) => state.signin);
+  const { username } = yield select((state) => state.mypage);
   try {
-    console.log('before request myinfo save action:', action);
-    res = yield call(mypageAPI.saveMyInfo, accessToken, action.payload);
-    console.log('save my info res success: ', res);
-    Alert.alert('닉네임이 변경되었습니다.');
-
+    res = yield call(mypageAPI.saveMyInfo, accessToken, username);
+    yield put(getMyInfo(user.id));
+    yield put(updateUsername(username));
     yield put(myInfoSaveSucceess());
-    yield put(saveMyInfoToRedux(action.payload));
   } catch (e) {
     res = e.response;
     console.log('my info save failed: ', res);
@@ -408,7 +417,6 @@ export function* deleteMyStoreItemSaga(action: any, accessToken: string) {
   let res;
   const storeId = action.payload;
   console.log('before delete mystore item');
-
   try {
     res = yield call(mypageAPI.deleteMyStoreItem, accessToken, storeId);
     console.log('delete mystore item success: ', res);
@@ -427,83 +435,91 @@ export function* deleteMyStoreItemSaga(action: any, accessToken: string) {
   }
 }
 
-export function* getMyMenuListSaga(action: any, accessToken: string){
+export function* getMyMenuListSaga(action: any, accessToken: string) {
   let res;
   const storeId = action.payload;
   console.log('before get my menu list, storeId', storeId);
 
-  try{
+  try {
     res = yield call(mypageAPI.getMyMenuList, accessToken, storeId);
 
     console.log('get my menu list success: ', res);
 
     yield put(getMyMenuListSuccess(res.data));
-  } catch(e){
+  } catch (e) {
     res = e.response;
     console.log('get my menu list fail:', res);
-    
-    if(res){
-      const isAuthError = yield call(handleIfAuthError, res.status)
-      if(!isAuthError){
+
+    if (res) {
+      const isAuthError = yield call(handleIfAuthError, res.status);
+      if (!isAuthError) {
         yield put(getMyMenuListFail('알 수없는 에러입니다.'));
       }
     } else {
       yield put(getMyMenuListFail('서버에서 응답이 없습니다.'));
     }
   }
-};
+}
 
-export function* deleteMyMenuItemSaga(action: any, accessToken: string){
+export function* deleteMyMenuItemSaga(action: any, accessToken: string) {
   let res;
   const { storeId, productionId } = action.payload;
-  console.log('before delete my menu item, storeId, productionId', storeId, productionId);
+  console.log(
+    'before delete my menu item, storeId, productionId',
+    storeId,
+    productionId
+  );
 
-  try{
-    res = yield call(mypageAPI.deleteMyMenuItem, accessToken, storeId, productionId);
+  try {
+    res = yield call(
+      mypageAPI.deleteMyMenuItem,
+      accessToken,
+      storeId,
+      productionId
+    );
     console.log('delete my menu item success: ', res);
-    
+
     yield put(deleteMyMenuItemSuccess(storeId, productionId));
+    yield put(initialize());
     Alert.alert('해당 메뉴가 삭제되었습니다.');
-  } catch(e){
+  } catch (e) {
     res = e.response;
     console.log('delete my menu item fail:', res);
-    
-    Alert.alert('메뉴를 삭제할 수 없습니다.');
-    
-    if(res){
-      const isAuthError = yield call(handleIfAuthError, res.status)
-      if(!isAuthError){
-        yield put(deleteMyMenuItemFail('알 수없는 에러입니다.'));
 
+    Alert.alert('메뉴를 삭제할 수 없습니다.');
+
+    if (res) {
+      const isAuthError = yield call(handleIfAuthError, res.status);
+      if (!isAuthError) {
+        yield put(deleteMyMenuItemFail('알 수없는 에러입니다.'));
       }
     } else {
       yield put(deleteMyMenuItemFail('서버에서 응답이 없습니다.'));
     }
   }
-
 }
 
-export function* mypageSaga(action: ActionsWithAuth, accessToken: string){
-    console.log('saga pattern:', action);
-    switch(action.type as any){
-      case GET_MY_INFO:
-        return yield fork(getMyInfoSaga, action, accessToken);
-      case REQUEST_UNREGISTER:
-        return yield fork(requestUnregisterSaga, accessToken);
-      case SAVE_MY_INFO:
-        return yield fork(saveMyInfoSaga, action, accessToken);
-      case UPLOAD_MY_PHOTO:
-        return yield fork(uploadMyPhotoSaga, action, accessToken);
-      case REQUEST_PASSWORD_CHANGE:
-        return yield fork(requestPasswordChangeSaga, action, accessToken);
-      case DELETE_MY_STORE_ITEM:
-        return yield fork(deleteMyStoreItemSaga, action, accessToken);
-      case GET_MY_MENU_LIST:
-        return yield fork(getMyMenuListSaga, action, accessToken);
-      case DELETE_MY_MENU_ITEM:
-        return yield fork(deleteMyMenuItemSaga, action, accessToken);
-    }
-};
+export function* mypageSaga(action: ActionsWithAuth, accessToken: string) {
+  console.log('saga pattern:', action);
+  switch (action.type as any) {
+    case GET_MY_INFO:
+      return yield fork(getMyInfoSaga, action, accessToken);
+    case REQUEST_UNREGISTER:
+      return yield fork(requestUnregisterSaga, accessToken);
+    case SAVE_MY_INFO:
+      return yield fork(saveMyInfoSaga, action, accessToken);
+    case UPLOAD_MY_PHOTO:
+      return yield fork(uploadMyPhotoSaga, action, accessToken);
+    case REQUEST_PASSWORD_CHANGE:
+      return yield fork(requestPasswordChangeSaga, action, accessToken);
+    case DELETE_MY_STORE_ITEM:
+      return yield fork(deleteMyStoreItemSaga, action, accessToken);
+    case GET_MY_MENU_LIST:
+      return yield fork(getMyMenuListSaga, action, accessToken);
+    case DELETE_MY_MENU_ITEM:
+      return yield fork(deleteMyMenuItemSaga, action, accessToken);
+  }
+}
 
 const initialState: MyPageState = {
   store: 0,
@@ -512,6 +528,7 @@ const initialState: MyPageState = {
   menus: [],
   loading: false,
   error: null,
+  username: '',
 };
 
 export default function mypage(
@@ -538,6 +555,7 @@ export default function mypage(
         store: action.payload.store,
         production: action.payload.production,
         upload: action.payload.upload,
+        username: action.payload.username,
         loading: false,
       };
     case GET_MY_INFO_FAIL:
@@ -642,6 +660,11 @@ export default function mypage(
         loading: false,
         error: action.payload,
       };
+    case CHANGE_USERNAME:
+      return {
+        ...state,
+        username: action.payload,
+      };
 
     case GET_MY_MENU_LIST:
       return {
@@ -652,13 +675,13 @@ export default function mypage(
       return {
         ...state,
         loading: false,
-        menus: state.menus.concat(action.payload)
+        menus: action.payload,
       };
     case GET_MY_MENU_LIST_FAIL:
       return {
         ...state,
-        loading:false,
-        error: action.payload
+        loading: false,
+        error: action.payload,
       };
 
     case DELETE_MY_MENU_ITEM:
@@ -673,13 +696,13 @@ export default function mypage(
         loading: false,
         menus: state.menus.filter((menu: MyMenuItemType) => {
           return menu.storeId !== storeId || menu.productionId !== productionId;
-        })
+        }),
       };
     case DELETE_MY_MENU_ITEM_FAIL:
       return {
         ...state,
-        loading:false,
-        error: action.payload
+        loading: false,
+        error: action.payload,
       };
 
     default:

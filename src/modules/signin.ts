@@ -8,6 +8,7 @@ import {
   SigninState,
   SigninStoreData,
   SigninUserData,
+  Store,
 } from '@base/types/auth';
 import {
   storeTokens,
@@ -22,7 +23,6 @@ import {
   REMOVE_SIGNIN,
   SAVE_MY_STORE_LIST_TO_REDUX,
   saveMyStoreListToRedux,
-  DELETE_MY_STORE_ITEM_IN_REDUX,
   deleteMyStoreItemInRedux,
   SAVE_MY_PHOTO_TO_REDUX,
   saveMyPhotoToRedux,
@@ -41,6 +41,7 @@ const VALID_TOKEN = 'signin/VALID_TOKEN' as const;
 const SIGNOUT = 'signin/SIGNOUT' as const;
 const SIGNOUT_SUCCESS = 'signin/SIGNOUT_SUCCESS' as const;
 const UPDATE_STORE = 'signin/UPDATE_STORE' as const;
+const UPDATE_USERNAME = 'signin/UPDATE_USERNAME' as const;
 //액션 생성자
 
 export const initializeSignin = (service?: 'customer' | 'store') => {
@@ -100,9 +101,14 @@ export const signoutSuccess = () => ({
   type: SIGNOUT_SUCCESS,
 });
 
-export const updateStore = (store) => ({
+export const updateStore = (store: Store) => ({
   type: UPDATE_STORE,
   payload: store,
+});
+
+export const updateUsername = (username: string) => ({
+  type: UPDATE_USERNAME,
+  payload: username,
 });
 
 const actions = {
@@ -121,25 +127,18 @@ const actions = {
   deleteMyStoreItemInRedux,
   saveMyPhotoToRedux,
   updateStore,
+  updateUsername,
 };
 
 type SigninAction = ActionType<typeof actions>;
 
-//리덕스 사가
 function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
   const signinInfo = action.payload;
-  let res;
-  console.log('before signin');
-  //토큰 존재 여부 테스트
-  const test_access = yield SecureStore.getItemAsync('access_token');
-  const test_refresh = yield SecureStore.getItemAsync('refresh_token');
-  console.log('test tokens: ', test_access, test_refresh);
 
   try {
-    res = yield call(authAPI.signin, signinInfo);
-    console.log('res success: ', res.data);
+    const result = yield call(authAPI.signin, signinInfo);
 
-    const { userdata, storedata } = res.data;
+    const { userdata, storedata } = result.data;
     const { access_token, refresh_token } = userdata;
 
     delete userdata.access_token;
@@ -149,16 +148,15 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
 
     storeTokens(access_token, refresh_token);
   } catch (e) {
-    res = e.response;
-    console.log('error:', res, e);
-    if (!res) {
+    const result = e.response;
+    if (!result) {
       yield put(signinError('알려지지 않은 에러가 발생했습니다.'));
       return;
     }
 
-    if (res.status == 400) {
+    if (result.status === 400) {
       yield put(signinError('아이디 또는 비밀번호를 입력해주세요.'));
-    } else if (res.status == 404) {
+    } else if (result.status === 404) {
       yield put(signinError('계정이 존재하지 않습니다.'));
     } else {
       yield put(signinError(e.message));
@@ -167,18 +165,10 @@ function* requestSigninSaga(action: ReturnType<typeof requestSignin>) {
 }
 
 function* signoutSaga() {
-  let res;
-  console.log('before signout');
-
   const accessToken = yield call([SecureStore, 'getItemAsync'], 'access_token');
-  try {
-    yield call(authAPI.signout, accessToken);
-  } catch (e) {
-    console.error('서버에서 로그아웃 요청 처리 실패:', e);
-  } finally {
-    yield call(clearTokens);
-    yield put(signoutSuccess());
-  }
+  yield call(authAPI.signout, accessToken);
+  yield call(clearTokens);
+  yield put(signoutSuccess());
 }
 
 const signinAuthCheckSaga = createAuthCheckSaga(true);
@@ -193,9 +183,8 @@ const initialState: SigninState = {
   isSignin: false,
   service: null,
   user: null,
-  // store
   /*
-    {
+    store: {
       1: {
         "id": 1,
         "storeName": "공통",
@@ -204,11 +193,7 @@ const initialState: SigninState = {
         "longitude": 127
       },
       2: {
-        "id": 2,
-        "storeName": "공통",
-        "storeAddress": "전국(서울)",
-        "latitude": 38,
-        "longitude": 127
+        ...
       }
     }
   */
@@ -297,20 +282,6 @@ export default function signin(
         store: action.paylaod,
       };
 
-    case DELETE_MY_STORE_ITEM_IN_REDUX:
-      const storeId = action.payload;
-
-      if (storeId in state.store) {
-        delete state.store[storeId];
-      }
-
-      return {
-        ...state,
-        store: {
-          ...state.store,
-        },
-      };
-
     case SAVE_MY_PHOTO_TO_REDUX:
       return {
         ...state,
@@ -325,6 +296,14 @@ export default function signin(
       return {
         ...state,
         store: action.payload,
+      };
+    case UPDATE_USERNAME:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          username: action.payload,
+        },
       };
     default:
       return state;

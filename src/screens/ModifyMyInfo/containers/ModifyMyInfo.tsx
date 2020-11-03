@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, Text, Alert, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 
 import { MINT } from '@base/baseColors';
 import ModifyMyInfoScreen from '../components/ModifyMyInfoScreen';
@@ -11,6 +10,7 @@ import {
   requestUnregister,
   saveMyInfo,
   uploadMyPhoto,
+  changeUsername,
 } from '@base/modules/mypage';
 import { ModifyMyInfoProps } from '@base/types/Navigation/MyPageNavigation';
 
@@ -18,17 +18,12 @@ export default function ModifyMyInfoContainer({
   navigation,
 }: ModifyMyInfoProps) {
   const { user } = useSelector((state: RootState) => state.signin);
-  const username = useSelector((state: RootState) =>
-    state.signin.user ? state.signin.user.username : ''
-  );
+  const { username } = useSelector((state: RootState) => state.mypage);
   const { email, userImg } = user ? user : { email: '', userImg: null };
-  const [_username, setUsername] = useState(username);
   const dispatch = useDispatch();
 
   const handleUsernameChange = (text: string) => {
-    console.log('username:', _username, username);
-
-    setUsername(text);
+    dispatch(changeUsername(text));
   };
   const handleUnregisterRequestPress = () => {
     dispatch(requestUnregister());
@@ -41,13 +36,6 @@ export default function ModifyMyInfoContainer({
       },
       { text: '확인', onPress: handleUnregisterRequestPress },
     ]);
-  };
-  const handleMyInfoSavePress = () => {
-    setUsername((state: any) => {
-      dispatch(saveMyInfo(state));
-      return state;
-    });
-    navigation.goBack();
   };
 
   const handlePhotoModifyPress = async () => {
@@ -78,7 +66,11 @@ export default function ModifyMyInfoContainer({
       headerRight: () => (
         <TouchableOpacity
           style={{ marginRight: 20 }}
-          onPress={handleMyInfoSavePress}>
+          onPress={() => {
+            dispatch(saveMyInfo());
+            Alert.alert('닉네임이 변경되었습니다.');
+            navigation.goBack();
+          }}>
           <Text style={{ fontSize: 17, fontWeight: 'bold', color: MINT }}>
             저장
           </Text>
@@ -91,7 +83,7 @@ export default function ModifyMyInfoContainer({
     <ModifyMyInfoScreen
       navigation={navigation}
       userImg={userImg}
-      username={_username}
+      username={username}
       email={email}
       onPhotoModifyPress={handlePhotoModifyPress}
       onUsernameChange={handleUsernameChange}
