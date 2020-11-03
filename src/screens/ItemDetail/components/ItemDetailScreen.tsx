@@ -43,7 +43,7 @@ export default function ItemDetailScreen({
         <ItemDetailImg
           source={
             data.productionImg
-              ? data.productionImg
+              ? { uri: data.productionImg }
               : require('@base/../assets/images/default_dessert_image.png')
           }
         />
@@ -162,6 +162,7 @@ const DetailContent = styled.Text`
 
 const IngredientWrapper = styled.View`
   align-items: center;
+  flex-direction: row;
 `;
 
 const Ingredient = styled.Text`

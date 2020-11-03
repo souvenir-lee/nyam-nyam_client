@@ -4,9 +4,7 @@ import * as Location from 'expo-location';
 import { SignUpAddressProps } from '@base/types/Navigation/SignUpNavigation';
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 
-export default function useLocation({
-  navigation
-}: any) {
+export default function useLocation({ navigation }: any) {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
@@ -25,6 +23,7 @@ export default function useLocation({
       }
 
       const curLocation = await Location.getCurrentPositionAsync({});
+      console.log('current location', curLocation);
       setLocation(curLocation);
     };
 

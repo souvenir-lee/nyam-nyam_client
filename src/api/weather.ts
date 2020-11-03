@@ -20,10 +20,23 @@ export const weatherToKorean = {
   Dust: '황사',
 };
 
+export const weatherList = [
+  '번개',
+  '소나기',
+  '비',
+  '눈',
+  '황사',
+  '안개',
+  '태풍',
+  '맑음',
+  '구름',
+];
+
 export const getOpenWeather = async ({
   x,
   y,
 }: Coords): Promise<WeatherAPIResults> => {
+  console.log('x', x, 'y', y);
   const weatherResult = await axios.get(
     `https://api.openweathermap.org/data/2.5/onecall?lat=${x}&lon=${y}&exclude=minutely,hourly,alerts&appid=${WEATHER_API_KEY}&units=metric`
   );

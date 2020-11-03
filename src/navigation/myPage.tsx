@@ -24,12 +24,15 @@ export default function MyPageNavigation() {
       screenOptions={{
         headerStyle: {
           shadowColor: 'transparent',
-          borderBottomWidth: 2,
-          borderBottomColor: MINT_RGBA_LINE,
+          elevation: 0,
+          borderBottomWidth: 0,
           height: 70,
         },
         headerStatusBarHeight: 0,
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyle: {
+          backgroundColor: 'white',
+        },
       }}>
       <MyPageStack.Screen
         name="MyPage"
@@ -57,12 +60,97 @@ export default function MyPageNavigation() {
           headerBackTitleVisible: false,
         }}
       />
-      <MyPageStack.Screen name="MyMenuListInfo" component={MyMenuListInfo} />
-      <MyPageStack.Screen name="MyStoreListInfo" component={MyStoreListInfo} />
-      <MyPageStack.Screen name="AddStore" component={AddStore} />
-      <MyPageStack.Screen name="AddMenu" component={AddMenu} />
-      <MyPageStack.Screen name="ItemModify" component={ItemModify} />
-      <MyPageStack.Screen name="ChangePassword" component={ChangePassword} />
+      <MyPageStack.Screen
+        name="MyMenuListInfo"
+        component={MyMenuListInfo}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+        }}
+      />
+      <MyPageStack.Screen
+        name="MyStoreListInfo"
+        component={MyStoreListInfo}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+        }}
+      />
+      <MyPageStack.Screen
+        name="AddStore"
+        component={AddStore}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '내 가게 추가',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            color: MINT,
+            fontSize: 22,
+            fontFamily: 'BMHANNA',
+          },
+          headerBackTitleVisible: false,
+        }}
+      />
+      <MyPageStack.Screen
+        name="AddMenu"
+        component={AddMenu}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '가게 추가',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            color: MINT,
+            fontSize: 22,
+            fontFamily: 'BMHANNA',
+          },
+          headerBackTitleVisible: false,
+        }}
+      />
+      <MyPageStack.Screen
+        name="ItemModify"
+        component={ItemModify}
+        options={{ headerShown: false }}
+      />
+      <MyPageStack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+              tintColor={MINT}
+              pressColorAndroid={MINT}
+            />
+          ),
+          headerTitle: '',
+          headerTitleAlign: 'center',
+          headerBackTitleVisible: false,
+        }}
+      />
     </MyPageStack.Navigator>
   );
 }

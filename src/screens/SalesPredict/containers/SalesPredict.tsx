@@ -11,18 +11,7 @@ import {
 import { SalesPredictProps } from '@base/types/Navigation/SalesPredictNavigation';
 import { initialize } from '@base/modules/salesPredict';
 import { RootState } from '@base/modules';
-
-function convertStoreObjToArray(store) {
-  if (!store) {
-    return [];
-  }
-  const storeIds = Object.getOwnPropertyNames(store);
-  const storeLists = [];
-  storeIds.forEach((storeId, index) => {
-    storeLists.push(store[storeId]);
-  });
-  return storeLists;
-}
+import { convertStoreObjToArray } from '@base/api/utils';
 
 export default function SalesPredictContainer({
   navigation,
@@ -90,9 +79,7 @@ export default function SalesPredictContainer({
     return null;
   }
 
-  console.log('weatherLoading', weatherLoading);
-  console.log('storeArray', storeArray);
-  return weatherLoading || !storeArray.length ? (
+  return !currentWeatherData || weatherLoading || !storeArray.length ? (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" color="#000000" />
     </View>

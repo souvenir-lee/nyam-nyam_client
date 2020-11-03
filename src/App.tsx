@@ -21,5 +21,5 @@ export default function App() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-  return <Navigation />;
+  return loaded ? <Navigation /> : null;
 }

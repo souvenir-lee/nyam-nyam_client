@@ -6,29 +6,34 @@ import { Button } from 'react-native-elements';
 import { MINT, MINT_RGBA_LINE, MINT_STRONG } from '@base/baseColors';
 import { MyPageProps } from '@base/types/Navigation/MyPageNavigation';
 import { MyInfo } from '@base/types/mypage';
- 
+
 type MyPageScreenProps = {
   navigation: MyPageProps['navigation'];
   myPageInfo: any;
   handleSignoutButtonPress: () => void;
 };
 
-export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButtonPress }
-  : MyPageScreenProps) {
+export default function MyPageScreen({
+  navigation,
+  myPageInfo,
+  handleSignoutButtonPress,
+}: MyPageScreenProps) {
+  const { username, email, store, production, upload, userImg } = myPageInfo;
+  const avatar = userImg
+    ? { uri: userImg }
+    : require('@base/../assets/images/default_user_avatar.jpg');
 
-  const { username, email, store, production, uploadSales } = myPageInfo; 
   return (
     <MyPageContainer>
-
       <MyPageTitle>내 정보</MyPageTitle>
 
       <MyPageUserInfo>
-        <UserAvatar
-          source={require('@base/../assets/images/default_user_avatar.jpg')}
-        />
+        <UserAvatar source={avatar} />
         <UserTextWrapper>
           <UserNameText>{username}</UserNameText>
-          <UserInfoText>{email} {'\n'}사장님</UserInfoText>
+          <UserInfoText>
+            {email} {'\n'}사장님
+          </UserInfoText>
         </UserTextWrapper>
       </MyPageUserInfo>
 
@@ -43,8 +48,7 @@ export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButt
           <BriefInfoTitle>내 상품 수</BriefInfoTitle>
         </BriefInfoRow>
         <BriefInfoRow>
-
-          <BriefInfoContent>{uploadSales}</BriefInfoContent>
+          <BriefInfoContent>{upload}</BriefInfoContent>
           <BriefInfoTitle>내역 업로드 수</BriefInfoTitle>
         </BriefInfoRow>
       </MyPageBriefInfo>
@@ -80,18 +84,20 @@ export default function MyPageScreen({ navigation, myPageInfo, handleSignoutButt
           titleStyle={{ color: MINT_STRONG, fontSize: 20, fontWeight: 'bold' }}
           containerStyle={{ marginBottom: 20 }}
           buttonStyle={{ borderColor: MINT, borderWidth: 2 }}
-          onPress={() => Alert.alert(
-            "로그아웃",
-            "로그아웃 하시겠습니까?",
-            [
-              {
-                text: "취소",
-                style: "cancel"
-              },
-              { text: "확인", onPress: handleSignoutButtonPress }
-            ],
-            { cancelable: false }
-          )}
+          onPress={() =>
+            Alert.alert(
+              '로그아웃',
+              '로그아웃 하시겠습니까?',
+              [
+                {
+                  text: '취소',
+                  style: 'cancel',
+                },
+                { text: '확인', onPress: handleSignoutButtonPress },
+              ],
+              { cancelable: false }
+            )
+          }
         />
       </MyPageNavContainer>
     </MyPageContainer>
@@ -121,7 +127,7 @@ const UserAvatar = styled.Image`
   width: 100px;
   height: 100px;
   margin-right: 10px;
-  opacity: 0.5;
+  opacity: 1;
 `;
 
 const UserTextWrapper = styled.View``;

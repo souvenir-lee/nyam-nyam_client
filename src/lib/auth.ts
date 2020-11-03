@@ -13,7 +13,7 @@ import * as authAPI from '@base/api/auth';
 import { isOfType } from 'typesafe-actions';
 
 //테스트 코드
-const testToken = async (type: string, token?: string,) => {
+const testToken = async (type: string, token?: string) => {
   console.log('리프레시 토큰 테스트 시작');
 
   if (!token) {
@@ -45,17 +45,21 @@ const testToken = async (type: string, token?: string,) => {
 export async function storeTokens(accessToken: string, refreshToken?: string) {
   try {
     console.log('store tokens: access:', accessToken, 'refresh:', refreshToken);
-    console.log('access type:', typeof accessToken, 'refresh type:', typeof refreshToken);
+    console.log(
+      'access type:',
+      typeof accessToken,
+      'refresh type:',
+      typeof refreshToken
+    );
     await SecureStore.setItemAsync('access_token', accessToken);
 
     if (refreshToken) {
       await SecureStore.setItemAsync('refresh_token', refreshToken);
     }
-    
+
     const access = await SecureStore.getItemAsync('access_token');
     const refresh = await SecureStore.getItemAsync('refresh_token');
     console.log('after store tokens: access:', access, 'refresh:', refresh);
-
   } catch (e) {
     console.error('cannot store tokens:', e);
   }
@@ -65,8 +69,9 @@ export async function clearTokens() {
   try {
     await SecureStore.deleteItemAsync('access_token');
     await SecureStore.deleteItemAsync('refresh_token');
-    const t = await SecureStore.getItemAsync('access_token');
-    console.log('clear token:', t);
+    const access = await SecureStore.getItemAsync('access_token');
+    const refresh = await SecureStore.getItemAsync('refresh_token');
+    console.log('clear tokens:', access, '|||', refresh);
   } catch (e) {
     console.error(e);
   }
@@ -80,7 +85,7 @@ export function* isTokenExpired(token: string) {
     console.log('token payload: ', payload);
     const { exp } = payload; //토큰 만료시간
 
-    console.log('is token expired: ', exp < (Date.now() / 1000));
+    console.log('is token expired: ', exp < Date.now() / 1000);
     if (exp < Date.now() / 1000) return true;
     //만료 시간이 지났다면
     else false;
@@ -117,13 +122,14 @@ function* verifyToken(token: string) {
   return isExpired;
 }
 
-function* refresh(
-  accessToken: string,
-  refreshToken: string,
-) {
+function* refresh(accessToken: string, refreshToken: string) {
   let res;
-  
-  console.log('before refresh tokens[access, refresh]: ', accessToken, refreshToken)
+
+  console.log(
+    'before refresh tokens[access, refresh]: ',
+    accessToken,
+    refreshToken
+  );
   try {
     res = yield call(authAPI.refresh, accessToken, refreshToken);
     console.log('refresh result:', res);
@@ -162,7 +168,6 @@ function* fetchUserData(accessToken: string) {
 }
 
 export function* autoSignin(): any {
-
   const { error, service } = yield select((state) => state.signin);
 
   //리소스 요청 중에 인증 실패해서 인증 페이지로 이동했을 때는 이전에 이미 토큰을 체크했기 때문에 토큰 체크 안함
@@ -194,12 +199,12 @@ export function* autoSignin(): any {
       if (refreshToken && typeof refreshToken === 'string') {
         //refresh token의 만료기간을 확인한다
         const isRefreshTokenInvalid = yield call(verifyToken, refreshToken);
-        
-        if (isRefreshTokenInvalid === null) { 
+
+        if (isRefreshTokenInvalid === null) {
           //토큰이 유효하지 않다면
           console.error('refresh token is invalid');
           yield put(signinError(getAuthErrMsg(403) as string));
-        } 
+        }
 
         if (isRefreshTokenInvalid) {
           //refresh token의 만료기간이 유효하지 않다면
@@ -316,7 +321,8 @@ export function createAuthCheckSaga(isAppLoaded = false) {
         if (callCount > 0) {
           console.log('start resource api authentication');
           isTokenValid = yield call(checkToken);
-        } else { //자동 로그인할 때 token 검증 안함
+        } else {
+          //자동 로그인할 때 token 검증 안함
           console.log('already auth checked in auto signin');
           isTokenValid = yield select((state) => state.signin.isSignin);
         }
@@ -337,11 +343,11 @@ export function createAuthCheckSaga(isAppLoaded = false) {
 }
 
 export const getAuthErrMsg = (statusCode: string | number) => {
-  if (statusCode == 400) {
+  if (statusCode === 400) {
     return '토큰이 존재하지 않습니다.';
-  } else if (statusCode == 401) {
+  } else if (statusCode === 401) {
     return '토큰 만료기간이 지났습니다';
-  } else if (statusCode == 403) {
+  } else if (statusCode === 403) {
     return '유효한 토큰이 아닙니다.';
   }
 
@@ -350,10 +356,10 @@ export const getAuthErrMsg = (statusCode: string | number) => {
 
 //리소스 api에서 인증 실패시 에러 처리
 export function* handleIfAuthError(statusCode: number | string) {
-  if (statusCode == 401) {
+  if (statusCode === 401) {
     yield put(invalidToken(statusCode));
     return true;
-  } else if (statusCode == 403) {
+  } else if (statusCode === 403) {
     yield put(invalidToken(statusCode));
     return true;
   }

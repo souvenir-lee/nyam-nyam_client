@@ -10,20 +10,32 @@ type ModifyMyInfoScreenProps = {
   navigation: ModifyMyInfoProps['navigation'];
   username: string;
   email: string;
+  userImg: string | null;
+  onPhotoModifyPress: () => void;
   onUsernameChange: (text: string) => void;
-  onUnregisterSubmit: () => void
+  onUnregisterSubmit: () => void;
 };
 
 export default function ModifyMyInfoScreen({
-  navigation, username, email, onUsernameChange, onUnregisterSubmit
+  navigation,
+  username,
+  email,
+  userImg,
+  onUsernameChange,
+  onUnregisterSubmit,
+  onPhotoModifyPress,
 }: ModifyMyInfoScreenProps) {
-
+  const avatar = userImg
+    ? { uri: userImg }
+    : require('@base/../assets/images/default_user_avatar.jpg');
   return (
     <Container>
       <MyPageUserInfo>
-        <UserAvatar
-          source={require('@base/../assets/images/default_user_avatar.jpg')}
-        />
+        <UserAvatarWrapper onPress={onPhotoModifyPress}>
+          <UserAvatar source={avatar} />
+          <UserAvatarBackground />
+          <BackgroundText>사진 수정</BackgroundText>
+        </UserAvatarWrapper>
         <UserTextWrapper>
           <UserNameText>{username}</UserNameText>
           <UserInfoText>사장님</UserInfoText>
@@ -34,13 +46,9 @@ export default function ModifyMyInfoScreen({
           <RowTitle>이메일</RowTitle>
           <RowContent>{email}</RowContent>
         </MyPageUserRow>
-        <MyPageUserRow>
+        <MyPageUserRow isLast>
           <RowTitle>닉네임</RowTitle>
-          <RowInput
-            defaultValue={username}
-            onChangeText={onUsernameChange}
-            onSubmitEditing={() => console.log('submit')}
-          />
+          <RowInput value={username} onChangeText={onUsernameChange} />
         </MyPageUserRow>
         <Button
           title="비밀번호 변경"
@@ -66,6 +74,7 @@ export default function ModifyMyInfoScreen({
 const Container = styled.KeyboardAvoidingView`
   flex: 1;
   background-color: white;
+  padding: 0 30px;
 `;
 
 const MyPageUserInfo = styled.View`
@@ -74,13 +83,45 @@ const MyPageUserInfo = styled.View`
   justify-content: center;
 `;
 
+const UserAvatarWrapper = styled.TouchableOpacity`
+  position: relative;
+  width: 100px;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+`;
+
+const UserAvatarBackground = styled.View`
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  background-color: black;
+  opacity: 0.4;
+  border-radius: 5px;
+`;
 const UserAvatar = styled.Image`
   width: 100px;
   height: 100px;
   margin-bottom: 10px;
 `;
+const BackgroundText = styled.Text`
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  opacity: 0.9;
+`;
 
 const UserTextWrapper = styled.View``;
+
+const UserAvatarModifyButton = styled.TouchableOpacity`
+  margin-bottom: 20px;
+`;
+
+const ButtonText = styled.Text`
+  color: blue;
+`;
 
 const UserNameText = styled.Text`
   font-weight: bold;
@@ -103,23 +144,30 @@ const MyPageUserForm = styled.View`
 
 const MyPageUserRow = styled.View`
   flex-direction: row;
-  padding: 0 30px;
   align-items: center;
+  margin-bottom: ${(props) => (props.isLast ? '50px' : 0)};
 `;
 
 const RowTitle = styled.Text`
+  font-size: 20px;
   margin-right: 30px;
+  color: ${MINT_STRONG};
+  font-weight: bold;
 `;
 
-const RowContent = styled.Text``;
+const RowContent = styled.Text`
+  font-size: 18px;
+  color: ${MINT_STRONG};
+`;
 
 const RowInput = styled.TextInput`
   flex: 1;
-  padding: 3%;
+  padding: 2%;
   background: white;
   border-bottom-width: 1px;
-  border-bottom-color: black;
-  font-size: 15px;
+  border-bottom-color: ${MINT_STRONG};
+  font-size: 18px;
+  color: ${MINT_STRONG};
 `;
 
 const ModifyNavContainer = styled.View`

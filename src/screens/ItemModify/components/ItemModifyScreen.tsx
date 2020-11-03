@@ -3,6 +3,7 @@ import { ScrollView, Alert, TextInput } from 'react-native';
 import styled from 'styled-components/native';
 import { HeaderBackButton } from '@react-navigation/stack';
 import { Picker } from '@react-native-community/picker';
+import { Button } from 'react-native-elements';
 
 import { ItemModifyProps as PropsFromItemDetail } from '@base/types/Navigation/ItemDetail';
 import { ItemModifyProps as PropsFromMyPage } from '@base/types/Navigation/MyPageNavigation';
@@ -21,6 +22,7 @@ type MyMenuListInfoScreen = {
 export default function ItemModifyScreen({
   data,
   image,
+  loading,
   onChange,
   onDelete,
   pickImage,
@@ -87,7 +89,7 @@ export default function ItemModifyScreen({
               placeholder={'가격(원)'}
               keyboardType="numeric"
               maxLength={7}
-              onChangeText={(text) => onChange('productionName', text)}
+              onChangeText={(text) => onChange('price', text)}
               value={price.toString()}
             />
           </DetailRow>
@@ -122,7 +124,7 @@ export default function ItemModifyScreen({
                 }
               }}>
               {idToIngredients.map((type, index) => (
-                <Picker.Item label={type} value={index + 1} />
+                <Picker.Item key={index} label={type} value={index + 1} />
               ))}
             </Picker>
           </DetailRow>
@@ -173,12 +175,19 @@ export default function ItemModifyScreen({
           />
         </DetailDescContainer>
       </ScrollView>
-      <SubmitButton onPress={handleSubmit}>
-        <SubmitText>수정</SubmitText>
-      </SubmitButton>
+      <Button
+        title="수정"
+        type="solid"
+        loading={loading}
+        titleStyle={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
+        buttonStyle={{ backgroundColor: MINT_STRONG }}
+        onPress={handleSubmit}
+      />
     </>
   );
 }
+
+const Wrapper = styled.KeyboardAvoidingView``;
 
 const ItemModifyModifyMenu = styled.View`
   width: 100%;

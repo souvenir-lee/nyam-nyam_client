@@ -3,7 +3,12 @@ import { Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import * as ImagePicker from 'expo-image-picker';
 import { RootState } from '@base/modules';
-import { getItemModify, postItemModify } from '@base/modules/itemModify';
+import {
+  getItemModify,
+  postItemModify,
+  clearData,
+} from '@base/modules/itemModify';
+import { ingredients } from '@base/api/item';
 import useForm from '@base/hooks/useForm';
 import ItemModifyScreen from '../components/ItemModifyScreen';
 
@@ -11,28 +16,31 @@ function refactorModifyData(data) {
   const {
     dessertType,
     id,
+    storeId,
     info,
-    ingredients,
+    ingredient1,
+    ingredient2,
     price,
     productionImg,
     productionName,
     type,
-  } = data.productionData;
+    storeName,
+  } = data;
   const refactoredData = {
-    productionId: id,
-    storeId: data.storeId,
+    storeName,
     productionName,
     price,
     info,
-    storeName: data.storeName,
+    productionId: id,
+    storeId,
     dessertType,
     type,
   };
-  if (ingredients[0]) {
-    refactoredData.ingredient1 = ingredients[0].id;
+  if (ingredient1) {
+    refactoredData.ingredient1 = ingredients[ingredient1];
   }
-  if (ingredients[1]) {
-    refactoredData.ingredient2 = ingredients[1].id;
+  if (ingredient2) {
+    refactoredData.ingredient2 = ingredients[ingredient2];
   }
   return [refactoredData, productionImg];
 }
@@ -42,8 +50,9 @@ function createFormData(form, image) {
   for (const key in form) {
     formdata.append(key, form[key]);
   }
+  console.log(image);
   if (image.name && image.type) {
-    formdata.append('productionImg', image);
+    formdata.append('data', image);
   }
   return formdata;
 }
@@ -53,15 +62,24 @@ export default function ItemModifyContainer({ navigation, route }) {
   console.log(route);
   const { productionId, storeId } = route.params;
   const {
-    itemInfo: { loading, data, error },
-  } = useSelector((state) => state.itemDetail);
+    itemInfo: { itemLoading, data, itemError },
+  } = useSelector((state) => state.itemModify);
+  const { loading, error } = useSelector((state) => state.itemModify);
   const dispatch = useDispatch();
   const [form, onChange, onDelete, initialize] = useForm(null);
   const [image, setImage] = useState(null);
 
   useEffect(() => {
+    console.log('get item modify', productionId, storeId);
     dispatch(getItemModify({ productionId, storeId }));
-  }, [dispatch]);
+  }, [dispatch, productionId, storeId]);
+
+  useEffect(() => {
+    if (!itemLoading && data) {
+      const [refactored] = refactorModifyData(data);
+      initialize(refactored);
+    }
+  }, [itemLoading]);
 
   useEffect(() => {
     if (!loading) {
@@ -69,12 +87,15 @@ export default function ItemModifyContainer({ navigation, route }) {
         Alert.alert('정보를 수정할 수 없습니다.');
         navigation.goBack();
       } else if (!form && data) {
+        data.id = productionId;
+        data.storeId = storeId;
         const [refactored, imageURL] = refactorModifyData(data);
+        console.log('refactored', refactored);
         initialize(refactored);
         setImage({ uri: imageURL });
       }
     }
-  }, [navigation, loading, error, data]);
+  }, [navigation, loading, error, data, form, initialize]);
 
   const handleImageLibraryPermission = async () => {
     const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -105,18 +126,33 @@ export default function ItemModifyContainer({ navigation, route }) {
   };
 
   const handleGoBack = () => {
+    dispatch(clearData());
     navigation.goBack();
   };
 
   const handleSubmit = () => {
+    const { productionName, price, info, dessertType } = form;
+    if (
+      !productionName ||
+      !price ||
+      !info ||
+      !dessertType ||
+      !('ingredient1' in form)
+    ) {
+      Alert.alert('모든 정보를 입력해주세요.');
+      return;
+    }
+
     const formdata = createFormData(form, image);
-    console.log(formdata);
+    console.log('submit formdata', formdata);
+    dispatch(postItemModify(formdata, form.productionId));
     navigation.goBack();
   };
 
-  return loading || !form ? null : (
+  return itemLoading || !form ? null : (
     <ItemModifyScreen
       data={form}
+      loading={loading}
       image={image}
       onChange={onChange}
       onDelete={onDelete}
