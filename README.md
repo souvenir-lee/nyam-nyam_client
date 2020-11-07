@@ -29,8 +29,8 @@ npm install
 ```
 ## Homepage
 
-### [프로젝트 상세설명](https://github.com/codestates/nyamnyam-server)
-### [위키](https://github.com/codestates/nyamnyam-server/wiki)
+### [프로젝트 상세설명](https://github.com/souvenir-lee/nyam-nyam_server)
+### [위키](https://github.com/souvenir-lee/nyam-nyam_server/wiki)
 
 <br>
 
